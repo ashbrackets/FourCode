@@ -1,0 +1,80 @@
+<html>
+    <head>
+        <title>FourCode</title>
+        <link href="{{url_for('static',filename='css/main.css')}}"
+            rel="stylesheet">
+        <link rel="stylesheet"
+            href="{{ url_for('static', filename='codemirror/lib/codemirror.css') }}">
+        <script defer
+            src="{{ url_for('static', filename='js/lesson.js') }}"></script>
+        <script
+            src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"></script>
+        <script
+            src="{{ url_for('static', filename='codemirror/mode/python/python.js') }}"></script>
+        <link rel="stylesheet"
+            href="{{ url_for('static', filename='codemirror/theme/monokai.css') }}" />
+        <style>
+            .CodeMirror {
+                background-color: #1D2D44 !important;
+            }
+            .CodeMirror-gutters {
+                background-color: #1D2D44 !important;
+                border-right: 1px solid #374151 !important;
+            }
+            .CodeMirror {
+                font-size: 16px;
+                font-family: monospace; 
+            }
+        </style>
+    </head>
+    <body class="bg-[#0D1321] flex flex-col h-[100vh]">
+        <div id="header"
+            class="h-[7%] w-full bg-[#0D1321] flex items-center justify-between">
+            <div name="Logo" class="flex flex-row pl-3 pb-2">
+                <p class="text-blue-400 text-4xl">[</p>
+                <p class="text-white text-4xl">FourCode</p>
+                <p class="text-blue-400 text-4xl">]</p>
+            </div>
+            <div name="navbar" class="pr-2">
+                <button
+                    class="rounded-lg bg-[#3E5C76] text-stone-200 mr-1 px-4 py-2 border-stone-200 hover:border-[1px]">
+                    Login
+                </button>
+            </div>
+        </div>
+        <div
+            class="flex flex-col lg:flex-row flex-1 h-[93%] rounded-t-lg bg-zinc-300">
+            <div
+                class="flex flex-col h-full w-full py-2 pr-1 pl-2 order-3 lg:order-1 flex-1">
+                <div name="Input"
+                    class="h-[66%] flex flex-col bg-[#0D1321] rounded-lg mb-2">
+                    <p
+                        class="text-white pl-1 py-1">Code</p>
+                    <div
+                        class="rounded-lg overflow-hidden h-full mx-2 mt-1 bg-[#1f2937]">
+                        <textarea id="code-editor"
+                            class=" w-full h-full"></textarea>
+                    </div>
+                    <div class="flex justify-end p-2">
+                        <button id="run-button"
+                            class="rounded-lg bg-[#1D2D44] text-[#F0EBD8] hover:outline outline-1 outline-white px-6 py-1">
+                            Run
+                        </button>
+                    </div>
+                </div>
+                <div name="Output"
+                    class="h-[33%] flex flex-col bg-[#0D1321] rounded-lg">
+                    <p class="text-white pl-1 pt-1">Output</p>
+                    <div id="output"
+                        class="h-full m-2 rounded-lg bg-[#1D2D44] text-white font-mono overflow-y-scroll whitespace-pre-wrap pl-2 pt-1"></div>
+                </div>
+            </div>
+            <div
+                class="flex flex-col h-full w-full py-2 pr-2 pl-1 order-1 lg:order-3 flex-1">
+                <div name="lesson" class="bg-[#0D1321] rounded-lg h-full">
+                    <p class="text-white pl-2 pt-1 text-lg">Lesson</p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
