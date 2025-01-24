@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
-from compiler.lexer import Lexer
-from compiler.parser import Parser
+from static.compiler.lexer import Lexer
+from static.compiler.parser import Parser
+from static.compiler.emitter import Emitter
 
 app = Flask(__name__)
 
@@ -14,10 +15,12 @@ def run_code():
     
     
     lexer = Lexer(code)
-    parser = Parser(lexer)
+    emitter = Emitter("out.c")
+    parser = Parser(lexer, emitter)
 
     parser.program()
-
+    emitter.writeFile()
+    print("Compilation Complete!!")
     # return output
     return jsonify({"result": code})
 
