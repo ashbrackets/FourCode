@@ -1,4 +1,4 @@
-from lexer import *
+from static.compiler.lexer import *
 # import sys
 
 class Parser:
@@ -26,6 +26,7 @@ class Parser:
     def match(self, kind):
         if not self.checkToken(kind):
             self.addError("Expected " + kind.name + ", got " + self.curToken.kind.name)
+            return
         self.nextToken()
 
     def nextToken(self):
@@ -60,7 +61,7 @@ class Parser:
         while not self.checkToken(TokenType.EOF):
             if self.error != '':
                 print(self.error)
-                break
+                return self.error
             self.statement()
         
         print("PROGRAM-END")
@@ -95,6 +96,7 @@ class Parser:
             self.emitter.emit('if(')
             if self.checkToken(TokenType.NEWLINE):
                 self.addError("Expected comparison after 'if'.")
+                return
             self.comparison()
 
             # Goes on until it finds not nl
@@ -107,6 +109,7 @@ class Parser:
                     self.emitter.emitLine('} else if (')
                     if self.checkToken(TokenType.NEWLINE):
                         self.addError("Expected comparison after 'elseif'.")
+                        return
                     self.comparison()
 
                     # Goes on until it finds not nl
@@ -146,7 +149,7 @@ class Parser:
             self.match(TokenType.EQ)
 
             if self.checkToken(TokenType.STRING):
-                if varName not in self.symbols:
+                if varName not in self.symbols.keys():
                     self.symbols[varName] = TokenType.STRING
                     self.emitter.headerLine("char " + varName + "[100] = " + "\"" + self.curToken.text + "\"" + ';')
                 self.nextToken()
@@ -158,8 +161,9 @@ class Parser:
                 self.expression()
                 self.emitter.emitLine(";")
         elif self.checkToken(TokenType.VARIABLE):
-            if self.curToken.text not in self.symbols:
+            if self.curToken.text not in self.symbols.keys():
                 self.addError("Referencing variable before assignment: " + self.curToken.text)
+                return
             print("VARIABLE " + str(self.symbols[self.curToken.text]))
             if self.symbols[self.curToken.text] == TokenType.STRING:
                 self.emitter.emit("strcpy(")
@@ -178,6 +182,7 @@ class Parser:
                 self.emitter.emitLine(";")
         else:
             self.addError("Invalid statement at \'" + self.curToken.text + "\' (" + self.curToken.kind.name + ")")
+            return
 
         self.nl()
     
@@ -241,12 +246,14 @@ class Parser:
             # Ensure the variable already exists.
             if self.curToken.text not in self.symbols:
                 self.addError("Referencing variable before assignment: " + self.curToken.text)
+                return
 
             self.emitter.emit(self.curToken.text)
             self.nextToken()
         else:
             # Error!
             self.addError("Unexpected token at " + self.curToken.text)
+            return
 
     # nl ::= '\n'+
     def nl(self):

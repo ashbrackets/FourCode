@@ -12,7 +12,9 @@ class Compiler:
         emitter = Emitter("out.c")
         parser = Parser(lexer, emitter)
 
-        parser.program()
+        error = parser.program()
+        if error:
+            return error 
         emitter.writeFile()
 
     def run(self):
