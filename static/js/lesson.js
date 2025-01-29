@@ -20,7 +20,11 @@ document.getElementById('run-button').addEventListener('click', async () => {
     });
 
     const result = await response.json();
-    document.getElementById('output').textContent = result.result; // Display the result
+    if (result.error) {
+        document.getElementById('output').textContent = result.error;
+    } else {
+        document.getElementById('output').textContent = result.result; // Display the result
+    }
 });
 
 var savedCode = localStorage.getItem('savedCode');
@@ -28,7 +32,7 @@ if (savedCode) {
     editor.setValue(savedCode);
 }
 
-editor.on('change', function() {
+editor.on('change', function () {
     var code = editor.getValue();
     localStorage.setItem('savedCode', code);
 });
