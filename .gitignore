@@ -2,3 +2,6 @@ __pycache__
 .venv
 node_modules
 .vscode
+*.c
+*.fc
+*.exe
