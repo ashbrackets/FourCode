@@ -7,8 +7,8 @@ class Lexer:
         self.curChar = ''
         self.curPos = -1
         self.lineNo = 1
-        self.prevLinePos = 0
-        self.linePos = 0
+        self.prevLinePos = 0    # cursor position in the previous line 
+        self.linePos = 0        # current cursor position in the line 
         self.error = ''
         self.nextChar()
 
@@ -28,7 +28,7 @@ class Lexer:
     def addError(self, message):
         if "Lexing Error" not in self.error:
             self.error += "Lexing Error: \n\t" 
-        self.error += 'line ' + str(self.lineNo) + ':' + str(self.curPos + 1) + ' '
+        self.error += 'line ' + str(self.lineNo) + ':' + str(self.linePos + 1) + ' '
         self.error += message + '\n\t'
         # sys.exit("Lexing error. \n\t" + message)
 
@@ -87,7 +87,11 @@ class Lexer:
             self.nextChar()
             startPos = self.curPos
 
-            while self.curChar != '\"':
+            while self.curChar != '\"' and self.curChar != '\0':
+                isIncompleteString = False
+                if self.peek() == '\0':
+                    isIncompleteString = True
+                    self.addError("String needs a end quote.")
                 errorChar = None
                 if self.curChar == '\r':
                     errorChar = '\\r' 
@@ -99,7 +103,7 @@ class Lexer:
                     errorChar = '\\' 
                 elif self.curChar == '%':
                     errorChar = '%'
-                if errorChar:
+                if errorChar and not isIncompleteString:
                     self.addError(errorChar + " not allowed in strings in this language. Allowed in most other languages")
                 self.nextChar()
 
@@ -150,6 +154,9 @@ class Lexer:
             self.addError('Unknown Token: ' + self.curChar)
             token = Token('', TokenType.UNKNOWN)
         
+        if self.error:
+            return Token(self.error, TokenType.ERROR)
+
         self.nextChar()
         return token
 
@@ -167,6 +174,7 @@ class Token:
         return None
 
 class TokenType(enum.Enum):
+    ERROR = -4
     IGNORE = -3 
     UNKNOWN = -2
     EOF = -1
@@ -186,6 +194,8 @@ class TokenType(enum.Enum):
     WHILE = 110
     REPEAT = 111
     FOR = 112
+    FROM = 113
+    TO = 114
     # Operators.
     EQ = 201  
     PLUS = 202

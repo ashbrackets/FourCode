@@ -1,12 +1,18 @@
 from static.compiler.lexer import *
 # import sys
 
+LOOP_LIMIT = 1000
+
+class ParseError(Exception):
+    pass
+
 class Parser:
     def __init__(self, lexer, emitter):
         self.lexer = lexer
         self.emitter = emitter
         self.error = ''
         self.linePos = 0
+        self.isInLoop = False # tracks if currently in a while loop waiting for a token. used in errors
 
         self.symbols = dict()    # Variables declared so far.
         self.labelsDeclared = set() # Labels declared so far.
@@ -26,13 +32,16 @@ class Parser:
     def match(self, kind):
         if not self.checkToken(kind):
             self.addError("Expected " + kind.name + ", got " + self.curToken.kind.name)
-            return
         self.nextToken()
 
     def nextToken(self):
         self.linePos = self.lexer.linePos
         self.curToken = self.peekToken
         self.peekToken = self.lexer.getToken()
+        if self.peekToken.kind == TokenType.ERROR:
+            # self.addError(self.peekToken.text)
+            self.error = self.peekToken.text
+            raise ParseError(self.peekToken.text)
         if self.curToken:
             print(self.curToken.kind)
     
@@ -43,30 +52,37 @@ class Parser:
             lineNo -= 1
             linePos = self.lexer.prevLinePos
         if "Parsing Error" not in self.error:
-            self.error += "Parsing Error: \n\t" 
-        self.error += 'line ' + str(lineNo) + ':' + str(linePos) + ' '
-        self.error += message + '\n\t'
+            self.error += "Parsing Error: \n\t"
+        lineData = 'line ' + str(lineNo) + ':' + str(linePos) + ' '
+        self.error += lineData
+        self.error += message
+        if self.isInLoop:
+            self.error += "\n\t" + ' ' * len(lineData) + "Probably a missing 'end' for a statement."
+        self.error += '\n\t'
+        print(self.error)
+        raise ParseError(self.error)
         # sys.exit("Parsing error. \n\t" + self.error)
 
     def program(self):
-        self.emitter.headerLine("#include <stdio.h>")
-        self.emitter.headerLine("#include <string.h>")
-        self.emitter.headerLine("int main(void){")
-        print('PROGRAM')
+        try:
+            self.emitter.headerLine("#include <stdio.h>")
+            self.emitter.headerLine("#include <string.h>")
+            self.emitter.headerLine("int main(void){")
+            print('PROGRAM')
 
 
-        while self.checkToken(TokenType.NEWLINE):
-            self.nextToken()
-        
-        while not self.checkToken(TokenType.EOF):
-            if self.error != '':
-                print(self.error)
-                return self.error
-            self.statement()
-        
-        print("PROGRAM-END")
-        self.emitter.emitLine("return 0;")
-        self.emitter.emitLine("}")
+            while self.checkToken(TokenType.NEWLINE):
+                self.nextToken()
+            
+            while not self.checkToken(TokenType.EOF):
+                self.statement()
+            
+            print("PROGRAM-END")
+            self.emitter.emitLine("return 0;")
+            self.emitter.emitLine("}")  
+            return None
+        except ParseError as e:
+            return self.error
         
     def statement(self):
         if self.checkToken(TokenType.PRINT):
@@ -96,20 +112,19 @@ class Parser:
             self.emitter.emit('if(')
             if self.checkToken(TokenType.NEWLINE):
                 self.addError("Expected comparison after 'if'.")
-                return
             self.comparison()
 
             # Goes on until it finds not nl
             self.nl()
             self.emitter.emitLine('){')
-
+            
+            self.isInLoop = True
             while not self.checkToken(TokenType.END):
                 if self.checkToken(TokenType.ELSEIF):
                     self.nextToken()
                     self.emitter.emitLine('} else if (')
                     if self.checkToken(TokenType.NEWLINE):
                         self.addError("Expected comparison after 'elseif'.")
-                        return
                     self.comparison()
 
                     # Goes on until it finds not nl
@@ -120,7 +135,7 @@ class Parser:
                     self.emitter.emitLine('} else {')
                     self.nl()
                 self.statement()
-                print("yo")
+            self.isInLoop = False
 
             print('IF-END')
             self.match(TokenType.END)
@@ -128,14 +143,23 @@ class Parser:
         elif self.checkToken(TokenType.WHILE):
             print('WHILE')
             self.nextToken()
+            self.emitter.emitLine("__loop_counter = 0;")
             self.emitter.emit('while(')
             self.comparison()
 
             self.nl()
             self.emitter.emitLine('){')
-
+            self.symbols["__loop_counter"] = TokenType.INTEGER
+            self.emitter.headerLine("int __loop_counter = 0;")
+            self.emitter.emitLine("if(__loop_counter >= " + str(LOOP_LIMIT) + "){")
+            self.emitter.emit(f"printf(\"Error:\\n\\tLoop limit of {LOOP_LIMIT} has been reached.\");")
+            self.emitter.emitLine("break;")
+            self.emitter.emitLine("}")
+            self.emitter.emitLine("__loop_counter++;")
+            self.isInLoop = True
             while not self.checkToken(TokenType.END):
                 self.statement()
+            self.isInLoop = False
             
             print("WHILE-END")
             self.match(TokenType.END)
@@ -163,7 +187,6 @@ class Parser:
         elif self.checkToken(TokenType.VARIABLE):
             if self.curToken.text not in self.symbols.keys():
                 self.addError("Referencing variable before assignment: " + self.curToken.text)
-                return
             print("VARIABLE " + str(self.symbols[self.curToken.text]))
             if self.symbols[self.curToken.text] == TokenType.STRING:
                 self.emitter.emit("strcpy(")
@@ -182,7 +205,6 @@ class Parser:
                 self.emitter.emitLine(";")
         else:
             self.addError("Invalid statement at \'" + self.curToken.text + "\' (" + self.curToken.kind.name + ")")
-            return
 
         self.nl()
     
@@ -246,14 +268,12 @@ class Parser:
             # Ensure the variable already exists.
             if self.curToken.text not in self.symbols:
                 self.addError("Referencing variable before assignment: " + self.curToken.text)
-                return
 
             self.emitter.emit(self.curToken.text)
             self.nextToken()
         else:
             # Error!
             self.addError("Unexpected token at " + self.curToken.text)
-            return
 
     # nl ::= '\n'+
     def nl(self):

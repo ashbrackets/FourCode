@@ -1,3 +1,4 @@
+import time
 from flask import Flask, render_template, request, jsonify
 from static.compiler.compiler import Compiler
 import os, uuid
@@ -16,7 +17,6 @@ def index():
 @app.route('/run', methods=['POST'])
 def run_code():
     code = request.json.get('code').strip()
-    print(code)
     if not code:
         return jsonify({"result": "No code provided"})
 
@@ -28,9 +28,10 @@ def run_code():
     error = compiler.compile(c_file)
     if error:
         return jsonify({"result": error})
-    print(error)
+    
+    start = time.time()
     code = compiler.run(c_file, exe_file)
-
+    print("Done: " + str(time.time() - start))
     # return output
     return jsonify({"result": code})
 

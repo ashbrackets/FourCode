@@ -25,6 +25,9 @@
                 font-size: 16px;
                 font-family: monospace; 
             }
+            #output::-webkit-scrollbar {
+                display: none;
+            }
         </style>
     </head>
     <body class="bg-[#0D1321] flex flex-col h-[100vh]">
@@ -42,30 +45,40 @@
                 </button>
             </div>
         </div>
-        <div class="flex flex-col lg:flex-row flex-1 h-[90%] rounded-t-lg bg-zinc-300">
-            <div class="flex flex-col h-full w-full px-2 lg:py-2 pt-1 pb-2 lg:pr-1 lg:pl-2 order-2 lg:order-1 flex-1">
-                <div name="Input" class="h-[66%] flex flex-col bg-[#0D1321] rounded-lg mb-2">
+        <div
+            class="flex flex-col lg:flex-row flex-1 h-[90%] rounded-t-lg bg-zinc-300">
+            <div
+                class="flex flex-col h-full w-full px-2 lg:py-2 pt-1 pb-2 lg:pr-1 lg:pl-2 order-2 lg:order-1 flex-1">
+                <div name="Input"
+                    class="h-[66%] flex flex-col bg-[#0D1321] rounded-lg mb-2">
                     <p class="text-white pl-1 py-1">Code</p>
-                    <div class="rounded-lg overflow-hidden h-full mx-2 mt-1 bg-[#1f2937]">
-                        <textarea id="code-editor" class=" w-full h-full"></textarea>
+                    <div
+                        class="rounded-lg overflow-hidden h-full mx-2 mt-1 bg-[#1f2937]">
+                        <textarea id="code-editor"
+                            class=" w-full h-full"></textarea>
                     </div>
                     <div class="flex justify-end p-2">
-                        <button id="run-button" class="rounded-lg bg-[#1D2D44] text-[#F0EBD8] hover:outline outline-1 outline-white px-6 py-1">
+                        <button id="run-button"
+                            class="rounded-lg bg-[#1D2D44] text-[#F0EBD8] hover:outline outline-1 outline-white px-6 py-1">
                             Run
                         </button>
                     </div>
                 </div>
-                <div name="Output" class="h-[33%] flex flex-col bg-[#0D1321] rounded-lg">
+                <div name="Output"
+                    class="h-[33%] flex flex-col bg-[#0D1321] rounded-lg">
                     <p class="text-white pl-1 pt-1">Output</p>
                     <div id="output"
                         class="h-full m-2 rounded-lg bg-[#1D2D44] text-white font-mono overflow-y-auto whitespace-pre-wrap pl-2 pt-1"></div>
                 </div>
             </div>
-            <div class="flex flex-col h-full w-full px-2 lg:py-2 pt-2 pb-1 lg:pr-2 lg:pl-1 order-1 lg:order-2 flex-1">
-                <div name="lesson" class="bg-[#0D1321] rounded-lg h-[50%] flex-1 mb-2">
+            <div
+                class="flex flex-col h-full w-full px-2 lg:py-2 pt-2 pb-1 lg:pr-2 lg:pl-1 order-1 lg:order-2 flex-1">
+                <div name="lesson"
+                    class="bg-[#0D1321] rounded-lg h-[50%] flex-1 mb-2">
                     <p class="text-white pl-2 pt-1 text-lg">Lesson</p>
                 </div>
-                <div name="canvas" class="bg-[#0D1321] rounded-lg h-[50%] flex-1">
+                <div name="canvas"
+                    class="bg-[#0D1321] rounded-lg h-[50%] flex-1">
                     <p class="text-white pl-2 pt-1 text-lg">Canvas</p>
                 </div>
             </div>
