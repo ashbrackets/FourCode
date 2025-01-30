@@ -25,6 +25,7 @@ document.getElementById('run-button').addEventListener('click', async () => {
     } else {
         textarea.innerHTML = result.result; // Display the result
     }
+    textarea.innerHTML += "\n---END OF PROGRAM---"
     // auto scroll to the end
     scrollAnimation(textarea, .2)
 });
