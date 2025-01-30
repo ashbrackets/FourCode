@@ -21,9 +21,9 @@ document.getElementById('run-button').addEventListener('click', async () => {
     });
     const result = await response.json();
     if (result.error) {
-        textarea.textContent = result.error;
+        textarea.innerHTML = result.error;
     } else {
-        textarea.textContent = result.result; // Display the result
+        textarea.innerHTML = result.result; // Display the result
     }
     // auto scroll to the end
     scrollAnimation(textarea, .2)

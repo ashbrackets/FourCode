@@ -51,17 +51,20 @@ class Parser:
         if linePos == -1:
             lineNo -= 1
             linePos = self.lexer.prevLinePos
-        if "Parsing Error" not in self.error:
-            self.error += "Parsing Error: \n\t"
-        lineData = 'line ' + str(lineNo) + ':' + str(linePos) + ' '
+        # if "Parsing Error" not in self.error:
+        #     self.error += "Parsing Error: \n"
+        lineData = '<b><u>Line ' + str(lineNo) + ':' + str(linePos) + ':</u></b> '
         self.error += lineData
+        # message = message.split('\n')
+        # self.error += message[0]
+        # for i in range(1, len(message)):
+        #     self.error += "\n" + ' ' * len(lineData) + message[i]
         self.error += message
         if self.isInLoop:
-            self.error += "\n\t" + ' ' * len(lineData) + "Probably a missing 'end' for a statement."
-        self.error += '\n\t'
+            self.error += "\n" + ' ' * len(lineData) + "Probably a missing 'end' for a statement."
+        self.error += '\n'
         print(self.error)
         raise ParseError(self.error)
-        # sys.exit("Parsing error. \n\t" + self.error)
 
     def program(self):
         try:
@@ -69,7 +72,6 @@ class Parser:
             self.emitter.headerLine("#include <string.h>")
             self.emitter.headerLine("int main(void){")
             print('PROGRAM')
-
 
             while self.checkToken(TokenType.NEWLINE):
                 self.nextToken()
@@ -100,6 +102,9 @@ class Parser:
                         self.nextToken()
                     case TokenType.DECIMAL:
                         self.emitter.emitLine('printf(\"%' + '.2f\\n\", (float)(' + self.curToken.text + '));')
+                        self.nextToken()
+                    case TokenType.INTEGER:
+                        self.emitter.emitLine('printf(\"%' + 'd\\n\", (int)(' + self.curToken.text + '));')
                         self.nextToken()
             else:
                 print('PRINT-NUMBER')
@@ -149,19 +154,55 @@ class Parser:
 
             self.nl()
             self.emitter.emitLine('){')
-            self.symbols["__loop_counter"] = TokenType.INTEGER
-            self.emitter.headerLine("int __loop_counter = 0;")
+            
+            # Loop limiter
+            if "__loop_counter" not in self.symbols.keys():
+                self.symbols["__loop_counter"] = TokenType.INTEGER
+                self.emitter.headerLine("int __loop_counter = 0;")
             self.emitter.emitLine("if(__loop_counter >= " + str(LOOP_LIMIT) + "){")
             self.emitter.emit(f"printf(\"Error:\\n\\tLoop limit of {LOOP_LIMIT} has been reached.\");")
             self.emitter.emitLine("break;")
             self.emitter.emitLine("}")
             self.emitter.emitLine("__loop_counter++;")
+            
             self.isInLoop = True
             while not self.checkToken(TokenType.END):
                 self.statement()
             self.isInLoop = False
             
             print("WHILE-END")
+            self.match(TokenType.END)
+            self.emitter.emitLine('}')
+        elif self.checkToken(TokenType.FOR):
+            print("FOR")
+            self.nextToken()
+            self.emitter.emit("for(")
+            varName = self.curToken.text
+            if varName not in self.symbols.keys():
+                self.symbols[varName] = TokenType.INTEGER
+                self.emitter.headerLine("int " + varName + " = 0;")
+            self.emitter.emit(varName + "=")
+            self.nextToken()
+            self.match(TokenType.FROM)
+            self.expression()
+            self.emitter.emit(";" + varName + "<=")
+            self.match(TokenType.TO)
+            self.expression()
+            self.emitter.emit(";" + varName + "+=")
+            if self.checkToken(TokenType.STEP):
+                self.match(TokenType.STEP)
+                self.expression()
+            else:
+                self.emitter.emit("1")
+            self.emitter.emitLine("){")
+            self.nl()
+            
+            self.isInLoop = True
+            while not self.checkToken(TokenType.END):
+                self.statement()
+            self.isInLoop = False
+
+            print("FOR-END")
             self.match(TokenType.END)
             self.emitter.emitLine('}')
         elif self.checkToken(TokenType.VAR):
@@ -273,7 +314,7 @@ class Parser:
             self.nextToken()
         else:
             # Error!
-            self.addError("Unexpected token at " + self.curToken.text)
+            self.addError("Unexpected token at \'" + self.curToken.text + f"\' ({self.curToken.kind}). Expecting either a INTEGER or DECIMAL. If VARIABLE, make sure it is either an INTEGER or DECIMAL.")
 
     # nl ::= '\n'+
     def nl(self):

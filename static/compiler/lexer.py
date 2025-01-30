@@ -30,7 +30,6 @@ class Lexer:
             self.error += "Lexing Error: \n\t" 
         self.error += 'line ' + str(self.lineNo) + ':' + str(self.linePos + 1) + ' '
         self.error += message + '\n\t'
-        # sys.exit("Lexing error. \n\t" + message)
 
     def skipWhitespace(self):
         while self.curChar == ' ' or self.curChar == "\t" or self.curChar == '\r':
@@ -196,6 +195,7 @@ class TokenType(enum.Enum):
     FOR = 112
     FROM = 113
     TO = 114
+    STEP = 115
     # Operators.
     EQ = 201  
     PLUS = 202

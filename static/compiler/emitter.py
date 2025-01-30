@@ -4,12 +4,15 @@ class Emitter:
         self.fullPath = fullPath
         self.header = ""
         self.code = ""
+        self.curPos = 0
 
     def emit(self, code):
         self.code += code
+        self.curPos += len(code)
 
     def emitLine(self, code):
         self.code += code + '\n'
+        self.curPos += len(code)
 
     def headerLine(self, code):
         self.header += code + '\n'
