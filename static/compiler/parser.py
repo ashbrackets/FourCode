@@ -187,7 +187,7 @@ class Parser:
                 self.symbols[varName] = TokenType.INTEGER
                 self.emitter.headerLine("int " + varName + " = 0;")
             else:
-                if self.symbols[varName] != TokenType.INTEGER or self.symbols[varName] != TokenType.DECIMAL:
+                if self.symbols[varName] != TokenType.INTEGER and self.symbols[varName] != TokenType.DECIMAL:\
                     self.addError("\'" + varName + "\' should be either an INTEGER or a DECIMAL.")
             self.emitter.emit(varName + "=")
             self.nextToken()
@@ -226,8 +226,15 @@ class Parser:
                     self.symbols[varName] = TokenType.STRING
                     self.emitter.headerLine("char " + varName + "[100] = " + "\"" + self.curToken.text + "\"" + ';')
                 self.nextToken()
-            else:
-                self.emitter.emit(varName + " = ")  
+            elif self.checkToken(TokenType.INTEGER):
+                self.emitter.emit(varName + " = ")
+                if varName not in self.symbols:
+                    self.symbols[varName] = TokenType.INTEGER
+                    self.emitter.headerLine("int " + varName + ";")
+                self.expression()
+                self.emitter.emitLine(";")
+            elif self.checkToken(TokenType.DECIMAL):
+                self.emitter.emit(varName + " = ")
                 if varName not in self.symbols:
                     self.symbols[varName] = TokenType.DECIMAL
                     self.emitter.headerLine("float " + varName + ";")

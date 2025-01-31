@@ -13,10 +13,6 @@
             src="{{ url_for('static', filename='codemirror/mode/python/python.js') }}"></script>
         <link rel="stylesheet"
             href="{{ url_for('static', filename='codemirror/theme/monokai.css') }}" />
-        <!-- <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/lint.css">
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/lint.js"></script> -->
         <style>
             .CodeMirror {
                 background-color: #1D2D44 !important;
@@ -39,9 +35,9 @@
         <div id="header"
             class="h-[10%] w-full bg-[#0D1321] flex items-center justify-between">
             <div name="Logo" class="flex flex-row pl-3 pb-2">
-                <p class="text-blue-400 text-4xl">[</p>
-                <p class="text-white text-4xl">FourCode</p>
-                <p class="text-blue-400 text-4xl">]</p>
+                <p class="text-blue-400 text-4xl font-mono">[</p>
+                <p class="text-white text-4xl font-mono">FourCode</p>
+                <p class="text-blue-400 text-4xl font-mono">]</p>
             </div>
             <div name="navbar" class="pr-2">
                 <button
