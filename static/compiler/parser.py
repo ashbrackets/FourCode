@@ -11,6 +11,7 @@ class Parser:
         self.lexer = lexer
         self.emitter = emitter
         self.error = ''
+        self.lineNo = 0
         self.linePos = 0
         self.isInLoop = False # tracks if currently in a while loop waiting for a token. used in errors
 
@@ -41,19 +42,20 @@ class Parser:
         if self.peekToken.kind == TokenType.ERROR:
             # self.addError(self.peekToken.text)
             self.error = self.peekToken.text
+            print(self.error)
             raise ParseError(self.peekToken.text)
         if self.curToken:
             print(self.curToken.kind)
     
     def addError(self, message):
-        linePos = self.linePos - len(self.curToken.text) - 1
-        lineNo = self.lexer.lineNo
-        if linePos == -1:
-            lineNo -= 1
-            linePos = self.lexer.prevLinePos
+        self.linePos = self.linePos - len(self.curToken.text) - 1
+        self.lineNo = self.lexer.lineNo
+        if self.linePos == -1:
+            self.lineNo -= 1
+            self.linePos = self.lexer.prevLinePos
         # if "Parsing Error" not in self.error:
         #     self.error += "Parsing Error: \n"
-        lineData = '<b><u>Line ' + str(lineNo) + ':' + str(linePos) + ':</u></b> '
+        lineData = '<b><u>Line ' + str(self.lineNo) + ':' + str(self.linePos) + ':</u></b> '
         self.error += lineData
         # message = message.split('\n')
         # self.error += message[0]
@@ -61,9 +63,10 @@ class Parser:
         #     self.error += "\n" + ' ' * len(lineData) + message[i]
         self.error += message
         if self.isInLoop:
-            self.error += "\n" + ' ' * len(lineData) + "Probably a missing 'end' for a statement."
+            self.error += " Probably a missing 'end' for a statement."
         self.error += '\n'
         print(self.error)
+        print(self.lexer.prevLinePos)
         raise ParseError(self.error)
 
     def program(self):
@@ -84,7 +87,7 @@ class Parser:
             self.emitter.emitLine("}")  
             return None
         except ParseError as e:
-            return self.error
+            return {"error": self.error, "line": self.lineNo, "pos": self.linePos, "curPos": self.lexer.curPos, "curLineNo": self.lexer.prevLineNo}
         
     def statement(self):
         if self.checkToken(TokenType.PRINT):
@@ -96,9 +99,11 @@ class Parser:
                 self.nextToken()
             elif self.checkToken(TokenType.VARIABLE):
                 print("PRINT-VARIABLE")
+                if not self.symbols.get(self.curToken.text):
+                    self.addError("Cannot print unassigned variable. Assign \'" + self.curToken.text + "\' a value.")
                 match self.symbols[self.curToken.text]:
                     case TokenType.STRING:
-                        self.emitter.emitLine('printf(\"' + self.curToken.text + '\\n\");')
+                        self.emitter.emitLine('printf(\"%100s\\n\",' + self.curToken.text + ');')
                         self.nextToken()
                     case TokenType.DECIMAL:
                         self.emitter.emitLine('printf(\"%' + '.2f\\n\", (float)(' + self.curToken.text + '));')
@@ -181,6 +186,9 @@ class Parser:
             if varName not in self.symbols.keys():
                 self.symbols[varName] = TokenType.INTEGER
                 self.emitter.headerLine("int " + varName + " = 0;")
+            else:
+                if self.symbols[varName] != TokenType.INTEGER or self.symbols[varName] != TokenType.DECIMAL:
+                    self.addError("\'" + varName + "\' should be either an INTEGER or a DECIMAL.")
             self.emitter.emit(varName + "=")
             self.nextToken()
             self.match(TokenType.FROM)

@@ -19,13 +19,33 @@ document.getElementById('run-button').addEventListener('click', async () => {
         },
         body: JSON.stringify({ code: code })
     });
-    const result = await response.json();
+    let result = await response.json();
     if (result.error) {
+        editor.getAllMarks().forEach(marker => marker.clear());
+        const line = result.line - 1
+        let pos = result.pos - 1
+        if(pos > editor.getLine(line).trim().length){
+            pos = editor.getLine(line).trim().length + 1
+            ensureCharAt(editor, line, pos)
+        }
+        let split = result.error.split(":")
+        split[1] = pos.toString()
+        result.error = split.join(":")
+        console.log(result.error)
         textarea.innerHTML = result.error;
+        editor.markText(
+            { line: line, ch: pos }, // Start position
+            { line: line, ch: pos + 1 }, // End position
+            { className: "error-highlight" } // Custom class for styling
+        );
+        const errorMessage = result.error;
+        const errorLine = result.line - 1; // The line where the error occurred
+        editor.setGutterMarker(errorLine, "error", document.createTextNode(errorMessage));
     } else {
         textarea.innerHTML = result.result; // Display the result
     }
-    textarea.innerHTML += "\n---END OF PROGRAM---"
+    // textarea.innerHTML += result.pos
+    textarea.innerHTML += "\n<b>---END OF PROGRAM---</b>"
     // auto scroll to the end
     scrollAnimation(textarea, .2)
 });
@@ -56,6 +76,24 @@ if (savedCode) {
 }
 
 editor.on('change', function () {
+    editor.getAllMarks().forEach(marker => marker.clear());
     var code = editor.getValue();
     localStorage.setItem('savedCode', code);
 });
+
+function ensureCharAt(editor, line, ch) {
+    let lineText = editor.getLine(line);
+
+    // If `ch` is beyond the end of the line, pad it with spaces
+    if (ch > lineText.length) {
+        let padding = " ".repeat(ch - lineText.length);
+        editor.replaceRange(padding + " ", { line, ch: lineText.length });
+        return true
+    }
+
+    // If the position is empty (e.g., at the end of the line), insert a space
+    if (lineText[ch] === '') {
+        editor.replaceRange(" ", { line, ch });
+
+    }
+}

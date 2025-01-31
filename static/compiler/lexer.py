@@ -6,6 +6,7 @@ class Lexer:
         self.source = source + '\n'
         self.curChar = ''
         self.curPos = -1
+        self.prevLineNo = 1
         self.lineNo = 1
         self.prevLinePos = 0    # cursor position in the previous line 
         self.linePos = 0        # current cursor position in the line 
@@ -26,8 +27,8 @@ class Lexer:
         return self.source[self.curPos + 1]
     
     def addError(self, message):
-        if "Lexing Error" not in self.error:
-            self.error += "Lexing Error: \n\t" 
+        # if "Lexing Error" not in self.error:
+        #     self.error += "Lexing Error: \n\t" 
         self.error += 'line ' + str(self.lineNo) + ':' + str(self.linePos + 1) + ' '
         self.error += message + '\n\t'
 
@@ -91,6 +92,7 @@ class Lexer:
                 if self.peek() == '\0':
                     isIncompleteString = True
                     self.addError("String needs a end quote.")
+                    token = Token(self.error, TokenType.ERROR)
                 errorChar = None
                 if self.curChar == '\r':
                     errorChar = '\\r' 
@@ -142,6 +144,7 @@ class Lexer:
                 token = Token(tokenText, keyword)
         elif self.curChar == '\n':
             token = Token('\\n', TokenType.NEWLINE)
+            self.prevLineNo = self.lineNo
             self.lineNo += 1
             self.prevLinePos = self.linePos
             self.linePos = 1

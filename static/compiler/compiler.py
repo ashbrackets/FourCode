@@ -31,7 +31,7 @@ class Compiler:
 
         # Execute the compiled program
         process = subprocess.Popen(
-            ["./" + exe_file],
+            [exe_file],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
