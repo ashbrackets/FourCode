@@ -58,9 +58,9 @@
                     class="h-[66%] flex flex-col bg-[#0D1321] rounded-lg mb-2">
                     <p class="text-white pl-1 py-1">Code</p>
                     <div
-                        class="rounded-lg overflow-hidden h-full mx-2 mt-1 bg-[#1f2937]">
+                        class="rounded-lg overflow-hidden h-full mx-2 mt-1">
                         <textarea id="code-editor"
-                            class=" w-full h-full"></textarea>
+                            class=" w-full h-full bg-[#1D2D44]"></textarea>
                     </div>
                     <div class="flex justify-end p-2">
                         <button id="run-button"
@@ -79,8 +79,17 @@
             <div
                 class="flex flex-col h-full w-full px-2 lg:py-2 pt-2 pb-1 lg:pr-2 lg:pl-1 order-1 lg:order-2 flex-1">
                 <div name="lesson"
-                    class="bg-[#0D1321] rounded-lg h-[50%] flex-1 ">
+                    class="bg-[#0D1321] rounded-lg h-[50%] w-full flex flex-col flex-1">
                     <p class="text-white pl-2 pt-1 text-lg">Lesson</p>
+                    <div class="prose prose-p:m-0 prose-h1:m-0 prose-h1:text-white prose-h2:text-white prose-h2:m-0 max-w-none scrollbar scrollbar-thumb-white scrollbar-track-transparent h-full mx-2 mt-2 rounded-lg bg-[#1D2D44] text-white font-mono overflow-y-auto whitespace-pre-wrap px-2 pt-1">{{ content | safe}}</div>
+                    <nav class="my-2 flex justify-between">
+                        <a href="{{ url_for('learn', lesson_index=lesson_index-1) }}" class="{{ 'invisible' if lesson_index <= 0 else '' }}">
+                            <button class="mx-2 px-6 py-1 bg-[#1D2D44] text-white rounded-lg hover:outline outline-1 outline-white {{ 'invisible' if lesson_index <= 0 else '' }}">Previous</button>
+                        </a>
+                        <a href="{{ url_for('learn', lesson_index=lesson_index+1) }} " class="{{ 'invisible' if lesson_index >= total_lessons - 1 else '' }}">
+                            <button class="mx-2 px-6 py-1 bg-[#1D2D44] text-white rounded-lg hover:outline outline-1 outline-white {{ 'invisible' if lesson_index >= total_lessons - 1 else '' }}">Next</button>
+                        </a>
+                    </nav>
                 </div>
                 <div name="canvas"
                     class=" bg-[#0D1321] rounded-lg h-[50%] flex-1 hidden mt-2">
