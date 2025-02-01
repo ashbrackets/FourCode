@@ -1,11 +1,24 @@
-var editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
-    lineNumbers: true,
-    theme: 'monokai',
-    lineNumbers: true,
-    lineWrapping: true,
-    indentUnit: 4,
+import { createEditor } from './editor.js'
+
+var editor
+document.addEventListener('DOMContentLoaded', () => {
+    editor = createEditor('code-editor');
+    editor.setSize("100%", "100%")
+    const urlParams = new URLSearchParams(window.location.search);
+    const lessonIndex = urlParams.get('lesson_index');
+    var savedCode = localStorage.getItem('lesson_' + lessonIndex + '_code');
+    if (savedCode) {
+        editor.setValue(savedCode);
+    }
+
+    editor.on('change', function () {
+        editor.getAllMarks().forEach(marker => marker.clear());
+        var code = editor.getValue();
+        const urlParams = new URLSearchParams(window.location.search);
+        const lessonIndex = urlParams.get('lesson_index');
+        localStorage.setItem('lesson_' + lessonIndex + '_code', code);
+    });
 });
-editor.setSize("100%", "100%")
 
 document.getElementById('run-button').addEventListener('click', async () => {
     const code = editor.getValue(); // Get the text from the editor
@@ -24,7 +37,7 @@ document.getElementById('run-button').addEventListener('click', async () => {
         editor.getAllMarks().forEach(marker => marker.clear());
         const line = result.line - 1
         let pos = result.pos - 1
-        if(pos > editor.getLine(line).trim().length){
+        if (pos > editor.getLine(line).trim().length) {
             pos = editor.getLine(line).trim().length + 1
             ensureCharAt(editor, line, pos)
         }
@@ -69,17 +82,6 @@ function scrollAnimation(textarea, duration) {
 
     requestAnimationFrame(animate);
 }
-
-var savedCode = localStorage.getItem('savedCode');
-if (savedCode) {
-    editor.setValue(savedCode);
-}
-
-editor.on('change', function () {
-    editor.getAllMarks().forEach(marker => marker.clear());
-    var code = editor.getValue();
-    localStorage.setItem('savedCode', code);
-});
 
 function ensureCharAt(editor, line, ch) {
     let lineText = editor.getLine(line);
