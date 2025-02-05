@@ -8,6 +8,9 @@
     "create-css": "npx tailwindcss -i ./static/src/input.css -o ./static/css/main.css --watch"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.16"
+    "@tailwindcss/typography": "^0.5.16",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "tw-colors": "^3.3.2"
   }
 }

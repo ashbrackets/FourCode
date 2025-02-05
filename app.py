@@ -4,12 +4,26 @@ import os, uuid, markdown
 
 
 app = Flask(__name__)
-
+app.config.update(
+    TEMPLATES_AUTO_RELOAD=True
+)
 STATIC_TEMP_DIR = os.path.join(app.static_folder, "temp_files")
 os.makedirs(STATIC_TEMP_DIR, exist_ok=True)
 
 LESSONS_FOLDER = os.path.join(app.static_folder, "lessons")
 LESSONS = sorted(os.listdir(LESSONS_FOLDER))
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/playground')
+def playground():
+    return render_template('playground.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 def get_lesson_content(filename):
     """Read and convert a Markdown file to HTML."""
@@ -40,20 +54,6 @@ def learn():
                            lesson_index=lesson_index, 
                            total_lessons=len(LESSONS))
 
-@app.route("/learn/<int:lesson_index>")
-def lesson(lesson_index):
-    """Displays a specific lesson by index."""
-    if lesson_index < 0 or lesson_index >= len(LESSONS):
-        return "Lesson not found", 404
-
-    lesson_content = get_lesson_content(LESSONS[lesson_index])
-    
-    return render_template("learn.html", 
-                           content=lesson_content, 
-                           lesson_index=lesson_index, 
-                           total_lessons=len(LESSONS))
-
-
 @app.route('/run', methods=['POST'])
 def run_code():
     code = request.json.get('code').strip()
@@ -73,3 +73,6 @@ def run_code():
     # return output
     return jsonify({"result": output})
 
+@app.route('/layout_test')
+def layout_test():
+    return render_template('learn.html')

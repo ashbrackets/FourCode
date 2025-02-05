@@ -1,0 +1,144 @@
+<html class="default">
+    <head>
+        <title>FourCode</title>
+        <!-- <script defer
+            src="{{ url_for('static', filename='js/lesson.js') }}"
+            ></script> -->
+        <!-- <script defer
+            src="{{ url_for('static', filename='js/editor.js') }}"
+            ></script> -->
+        <script src="{{ url_for('static', filename='js/lesson.js') }}"
+            type="module"></script>
+        <link href="{{url_for('static',filename='css/main.css')}}"
+            rel="stylesheet" />
+        <link
+            href="{{ url_for('static', filename='codemirror/lib/codemirror.css') }}"
+            rel="stylesheet" />
+        <script
+            src="{{ url_for('static', filename='codemirror/lib/codemirror.js') }}"></script>
+        <script
+            src="{{ url_for('static', filename='codemirror/mode/python/python.js') }}"></script>
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='codemirror/theme/monokai.css') }}" />
+        <style>
+			.CodeMirror {
+				background-color: #1d2d44 !important;
+			}
+			.CodeMirror-gutters {
+				background-color: #1d2d44 !important;
+				border-right: 1px solid #374151 !important;
+			}
+			.CodeMirror {
+				font-size: 16px;
+				font-family: monospace;
+			}
+			.error-highlight {
+				background-color: #ff0000;
+				color: #000000;
+			}
+		</style>
+    </head>
+    <body
+        class="flex flex-col bg-secondary h-screen overflow-auto md:overflow-hidden">
+        <nav
+            id="header"
+            class="flex justify-between items-center bg-secondary w-full h-[64px]">
+            <a href="/" name="Logo" class="flex flex-row pb-2 pl-3">
+                <p class="font-mono text-4xl text-blue-400">[</p>
+                <p class="font-mono text-4xl text-white">FourCode</p>
+                <p class="font-mono text-4xl text-blue-400">]</p>
+            </a>
+            <div name="navbar" class="pr-2">
+                <a href="/">
+                    <button class="m-3 text-white hover:underline">Home</button>
+                </a>
+                <a href="{{url_for('learn')}}">
+                    <button
+                        class="m-3 text-white hover:underline">Learn</button>
+                </a>
+                <a href="{{url_for('playground')}}">
+                    <button
+                        class="m-3 text-white hover:underline">Playground</button>
+                </a>
+                <a href="{{url_for('about')}}">
+                    <button
+                        class="m-3 text-white hover:underline">About</button>
+                </a>
+                <a href>
+                    <button
+                        class="m-3 text-white hover:underline">Login</button>
+                </a>
+            </div>
+        </nav>
+        <div
+            class="flex-grow bg-zinc-300 rounded-t-lg">
+            <div class="flex lg:flex-row flex-col justify-center h-full">
+                <div
+                    class="flex flex-col flex-none md:flex-1 order-2 lg:order-1 px-2 lg:py-2 pt-1 lg:pr-1 pb-2 lg:pl-2 w-full h-auto lg:h-full min-h-[500px]">
+                    <div
+                        name="Input"
+                        class="flex flex-col bg-background mb-2 rounded-lg h-[500px] lg:h-2/3">
+                        <p class="py-1 pl-1 text-white">Code</p>
+                        <div
+                            class="mx-2 mt-1 rounded-lg h-full max-h-full overflow-hidden">
+                            <textarea
+                                id="code-editor"
+                                class="bg-[#1D2D44] w-full h-full"></textarea>
+                        </div>
+                        <div class="flex justify-end p-2">
+                            <button
+                                id="run-button"
+                                class="bg-[#1D2D44] rounded-lg text-[#F0EBD8] hover:outline px-6 py-1 outline-1 outline-white">
+                                Run
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        name="Output"
+                        class="flex flex-col flex-1 bg-secondary rounded-lg lg:h-1/3 min-h-[300px]">
+                        <p class="pt-1 pl-1 text-white">Output</p>
+                        <div
+                            id="output"
+                            class="bg-[#1D2D44] m-2 scrollbar-thumb-white px-2 pt-1 rounded-lg h-full font-mono text-white whitespace-pre-wrap overflow-y-auto scrollbar scrollbar-track-transparent"></div>
+                    </div>
+                </div>
+                <div
+                    class="flex flex-col order-1 lg:order-2 px-2 lg:py-2 pt-2 lg:pr-2 pb-1 lg:pl-1 w-full h-[500px] lg:h-full">
+                    <div
+                        name="lesson"
+                        class="flex flex-col bg-secondary rounded-lg w-full h-[500px] lg:h-full">
+                        <p class="pt-1 pl-2 text-lg text-white">Lesson</p>
+                        <div
+                            class="flex-1 bg-[#1D2D44] prose-h1:m-0 prose-h2:m-0 prose-p:m-0 mx-2 mt-2 scrollbar-thumb-white px-2 pt-1 rounded-lg max-w-none font-mono text-white prose-h1:text-white prose-h2:text-white whitespace-pre-wrap overflow-y-auto prose scrollbar scrollbar-track-transparent">{{
+                            content | safe }}
+                        </div>
+                        <nav class="flex justify-between my-2">
+                            <a
+                                href="{{ url_for('learn', lesson_index=lesson_index-1) }}"
+                                class="{{ 'invisible' if lesson_index <= 0 else '' }}">
+                                <button
+                                    class="mx-2 px-6 py-1 bg-[#1D2D44] text-white rounded-lg hover:outline outline-1 outline-white {{ 'invisible' if lesson_index <= 0 else '' }}">
+                                    Previous
+                                </button>
+                            </a>
+                            <a
+                                href="{{ url_for('learn', lesson_index=lesson_index+1) }} "
+                                class="{{ 'invisible' if lesson_index >= total_lessons - 1 else '' }}">
+                                <button
+                                    class="mx-2 px-6 py-1 bg-[#1D2D44] text-white rounded-lg hover:outline outline-1 outline-white {{ 'invisible' if lesson_index >= total_lessons - 1 else '' }}">
+                                    Next
+                                </button>
+                            </a>
+                        </nav>
+                    </div>
+                    <div
+                        name="canvas"
+                        class="flex-1 hidden bg-secondary mt-2 rounded-lg h-[50%]">
+                        <p class="pt-1 pl-2 text-lg text-white">Canvas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <!-- Include Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body>
+        <div class="flex flex-col h-screen overflow-auto md:overflow-hidden">
+            <!-- Div A -->
+            <div class="bg-blue-200 h-[64px]">Div A</div>
+
+            <!-- Div B -->
+            <div
+                class="flex-grow bg-green-200">
+                <div class="flex md:flex-row flex-col h-full">
+                    <!-- Div C -->
+                    <div
+                        class="flex-none md:flex-1 order-2 md:order-1 bg-pink-200 h-[1000px] md:h-auto">Div
+                        C</div>
+                    <!-- Div D -->
+                    <div
+                        class="flex-none md:flex-1 order-1 md:order-2 bg-yellow-200 h-[500px] md:h-auto">Div
+                        D</div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
