@@ -1,9 +1,14 @@
 # Use an official Python runtime as the base image
-FROM python:3.12-slim
+FROM python:3.12-slim-bullseye
 
 # Install system dependencies required for compiling C code
 RUN apt-get update && \
-    apt-get install -y gcc build-essential && \
+    apt-get install -y \
+    gcc \
+    build-essential \
+    curl && \
+    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -23,8 +28,8 @@ RUN npm install --production
 COPY . .
 
 # Make port available (Render uses $PORT environment variable)
-ENV PORT 5000
+ENV PORT=5000
 EXPOSE $PORT
 
 # Run the Flask application using Gunicorn
-CMD gunicorn --bind 0.0.0.0:$PORT app:app
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
