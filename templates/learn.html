@@ -44,11 +44,11 @@
             class="flex flex-col bg-secondary h-screen overflow-auto">
             <nav
                 id="header"
-                class="flex justify-between items-center w-full h-[64px]">
+                class="flex justify-between items-center w-full h-[64px] min-h-[64px]">
                 <a href="/" name="Logo" class="flex flex-row pb-2 pl-3">
-                    <p class="font-mono text-4xl text-blue-400">[</p>
-                    <p class="font-mono text-4xl text-text">FourCode</p>
-                    <p class="font-mono text-4xl text-blue-400">]</p>
+                    <p class="font-mono text-blue-400 text-4xl">[</p>
+                    <p class="font-mono text-text text-4xl">FourCode</p>
+                    <p class="font-mono text-blue-400 text-4xl">]</p>
                 </a>
                 <div name="navbar" class="pr-2">
                     <a href="/">
@@ -74,7 +74,7 @@
                 </div>
             </nav>
             <div
-                class="flex-grow bg-background rounded-t-lg">
+                class="flex-grow bg-background rounded-t-lg overflow-y-auto">
                 <div
                     class="flex lg:flex-row flex-col gap-2 h-full">
                     <!-- input and output -->
@@ -93,18 +93,18 @@
                             <div class="flex justify-end p-2">
                                 <button
                                     id="run-button"
-                                    class="bg-primary rounded-lg text-text hover:outline px-6 py-1 outline-1 outline-white">
+                                    class="bg-primary px-6 py-1 rounded-lg hover:outline outline-1 outline-white text-text">
                                     Run
                                 </button>
                             </div>
                         </div>
                         <!-- Output -->
                         <div
-                            class="flex flex-col bg-secondary rounded-lg h-[300px] lg:h-1/3">
+                            class="flex flex-col bg-secondary rounded-lg h-[300px] lg:h-1/3 max-h-[300px] lg:max-h-[33.333%]">
                             <p class="pt-1 pl-1 text-text">Output</p>
                             <div
                                 id="output"
-                                class="bg-primary m-2 scrollbar-thumb-white px-2 pt-1 rounded-lg h-full font-mono text-lg text-text lg:text-md whitespace-pre-wrap overflow-y-auto scrollbar scrollbar-track-transparent"></div>
+                                class="bg-primary m-2 scrollbar-thumb-white px-2 pt-1 rounded-lg h-full overflow-y-auto font-mono text-md text-text lg:text-lg text-wrap whitespace-pre-wrap scrollbar scrollbar-track-transparent"></div>
                         </div>
                     </div>
                     <!-- lesson -->
@@ -113,9 +113,9 @@
                         <!-- Lesson -->
                         <div
                             class="flex flex-col bg-secondary rounded-lg h-full max-h-screen lg:max-h-[calc(100vh-64px)]">
-                            <p class="pt-1 pl-2 text-lg text-text">Lesson</p>
+                            <p class="pt-1 pl-2 text-text text-lg">Lesson</p>
                             <div
-                                class="flex-1 prose-xl lg:prose-sm bg-primary prose-h1:m-0 prose-h2:m-0 prose-p:m-0 mx-2 mt-2 scrollbar-thumb-white px-2 pt-1 rounded-lg max-w-none font-mono text-text prose-h1:text-text prose-h2:text-text whitespace-pre-wrap overflow-y-auto prose scrollbar scrollbar-track-transparent">{{
+                                class="flex-1 bg-primary prose-h1:m-0 prose-h2:m-0 prose-p:m-0 mx-2 mt-2 scrollbar-thumb-white px-2 pt-1 rounded-lg max-w-none overflow-y-auto font-mono text-text prose-h1:text-text prose-h2:text-text whitespace-pre-wrap prose-xl lg:prose-sm prose scrollbar scrollbar-track-transparent">{{
                                 content | safe }}
                             </div>
                             <nav class="flex justify-between my-2">

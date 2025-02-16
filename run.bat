@@ -1,1 +1,0 @@
-npm run create-css && flask run --debug

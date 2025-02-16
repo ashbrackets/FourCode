@@ -1,4 +1,4 @@
-from static.compiler.lexer import *
+from compiler.lexer import *
 # import sys
 
 LOOP_LIMIT = 1000

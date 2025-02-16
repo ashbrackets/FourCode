@@ -1,14 +1,13 @@
+from pathlib import Path
 from flask import Flask, redirect, render_template, request, jsonify, url_for
-from static.compiler.compiler import Compiler
+from compiler.compiler import Compiler
 import os, uuid, markdown
 
 
 app = Flask(__name__)
-app.config.update(
-    TEMPLATES_AUTO_RELOAD=True
-)
-STATIC_TEMP_DIR = os.path.join(app.static_folder, "temp_files")
-os.makedirs(STATIC_TEMP_DIR, exist_ok=True)
+
+TEMP_DIR = "temp_files"
+os.makedirs(TEMP_DIR, exist_ok=True)
 
 LESSONS_FOLDER = os.path.join(app.static_folder, "lessons")
 LESSONS = sorted(os.listdir(LESSONS_FOLDER))
@@ -61,18 +60,20 @@ def run_code():
         return jsonify({"result": "No code provided"})
 
     file_id = str(uuid.uuid4())
-    c_file = os.path.join(STATIC_TEMP_DIR, f"{file_id}.c")
-    exe_file = os.path.join(STATIC_TEMP_DIR, f'{file_id}.exe')
+    c_file = os.path.join(TEMP_DIR, f"{file_id}.c")
 
     compiler = Compiler(code)
     error = compiler.compile(c_file)
     if error:
         return jsonify({"error": error["error"], "line": error["line"], "pos": error["pos"]})
     
-    output = compiler.run(c_file, exe_file)
-    # return output
+    output = compiler.run(c_file)
+    print("Output: ", output)
     return jsonify({"result": output})
 
 @app.route('/layout_test')
 def layout_test():
     return render_template('learn.html')
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

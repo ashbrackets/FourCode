@@ -33,6 +33,7 @@ document.getElementById('run-button').addEventListener('click', async () => {
         body: JSON.stringify({ code: code })
     });
     let result = await response.json();
+    console.log(result)
     if (result.error) {
         editor.getAllMarks().forEach(marker => marker.clear());
         const line = result.line - 1
