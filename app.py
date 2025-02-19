@@ -61,13 +61,14 @@ def run_code():
 
     file_id = str(uuid.uuid4())
     c_file = os.path.join(TEMP_DIR, f"{file_id}.c")
+    exe_file = os.path.join(TEMP_DIR, f"{file_id}")
 
     compiler = Compiler(code)
     error = compiler.compile(c_file)
     if error:
         return jsonify({"error": error["error"], "line": error["line"], "pos": error["pos"]})
     
-    output = compiler.run(c_file)
+    output = compiler.run(c_file, exe_file)
     print("Output: ", output)
     return jsonify({"result": output})
 
