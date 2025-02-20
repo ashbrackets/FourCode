@@ -4,7 +4,13 @@ import { createThemes } from 'tw-colors'
 export const mode = 'jit'
 export const content = ["./templates/**/*.{html,htm}"]
 export const theme = {
-  extend: {},
+  extend: {
+    // fontFamily: {
+    //   // sans: ['Inter', 'sans-serif'],
+    //   serif: ['Merriweather', 'serif'],
+    //   // mono: ['Fira Code', 'monospace'],
+    // }
+  },
 }
 export const plugins = [
   require('tailwind-scrollbar'),
@@ -17,6 +23,6 @@ export const plugins = [
       'background': '#f1faee',
       'text': '#fffafa'
     }
-  })
+  }),
 ]
 

@@ -17,7 +17,7 @@ function resizeFontInEditor() {
         editor.style.fontSize = "24px";
     } else {
         console.log("tp")
-        editor.style.fontSize = "16px";
+        editor.style.fontSize = "20px";
     }
 }
 

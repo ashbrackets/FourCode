@@ -1,1 +1,87 @@
-Home
+<!DOCTYPE html>
+<html lang="en" class="default">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>FourCode</title>
+        <link href="{{url_for('static',filename='css/main.css')}}"
+            rel="stylesheet" />
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
+            integrity="sha512-1YMgn4j8cIL91s14ByDGmHtBU6+F8bWOMcF47S0cRO3QNm8SKPNexy4s3OCim9fABUtO++nJMtcpWbINWjMSzQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    </head>
+    <body>
+        <div id="canvas" class="-z-10 fixed blur-sm w-screen h-screen"></div>
+        <div
+            class="flex flex-col h-screen overflow-auto">
+            <nav
+                id="header"
+                class="flex justify-between items-center w-full h-[64px] min-h-[64px]">
+                <a href="/" name="Logo" class="flex flex-row pb-2 pl-3">
+                    <!-- <p class="font-mono text-blue-400 text-4xl">[</p>
+            <p class="font-mono text-text text-4xl">FourCode</p>
+            <p class="font-mono text-blue-400 text-4xl">]</p> -->
+                </a>
+                <div name="navbar" class="pr-2">
+                    <a href="/">
+                        <button
+                            class="m-3 text-text hover:underline">Home</button>
+                    </a>
+                    <a href="{{url_for('learn')}}">
+                        <button
+                            class="m-3 text-text hover:underline">Learn</button>
+                    </a>
+                    <a href="{{url_for('playground')}}">
+                        <button
+                            class="m-3 text-text hover:underline">Playground</button>
+                    </a>
+                    <a href="{{url_for('about')}}">
+                        <button
+                            class="m-3 text-text hover:underline">About</button>
+                    </a>
+                    <a href>
+                        <button
+                            class="m-3 text-text hover:underline">Login</button>
+                    </a>
+                </div>
+            </nav>
+            <div
+                class="flex flex-grow justify-center items-center rounded-t-lg overflow-y-auto">
+                <!-- CONTENT -->
+                <div
+                    class="relative flex flex-col justify-center items-center rounded-xl">
+                    <!-- Blurred Edge Effect -->
+                    <div
+                        class="absolute inset-0 bg-white/10 blur-2xl rounded-xl"></div>
+
+                    <!-- Content -->
+                    <a href="/" id="title" class="relative flex flex-row">
+                        <p
+                            class="font-mono text-[150px] text-blue-400">[</p>
+                        <p
+                            class="font-mono text-[150px] text-text"
+                            id="brandName">FourCode</p>
+                        <p
+                            class="font-mono text-[150px] text-blue-400">]</p>
+                    </a>
+
+                    <a href="{{url_for('learn')}}"
+                        class="relative bg-primary mt-5 px-9 py-3 rounded-lg outline outline-4 outline-secondary hover:outline-white">
+                        <button id="start-learning-button"
+                            class="mb-4 text-text text-6xl">
+                            Start learning for free
+                        </button>
+                    </a>
+
+                    <div class="relative">
+                        <p class="mt-7 mb-12 text-text text-4xl">easiest way to
+                            start coding.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script
+            src="{{ url_for('static', filename='js/homepage.js') }}"></script>
+    </body>
+</html>

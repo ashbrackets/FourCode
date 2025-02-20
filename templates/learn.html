@@ -1,12 +1,6 @@
 <html class="default">
     <head>
         <title>FourCode</title>
-        <!-- <script defer
-            src="{{ url_for('static', filename='js/lesson.js') }}"
-            ></script> -->
-        <!-- <script defer
-            src="{{ url_for('static', filename='js/editor.js') }}"
-            ></script> -->
         <script src="{{ url_for('static', filename='js/lesson.js') }}"
             type="module"></script>
         <link href="{{url_for('static',filename='css/main.css')}}"
@@ -30,7 +24,7 @@
 				border-right: 1px solid #374151 !important;
 			}
 			.CodeMirror {
-				font-size: 16px;
+				font-size: 24px;
 				font-family: monospace;
 			}
 			.error-highlight {
@@ -115,7 +109,7 @@
                             class="flex flex-col bg-secondary rounded-lg h-full max-h-screen lg:max-h-[calc(100vh-64px)]">
                             <p class="pt-1 pl-2 text-text text-lg">Lesson</p>
                             <div
-                                class="flex-1 bg-primary prose-h1:m-0 prose-h2:m-0 prose-p:m-0 mx-2 mt-2 scrollbar-thumb-white px-2 pt-1 rounded-lg max-w-none overflow-y-auto font-mono text-text prose-h1:text-text prose-h2:text-text whitespace-pre-wrap prose-xl lg:prose-sm prose scrollbar scrollbar-track-transparent">{{
+                                class="flex-1 bg-primary prose-h1:m-0 prose-h2:m-0 prose-p:m-0 mx-2 mt-2 scrollbar-thumb-white px-2 pt-1 rounded-lg max-w-none overflow-y-auto text-text prose-h1:text-text prose-h2:text-text whitespace-pre-wrap prose-xl lg:prose-md prose scrollbar scrollbar-track-transparent">{{
                                 content | safe }}
                             </div>
                             <nav class="flex justify-between my-2">
