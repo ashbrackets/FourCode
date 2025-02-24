@@ -10,74 +10,69 @@
             src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
             integrity="sha512-1YMgn4j8cIL91s14ByDGmHtBU6+F8bWOMcF47S0cRO3QNm8SKPNexy4s3OCim9fABUtO++nJMtcpWbINWjMSzQ=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+            rel="stylesheet">
+
     </head>
     <body>
-        <div id="canvas" class="-z-10 fixed blur-sm w-screen h-screen"></div>
+        <div id="canvas"
+            class="-top-5 -left-5 -z-10 fixed w-[calc(100vw+50px)] h-[calc(100vh+50px)] overflow-hidden"></div>
         <div
             class="flex flex-col h-screen overflow-auto">
-            <nav
-                id="header"
-                class="flex justify-between items-center w-full h-[64px] min-h-[64px]">
-                <a href="/" name="Logo" class="flex flex-row pb-2 pl-3">
-                    <!-- <p class="font-mono text-blue-400 text-4xl">[</p>
-            <p class="font-mono text-text text-4xl">FourCode</p>
-            <p class="font-mono text-blue-400 text-4xl">]</p> -->
-                </a>
-                <div name="navbar" class="pr-2">
-                    <a href="/">
-                        <button
-                            class="m-3 text-text hover:underline">Home</button>
-                    </a>
-                    <a href="{{url_for('learn')}}">
-                        <button
-                            class="m-3 text-text hover:underline">Learn</button>
-                    </a>
-                    <a href="{{url_for('playground')}}">
-                        <button
-                            class="m-3 text-text hover:underline">Playground</button>
-                    </a>
-                    <a href="{{url_for('about')}}">
-                        <button
-                            class="m-3 text-text hover:underline">About</button>
-                    </a>
-                    <a href>
-                        <button
-                            class="m-3 text-text hover:underline">Login</button>
-                    </a>
-                </div>
-            </nav>
+            {% include 'navbar.html' %}
             <div
                 class="flex flex-grow justify-center items-center rounded-t-lg overflow-y-auto">
                 <!-- CONTENT -->
                 <div
                     class="relative flex flex-col justify-center items-center rounded-xl">
                     <!-- Blurred Edge Effect -->
-                    <div
-                        class="absolute inset-0 bg-white/10 blur-2xl rounded-xl"></div>
+                    <!-- <div
+                        class="absolute inset-0 bg-black/40 blur-2xl rounded-xl"></div> -->
 
                     <!-- Content -->
-                    <a href="/" id="title" class="relative flex flex-row">
+                    <!-- <a href="/" id="title" class="relative flex justify-center">
                         <p
-                            class="font-mono text-[150px] text-blue-400">[</p>
+                            class="left-0 absolute font-mono text-blue-400 lg:text-[150px] text-7xl">[</p>
+                        <p id="brandName"
+                            class="inline-block min-w-[10ch] font-mono text-text lg:text-[150px] text-7xl text-center">
+                        </p>
                         <p
-                            class="font-mono text-[150px] text-text"
-                            id="brandName">FourCode</p>
+                            class="right-0 absolute font-mono text-blue-400 lg:text-[150px] text-7xl">]</p>
+                    </a> -->
+                    <p
+                        class="text-text lg:text-[80px] text-7xl text-center">
+                        <span class="block text-8xl">Welcome to the start</span>
+                        <span class="block mt-8">of your coding journey</span>
+                    </p>
+                    <!-- <a id="title"
+                        class="flex justify-center mt-12">
                         <p
-                            class="font-mono text-[150px] text-blue-400">]</p>
-                    </a>
+                            class="font-mono text-blue-400 lg:text-[150px] text-7xl transition-all duration-300 ease-in-out">[</p>
+                        <p id="brandName"
+                            class="font-mono text-text lg:text-[150px] text-7xl text-center transition-all duration-300 ease-in-out">
+                        </p>
+                        <p
+                            class="font-mono text-blue-400 lg:text-[150px] text-7xl transition-all duration-300 ease-in-out">]</p>
+                    </a> -->
 
-                    <a href="{{url_for('learn')}}"
-                        class="relative bg-primary mt-5 px-9 py-3 rounded-lg outline outline-4 outline-secondary hover:outline-white">
-                        <button id="start-learning-button"
-                            class="mb-4 text-text text-6xl">
-                            Start learning for free
+                    <a href="{{url_for('learn')}}" id="start-learning-button"
+                        class="z-10 relative bg-[#e88f36] mt-8 lg:mt-12 rounded-full outline outline-4 outline-secondary hover:outline-white">
+                        <button
+                            class="mx-20 my-5 text-black text-3xl lg:text-6xl">
+                            Start learning
                         </button>
                     </a>
 
-                    <div class="relative">
-                        <p class="mt-7 mb-12 text-text text-4xl">easiest way to
-                            start coding.</p>
-                    </div>
+                    <!-- <div class="relative">
+                        <p
+                            class="mt-7 text-text text-2xl lg:text-4xl">
+                            Easiest
+                            way
+                            to start coding.</p>
+                    </div> -->
                 </div>
             </div>
         </div>

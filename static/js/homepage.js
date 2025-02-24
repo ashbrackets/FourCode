@@ -5,7 +5,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function intro() {
+async function intro1() {
     let timeBetweenChange = -20
     for (let i = 0; i < 10; i++) {
         setBrandName(getRandomTextOfLength(8))
@@ -18,75 +18,121 @@ async function intro() {
     setBrandName("FourCode")
 }
 
-function setBrandName(text) {
-    document.getElementById("brandName").innerText = text
+async function intro2() {
+    const word = "FourCode";
+    let curLetterIndex = Math.floor(word.length / 2);
+    let brandElement = document.getElementById("brandName");
+    brandElement.textContent = ""
+    for (let i = 0; i < word.length / 2; i++) {
+        let timeBetweenChange = 0;
+
+        updateBrandName(getRandomText(1) + brandElement.innerText + getRandomText(1));
+        for (let j = 0; j < 10; j++) {
+            updateBrandName(" " + brandElement.innerText.slice(1, -1) + " ");
+            updateBrandName(getRandomText(1) + brandElement.innerText + getRandomText(1));
+            await sleep(timeBetweenChange);
+            timeBetweenChange += 1;
+        }
+
+        timeBetweenChange += 20;
+        await sleep(timeBetweenChange);
+        updateBrandName(" " + brandElement.innerText.slice(1, -1) + " ");
+        updateBrandName(word[word.length / 2 - 1 - i] + brandElement.innerText + word[curLetterIndex]);
+
+        curLetterIndex += 1;
+    }
 }
 
-function getRandomTextOfLength(length) {
-    let text = ''
-    for (let i = 0; i < length; i++) {
-        text += alphabets[Math.floor(Math.random() * alphabets.length)]
-    }
-    return text
+function updateBrandName(text) {
+    document.getElementById("brandName").innerText = text;
+}
+
+function getRandomText(length) {
+    return Array.from({ length }, () => alphabets[Math.floor(Math.random() * alphabets.length)]).join("");
 }
 
 window.addEventListener("load", (event) => {
-    intro()
+    intro2()
 });
+
 // #endregion
 
-// #region intro
+// #region background
 
-let H, W;
-let v = [];
-let scl = 20;
-let z = 0.002;
+let theShader;
+let container = document.getElementById("canvas")
+
+function preload() {
+    // Load our vertex and fragment shader files
+    theShader = loadShader('/static/shaders/shader.vert', '/static/shaders/shader.frag');
+}
+
 function setup() {
-    let container = document.getElementById("canvas");
-    createCanvas(container.clientWidth, container.clientHeight).parent(container);
-
-    H = (container.clientHeight / scl) + 1;
-    W = (container.clientWidth / scl) + 1;
-    for (let i = -1; i < H; i++) {
-        for (let j = -1; j < W; j++) {
-            let index = i * W + j;
-            let a = noise(j / 100, i / 100, z) * TWO_PI * 7;
-            v[index] = p5.Vector.fromAngle(a).setMag(1);
-        }
-    }
-};
+    // Use WEBGL mode to enable shaders
+    let canvas = createCanvas(container.clientWidth, container.clientHeight, WEBGL);
+    canvas.parent(container)
+    noStroke();
+    rectMode(CENTER);
+}
 
 function draw() {
-    background("#1d2d44");
-    let abc = 0;
-    for (let i = -1; i < H; i++) {
-        for (let j = -1; j < W; j++) {
-            let index = i * W + j;
-            let y = i * scl;
-            let x = j * scl;
+    // Set the active shader
+    shader(theShader);
 
-            push();
-            translate(x + scl / 2, y);
-            abc = abs(Math.sin(v[index].heading())) * 5;
-            rotate(v[index].heading());
-            noStroke();
-            fill("#0d1321")
-            beginShape();
-            vertex(0, 0);
-            vertex(scl - 5, 5 + abc);
-            vertex(scl + abc, 0);
-            vertex(scl - 5, -5 - abc);
-            endShape(CLOSE);
-            pop();
-            let a = noise(j / 100, i / 100, z) * TWO_PI * 7;
-            v[index] = p5.Vector.fromAngle(a);
-        }
-    }
-    z += 0.002;
-    textSize(32);
-};
+    // Pass uniforms: resolution, time, colors, and a noise scale factor
+    theShader.setUniform("u_resolution", [width, height]);
+    theShader.setUniform("u_time", millis() / 1000.0);
+    // Colors are normalized (0.0 - 1.0): white and a blue shade (#0D21A1)
+    theShader.setUniform("u_bgColor", [0.114, 0.176, 0.267]);
+    theShader.setUniform("u_fgColor", [0.051, 0.075, 0.129]);
+    theShader.setUniform("u_noiseScale", 2.0); // Adjust to taste
+
+    // Draw a rectangle that covers the entire canvas
+    rect(0, 0, width, height);
+}
 
 function windowResized() {
     let container = document.getElementById("canvas");
     resizeCanvas(container.clientWidth, container.clientHeight);
 };
+
+// #endregion
+
+// #region start-learning-button
+document.addEventListener("DOMContentLoaded", function () {
+    const button = document.getElementById("start-learning-button");
+    const threshold = 300; // Distance from the button where attraction starts
+    const strength = 0.3; // Attraction strength
+    let isInside = false;
+
+    document.addEventListener("mousemove", (event) => {
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
+        const buttonRect = button.getBoundingClientRect();
+        const centerX = buttonRect.left + buttonRect.width / 2;
+        const centerY = buttonRect.top + buttonRect.height / 2;
+        const deltaX = mouseX - centerX;
+        const deltaY = mouseY - centerY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+        if (distance < threshold) {
+            isInside = true;
+            gsap.to(button, {
+                x: deltaX * strength,
+                y: deltaY * strength,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        } else if (isInside) {
+            isInside = false;
+            gsap.to(button, {
+                x: 0,
+                y: 0,
+                duration: 0.6,
+                ease: "elastic.out(1, 0.5)"
+            });
+        }
+    });
+});
+
+// #endregion

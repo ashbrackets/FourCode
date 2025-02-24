@@ -34,32 +34,7 @@
 		</style>
     </head>
     <body class="flex flex-col bg-[#0D1321] h-[100vh]">
-        <nav
-            id="header"
-            class="flex justify-between items-center bg-[#0D1321] w-full h-[10%] min-h-[64px]">
-            <a href="/" name="Logo" class="flex flex-row pb-2 pl-3">
-                <p class="font-mono text-4xl text-blue-400">[</p>
-                <p class="font-mono text-4xl text-white">FourCode</p>
-                <p class="font-mono text-4xl text-blue-400">]</p>
-            </a>
-            <div name="navbar" class="pr-2">
-                <a href="/">
-                    <button class="m-3 text-white hover:underline">Home</button>
-                </a>
-                <a href="{{url_for('learn')}}">
-                    <button class="m-3 text-white hover:underline">Learn</button>
-                </a>
-                <a href="{{url_for('playground')}}">
-                    <button class="m-3 text-white hover:underline">Playground</button>
-                </a>
-                <a href="{{url_for('about')}}">
-                    <button class="m-3 text-white hover:underline">About</button>
-                </a>
-                <a href="">
-                    <button class="m-3 text-white hover:underline">Login</button>
-                </a>
-            </div>
-        </nav>
+        {% include 'navbar.html' %}
         <div
             class="flex lg:flex-row flex-col flex-1 justify-center gap-2 bg-zinc-300 p-2 rounded-t-lg h-auto lg:h-[90%]">
                 <div
@@ -75,7 +50,7 @@
                     <div class="flex justify-end p-2">
                         <button
                             id="run-button"
-                            class="bg-[#1D2D44] rounded-lg text-[#F0EBD8] hover:outline px-6 py-1 outline-1 outline-white">
+                            class="bg-[#1D2D44] px-6 py-1 rounded-lg hover:outline outline-1 outline-white text-[#F0EBD8]">
                             Run
                         </button>
                     </div>
@@ -86,7 +61,7 @@
                     <p class="pt-1 pl-1 text-white">Output</p>
                     <div
                         id="output"
-                        class="bg-[#1D2D44] m-2 scrollbar-thumb-white px-2 pt-1 rounded-lg h-full font-mono text-white whitespace-pre-wrap overflow-y-auto scrollbar scrollbar-track-transparent"></div>
+                        class="bg-[#1D2D44] m-2 scrollbar-thumb-white px-2 pt-1 rounded-lg h-full overflow-y-auto font-mono text-white whitespace-pre-wrap scrollbar scrollbar-track-transparent"></div>
                 </div>
             </div>
         </div>

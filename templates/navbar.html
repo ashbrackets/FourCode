@@ -1,0 +1,36 @@
+<nav
+    id="header"
+    class="flex justify-between items-center bg-nav drop-shadow-xl w-full h-[64px] min-h-[64px]">
+    <a href="/" name="Logo" class="flex flex-row mt-2 pb-2 pl-3">
+        <p class="font-mono text-blue-400 text-4xl">[</p>
+        <p class="font-mono text-text text-4xl"
+            id="brandName">FourCode</p>
+        <p class="font-mono text-blue-400 text-4xl">]</p>
+    </a>
+    <div name="navbar" class="pr-2">
+        <a href="/">
+            <button
+                class="m-3 text-text hover:underline">Home</button>
+        </a>
+        <a href="{{url_for('learn')}}">
+            <button
+                class="m-3 text-text hover:underline">Learn</button>
+        </a>
+        <a href="{{url_for('playground')}}">
+            <button
+                class="m-3 text-text hover:underline">Playground</button>
+        </a>
+        <a href="{{url_for('about')}}">
+            <button
+                class="m-3 text-text hover:underline">About</button>
+        </a>
+        <a href>
+            <button
+                class="m-3 text-text hover:underline">Login</button>
+        </a>
+        <a href="{{url_for('test')}}">
+            <button
+                class="m-3 text-text hover:underline">Test</button>
+        </a>
+    </div>
+</nav>

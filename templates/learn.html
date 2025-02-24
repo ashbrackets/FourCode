@@ -15,6 +15,9 @@
         <link
             rel="stylesheet"
             href="{{ url_for('static', filename='codemirror/theme/monokai.css') }}" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+            rel="stylesheet">
         <style>
 			.CodeMirror {
 				background-color: #1d2d44 !important;
@@ -31,15 +34,34 @@
 				background-color: #ff0000;
 				color: #000000;
 			}
+            .cm-scroller {
+                /* Firefox */
+                scrollbar-width: thin;
+                scrollbar-color: white transparent;
+            }
+
+            /* WebKit browsers */
+            .cm-scroller::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .cm-scroller::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .cm-scroller::-webkit-scrollbar-thumb {
+                background-color: white;
+                border-radius: 4px;
+            }
 		</style>
     </head>
     <body>
         <div
-            class="flex flex-col bg-secondary h-screen overflow-auto">
+            class="flex flex-col bg-nav h-screen overflow-auto">
             <nav
                 id="header"
                 class="flex justify-between items-center w-full h-[64px] min-h-[64px]">
-                <a href="/" name="Logo" class="flex flex-row pb-2 pl-3">
+                <a href="/" name="Logo" class="flex flex-row mt-2 pb-2 pl-3">
                     <p class="font-mono text-blue-400 text-4xl">[</p>
                     <p class="font-mono text-text text-4xl">FourCode</p>
                     <p class="font-mono text-blue-400 text-4xl">]</p>
@@ -68,7 +90,7 @@
                 </div>
             </nav>
             <div
-                class="flex-grow bg-background rounded-t-lg overflow-y-auto">
+                class="flex-grow bg-gray-300 rounded-t-lg overflow-y-auto">
                 <div
                     class="flex lg:flex-row flex-col gap-2 h-full">
                     <!-- input and output -->
@@ -77,7 +99,8 @@
                         <!-- Input -->
                         <div
                             class="flex flex-col bg-secondary rounded-lg h-[600px] lg:h-2/3">
-                            <p class="py-1 pl-1 text-text">Code</p>
+                            <p
+                                class="py-1 pl-1 font-medium text-text">Code</p>
                             <div
                                 class="mx-2 mt-1 rounded-lg h-full max-h-full overflow-hidden">
                                 <textarea
@@ -87,7 +110,7 @@
                             <div class="flex justify-end p-2">
                                 <button
                                     id="run-button"
-                                    class="bg-primary px-6 py-1 rounded-lg hover:outline outline-1 outline-white text-text">
+                                    class="bg-button px-6 py-1 rounded-lg hover:outline outline-1 outline-white font-medium text-black">
                                     Run
                                 </button>
                             </div>
@@ -117,7 +140,7 @@
                                     href="{{ url_for('learn', lesson_index=lesson_index-1) }}"
                                     class="{{ 'invisible' if lesson_index <= 0 else '' }}">
                                     <button
-                                        class="mx-2 px-6 py-1 bg-primary text-text rounded-lg hover:outline outline-1 outline-white {{ 'invisible' if lesson_index <= 0 else '' }}">
+                                        class="mx-2 px-6 py-1 bg-button text-black rounded-lg hover:outline outline-1 outline-white {{ 'invisible' if lesson_index <= 0 else '' }}">
                                         Previous
                                     </button>
                                 </a>
@@ -125,7 +148,7 @@
                                     href="{{ url_for('learn', lesson_index=lesson_index+1) }} "
                                     class="{{ 'invisible' if lesson_index >= total_lessons - 1 else '' }}">
                                     <button
-                                        class="mx-2 px-6 py-1 bg-primary text-text rounded-lg hover:outline outline-1 outline-white {{ 'invisible' if lesson_index >= total_lessons - 1 else '' }}">
+                                        class="mx-2 px-6 py-1 bg-button text-black rounded-lg hover:outline outline-1 outline-white {{ 'invisible' if lesson_index >= total_lessons - 1 else '' }}">
                                         Next
                                     </button>
                                 </a>

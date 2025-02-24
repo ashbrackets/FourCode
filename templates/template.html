@@ -12,37 +12,7 @@
     <body>
         <div
             class="flex flex-col bg-secondary h-screen overflow-auto">
-            <nav
-                id="header"
-                class="flex justify-between items-center w-full h-[64px] min-h-[64px]">
-                <a href="/" name="Logo" class="flex flex-row pb-2 pl-3">
-                    <p class="font-mono text-blue-400 text-4xl">[</p>
-                    <p class="font-mono text-text text-4xl">FourCode</p>
-                    <p class="font-mono text-blue-400 text-4xl">]</p>
-                </a>
-                <div name="navbar" class="pr-2">
-                    <a href="/">
-                        <button
-                            class="m-3 text-text hover:underline">Home</button>
-                    </a>
-                    <a href="{{url_for('learn')}}">
-                        <button
-                            class="m-3 text-text hover:underline">Learn</button>
-                    </a>
-                    <a href="{{url_for('playground')}}">
-                        <button
-                            class="m-3 text-text hover:underline">Playground</button>
-                    </a>
-                    <a href="{{url_for('about')}}">
-                        <button
-                            class="m-3 text-text hover:underline">About</button>
-                    </a>
-                    <a href>
-                        <button
-                            class="m-3 text-text hover:underline">Login</button>
-                    </a>
-                </div>
-            </nav>
+            {% include 'navbar.html' %}
             <div
                 class="flex-grow bg-background rounded-t-lg overflow-y-auto">
                 <!-- CONTENT -->

@@ -72,9 +72,34 @@ def run_code():
     print("Output: ", output)
     return jsonify({"result": output})
 
-@app.route('/layout_test')
-def layout_test():
-    return render_template('learn.html')
+class TempError(Exception):
+    pass
+
+class AnotherTempError(Exception):
+    pass
+
+def another_temp_func():
+    raise AnotherTempError()
+
+def temp_func():
+    another_temp_func()
+    
+    raise TempError()
+
+
+@app.route('/testing', methods=['POST'])
+def testing():
+    output = "Fail"
+    try:
+        temp_func()
+        return jsonify(output)
+    except TempError as e:
+        output = "Win"
+    return jsonify(output)
+
+@app.route('/test')
+def test():
+    return render_template('test.html')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

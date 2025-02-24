@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.getElementById('run-button').addEventListener('click', async () => {
+    let startTime = performance.now()
     const code = editor.getValue(); // Get the text from the editor
     const textarea = document.getElementById('output')
     textarea.textContent = ''
@@ -32,25 +33,27 @@ document.getElementById('run-button').addEventListener('click', async () => {
         },
         body: JSON.stringify({ code: code })
     });
-    let result = await response.json();
+    let result = await response.json()
     console.log(result)
     if (result.error) {
         editor.getAllMarks().forEach(marker => marker.clear());
-        const line = result.line - 1
+        let line = result.line
         let pos = result.pos - 1
-        if (pos > editor.getLine(line).trim().length) {
-            pos = editor.getLine(line).trim().length + 1
-            ensureCharAt(editor, line, pos)
+        if (editor.getLine(line)) {
+            if (pos > editor.getLine(line).trim().length) {
+                pos = editor.getLine(line).trim().length + 1
+                ensureCharAt(editor, line, pos)
+            }
         }
-        let split = result.error.split(":")
-        split[1] = pos.toString()
-        result.error = split.join(":")
+        // let split = result.error.split(":")
+        // split[1] = pos.toString()
+        // result.error = split.join(":")
         console.log(result.error)
         textarea.innerHTML = result.error;
         editor.markText(
-            { line: line, ch: pos }, // Start position
-            { line: line, ch: pos + 1 }, // End position
-            { className: "error-highlight" } // Custom class for styling
+            { line: line, ch: pos },
+            { line: line, ch: pos + 1 },
+            { className: "error-highlight" }
         );
         const errorMessage = result.error;
         const errorLine = result.line - 1; // The line where the error occurred
@@ -58,8 +61,11 @@ document.getElementById('run-button').addEventListener('click', async () => {
     } else {
         textarea.innerHTML = result.result; // Display the result
     }
+    let endTime = performance.now()
+    let perfTime = endTime - startTime
+    textarea.innerHTML += "\nExecution Time: " + perfTime.toFixed(2).toString() + " ms"
     // textarea.innerHTML += result.pos
-    textarea.innerHTML += "\n<b>---END OF PROGRAM---</b>"
+    textarea.innerHTML += "\n<b>- - - END OF PROGRAM - - -</b>"
     // auto scroll to the end
     scrollAnimation(textarea, .2)
 });

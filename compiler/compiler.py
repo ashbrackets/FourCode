@@ -16,6 +16,7 @@ class Compiler:
 
         error = parser.program()
         if error:
+            print("Compiler Stage: ", error)
             return error
         emitter.writeFile()
 

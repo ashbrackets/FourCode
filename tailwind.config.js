@@ -10,6 +10,14 @@ export const theme = {
     //   serif: ['Merriweather', 'serif'],
     //   // mono: ['Fira Code', 'monospace'],
     // }
+    fontFamily: {
+      // For headings, titles
+      headings: ['Montserrat', 'Helvetica Neue', 'Arial', 'sans-serif'],
+      // For general body text
+      sans: ['Roboto', 'sans-serif'],
+      // For code blocks and editor
+      mono: ['Fira Code', 'Courier New', 'Courier', 'monospace'],
+    },
   },
 }
 export const plugins = [
@@ -21,7 +29,9 @@ export const plugins = [
       'primary': '#1d2d44',
       'secondary': '#0d1321',
       'background': '#f1faee',
-      'text': '#fffafa'
+      'text': '#ffffff',
+      'nav': "#0d1321",
+      'button': '#e88f36'
     }
   }),
 ]
