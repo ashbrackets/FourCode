@@ -1,6 +1,7 @@
 from pathlib import Path
 from flask import Flask, redirect, render_template, request, jsonify, url_for
 from compiler.compiler import Compiler
+import compiler.test as diff
 import os, uuid, markdown
 
 
@@ -66,7 +67,12 @@ def run_code():
     compiler = Compiler(code)
     error = compiler.compile(c_file)
     if error:
-        return jsonify({"error": error["error"], "line": error["line"], "pos": error["pos"]})
+        return jsonify({"error": error["error"], 
+                        "line": error["line"], 
+                        "pos": error["pos"], 
+                        "curLineNo": error["curLineNo"], 
+                        "curPos": error["curPos"]
+                        })
     
     output = compiler.run(c_file, exe_file)
     print("Output: ", output)
@@ -79,22 +85,31 @@ class AnotherTempError(Exception):
     pass
 
 def another_temp_func():
-    raise AnotherTempError()
+    raise AnotherTempError("hello")
+
+def diff_funcc():
+    diff.diff_func()
 
 def temp_func():
+    diff_funcc()
     another_temp_func()
-    
     raise TempError()
-
 
 @app.route('/testing', methods=['POST'])
 def testing():
     output = "Fail"
     try:
+
         temp_func()
         return jsonify(output)
-    except TempError as e:
-        output = "Win"
+    except Exception as e:
+        output = "yo"
+    # except TempError as e:
+    #     output = "Win"
+    # except AnotherTempError as e:
+    #     output = str(e)
+    # except diff.DiffError as e:
+    #     output = 'diff'
     return jsonify(output)
 
 @app.route('/test')

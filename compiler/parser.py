@@ -3,7 +3,7 @@ from compiler.lexer import *
 
 LOOP_LIMIT = 1000
 
-class ParseError(Exception):
+class ParserError(Exception):
     pass
 
 class Parser:
@@ -38,36 +38,33 @@ class Parser:
     def nextToken(self):
         self.linePos = self.lexer.linePos
         self.curToken = self.peekToken
-        self.peekToken = self.lexer.getToken()
+        try:
+            self.peekToken = self.lexer.getToken()
+        except LexerError as e:
+            raise ParserError(str(e))
         if self.peekToken.kind == TokenType.ERROR:
-            # self.addError(self.peekToken.text)
-            self.error = self.peekToken.text
-            print(self.error)
-            raise ParseError(self.peekToken.text)
+            self.addError(self.peekToken.text, True)
+            # self.error = self.peekToken.text
         if self.curToken:
             print(self.curToken.kind)
     
-    def addError(self, message):
+    def addError(self, message, isLexError = False):
+        if isLexError:
+            raise ParserError("Lexer Error: " + message)
         self.linePos = self.linePos - len(self.curToken.text) - 1
         self.lineNo = self.lexer.lineNo
         if self.linePos == -1:
             self.lineNo -= 1
             self.linePos = self.lexer.prevLinePos
-        # if "Parsing Error" not in self.error:
-        #     self.error += "Parsing Error: \n"
         lineData = '<b><u>Line ' + str(self.lineNo) + ':' + str(self.linePos) + ':</u></b> '
         self.error += lineData
-        # message = message.split('\n')
-        # self.error += message[0]
-        # for i in range(1, len(message)):
-        #     self.error += "\n" + ' ' * len(lineData) + message[i]
         self.error += message
         if self.isInLoop:
             self.error += " Probably a missing 'end' for a statement."
         self.error += '\n'
-        print(self.error)
-        print(self.lexer.prevLinePos)
-        raise ParseError(self.error)
+        # print(self.error)
+        # print(self.lexer.prevLinePos)
+        raise ParserError("Parser Error:" + self.error)
 
     def program(self):
         try:
@@ -86,9 +83,22 @@ class Parser:
             self.emitter.emitLine("return 0;")
             self.emitter.emitLine("}")  
             return None
-        except ParseError as e:
-            return {"error": self.error, "line": self.lineNo, "pos": self.linePos, "curPos": self.lexer.curPos, "curLineNo": self.lexer.prevLineNo}
-        
+        except ParserError as e:
+            return {"error": str(e), 
+                    "line": self.lineNo, 
+                    "pos": self.linePos, 
+                    "curPos": self.lexer.curPos, 
+                    "curLineNo": self.lexer.prevLineNo
+                    }
+        except LexerError as e:
+            return {"error": str(e), 
+                    "line": self.lineNo,
+                    "pos": self.linePos, 
+                    "curLineNo": self.lexer.prevLineNo,
+                    "curPos": self.lexer.curPos, 
+                    }
+
+
     def statement(self):
         if self.checkToken(TokenType.PRINT):
             print("PRINT")

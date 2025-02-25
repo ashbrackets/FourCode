@@ -1,29 +1,66 @@
 <!DOCTYPE html>
-<html lang="en" class="default">
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>FourCode</title>
-        <script src="{{ url_for('static', filename='js/test.js') }}"
-            type="module"></script>
-        <link href="{{url_for('static',filename='css/main.css')}}"
-            rel="stylesheet" />
+        <title>Multiple Resizable Sections</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+        .divider {
+            height: 8px;
+            background: gray;
+            cursor: row-resize;
+        }
+    </style>
     </head>
-    <body>
-        <div
-            class="flex flex-col bg-secondary h-screen overflow-auto">
-            {% include 'navbar.html' %}
-            <div
-                class="flex flex-grow justify-center items-center bg-background rounded-t-lg overflow-y-auto">
-                <!-- CONTENT -->
-                <div
-                    class="p-14 transition-all animate-bounce duration-200">
-                    <button id="test-button"
-                        class="bg-button px-10 py-4 rounded-full outline outline-2 text-7xl">CLICK
-                        TO
-                        TEST</button>
-                </div>
-            </div>
-        </div>
+    <body class="flex flex-col h-screen select-none">
+
+        <div class="flex-1 bg-blue-500 resizable"></div>
+        <div class="divider"></div>
+        <div class="flex-1 bg-green-500 resizable"></div>
+        <div class="divider"></div>
+        <div class="flex-1 bg-red-500 resizable"></div>
+
+        <script>
+        document.querySelectorAll('.divider').forEach((divider, index) => {
+            let isResizing = false;
+            let startY, prevSection, nextSection, startHeightPrev, startHeightNext;
+
+            divider.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                startY = e.clientY;
+
+                prevSection = divider.previousElementSibling;
+                nextSection = divider.nextElementSibling;
+
+                startHeightPrev = prevSection.offsetHeight;
+                startHeightNext = nextSection.offsetHeight;
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+
+            function onMouseMove(e) {
+                if (!isResizing) return;
+
+                let deltaY = e.clientY - startY;
+                let newHeightPrev = startHeightPrev + deltaY;
+                let newHeightNext = startHeightNext - deltaY;
+
+                // Prevent sections from shrinking too much
+                if (newHeightPrev < 50 || newHeightNext < 50) return;
+
+                prevSection.style.flex = `0 0 ${newHeightPrev}px`;
+                nextSection.style.flex = `0 0 ${newHeightNext}px`;
+            }
+
+            function onMouseUp() {
+                isResizing = false;
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+        });
+    </script>
+
     </body>
 </html>

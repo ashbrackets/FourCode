@@ -34,11 +34,16 @@ document.getElementById('run-button').addEventListener('click', async () => {
         body: JSON.stringify({ code: code })
     });
     let result = await response.json()
+    console.log(editor)
     console.log(result)
     if (result.error) {
         editor.getAllMarks().forEach(marker => marker.clear());
         let line = result.line
         let pos = result.pos - 1
+        // if (result.error.includes("Lexer Error: ")) {
+        //     line = result.curLineNo
+        //     pos = result.curPos
+        // }
         if (editor.getLine(line)) {
             if (pos > editor.getLine(line).trim().length) {
                 pos = editor.getLine(line).trim().length + 1
@@ -106,3 +111,115 @@ function ensureCharAt(editor, line, ch) {
 
     }
 }
+
+let curResizeBar = null
+let isVerticalBar = null
+let resizeBars = new Map()
+let startY, startX, startHeightA, startHeightB, startWidthA, startWidthB
+const MIN_HEIGHT = 250
+const MIN_WIDTH = 300
+let sectionSizes = new Map()
+
+let allResizeBars = document.getElementsByName("resize-bar")
+for (let i = 0; i < allResizeBars.length; i++) {
+    let ele = allResizeBars[i]
+
+    let link1 = document.getElementById(ele.getAttribute("link1"))
+    let link2 = document.getElementById(ele.getAttribute("link2"))
+
+    resizeBars.set(ele, [link1, link2])
+
+    ele.addEventListener("mousedown", (e) => {
+        curResizeBar = ele
+        startX = e.clientX
+        startY = e.clientY
+        startWidthA = link1.offsetWidth
+        startWidthB = link2.offsetWidth
+        startHeightA = link1.offsetHeight
+        startHeightB = link2.offsetHeight
+
+        if (curResizeBar.getAttribute("direction") === "vertical") {
+            isVerticalBar = true
+        } else {
+            isVerticalBar = false
+        }
+
+        document.body.classList.add("select-none")
+        document.addEventListener("mousemove", resizeElements)
+        document.addEventListener("mouseup", endResizeElements)
+    })
+}
+
+function resizeElements(e) {
+    if (!curResizeBar) {
+        console.error("no resize bar!")
+        return
+    }
+
+    // get linked elements
+    let linkedElements = resizeBars.get(curResizeBar)
+    let link1 = linkedElements[0]
+    let link2 = linkedElements[1]
+    if (isVerticalBar) {
+        let deltaY = e.clientY - startY
+        let newHeightA = startHeightA + deltaY
+        let newHeightB = startHeightB - deltaY
+
+        if (newHeightA < MIN_HEIGHT || newHeightB < MIN_HEIGHT) return;
+
+        link1.style.flex = `0 0 ${newHeightA}px`
+        link2.style.flex = `0 0 ${newHeightB}px`
+
+        let totalHeight = newHeightA + newHeightB
+        sectionSizes.set(curResizeBar, [(newHeightA / totalHeight) * 100, (newHeightB / totalHeight) * 100])
+        // console.log((newHeightA / totalHeight) * 100, (newHeightB / totalHeight) * 100)
+    } else {
+        let deltaX = e.clientX - startX
+        let newWidthA = startWidthA + deltaX
+        let newWidthB = startWidthB - deltaX
+
+        if (newWidthA < MIN_WIDTH || newWidthB < MIN_WIDTH) return;
+
+        link1.style.width = `${newWidthA}px`
+        link2.style.width = `${newWidthB}px`
+
+        let totalWidth = newWidthA + newWidthB
+        sectionSizes.set(curResizeBar, [(newWidthA / totalWidth) * 100, (newWidthB / totalWidth) * 100])
+        // console.log([(newWidthA / totalWidth) * 100, (newWidthB / totalWidth) * 100])
+    }
+}
+
+function endResizeElements() {
+    curResizeBar = null
+    document.body.classList.remove("select-none")
+    document.removeEventListener("mousemove", resizeElements)
+    document.removeEventListener("mouseup", endResizeElements)
+}
+
+function setOnWindowResize() {
+    resizeBars.forEach(([link1, link2], bar) => {
+        let isVertical = bar.getAttribute("direction") === "vertical" ? true : false
+
+        if (isVertical) {
+            let heights = sectionSizes.get(bar)
+            if (heights) {
+                link1.style.cssText = ""
+                link2.style.cssText = ""
+                let totalHeight = bar.parentElement.offsetHeight
+                link1.style.height = `${(heights[0] * totalHeight) / 100}px`
+                link2.style.height = `${(heights[1] * totalHeight) / 100}px`
+                console.log("heights:", heights[0] * totalHeight, heights[1] * totalHeight)
+            }
+        } else {
+            let widths = sectionSizes.get(bar)
+            if (widths) {
+                let totalWidth = bar.parentElement.offsetWidth
+                link1.style.width = `${(widths[0] * totalWidth) / 100}px`
+                link2.style.width = `${(widths[1] * totalWidth) / 100}px`
+                console.log("widths:", widths[0] * totalWidth, widths[1] * totalWidth)
+            }
+        }
+    })
+}
+
+window.addEventListener("resize", setOnWindowResize)

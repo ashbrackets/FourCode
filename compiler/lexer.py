@@ -1,5 +1,7 @@
 import enum
 # import sys
+class LexerError(Exception):
+    pass
 
 class Lexer:
     def __init__(self, source):
@@ -29,8 +31,10 @@ class Lexer:
     def addError(self, message):
         # if "Lexing Error" not in self.error:
         #     self.error += "Lexing Error: \n\t" 
-        self.error += 'line ' + str(self.lineNo) + ':' + str(self.linePos + 1) + ' '
+        self.error += '<b><u>Line ' + str(self.lineNo) + ':' + str(self.linePos + 1) + ':</u></b> '
         self.error += message + '\n\t'
+        print(self.lineNo, self.curPos)
+        raise LexerError("Lexer Error: " + self.error)
 
     def skipWhitespace(self):
         while self.curChar == ' ' or self.curChar == "\t" or self.curChar == '\r':

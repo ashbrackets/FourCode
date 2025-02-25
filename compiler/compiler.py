@@ -1,7 +1,7 @@
 from compiler.lexer import Lexer
 from compiler.parser import Parser
 from compiler.emitter import Emitter
-import os, subprocess, platform
+import os, subprocess, platform, re
 
 EXECUTION_TIMEOUT = 5
 
@@ -10,10 +10,22 @@ class Compiler:
         self.code = code
 
     def compile(self, filepath):
-        lexer = Lexer(self.code)
-        emitter = Emitter(filepath)
-        parser = Parser(lexer, emitter)
-
+        try:
+            lexer = Lexer(self.code)
+            emitter = Emitter(filepath)
+            parser = Parser(lexer, emitter)
+        except Exception as e:
+            errormsg = str(e)
+            errData = re.search(r'Line (\d+):(\d+)', errormsg)
+            # print(type(e))
+            # print(e)
+            # print(str(e))
+            return {"error": str(e),
+                    "line": int(errData.group(1)),
+                    "pos": int(errData.group(2)),
+                    "curLineNo": lexer.prevLineNo,
+                    "curPos": lexer.curPos
+                    }
         error = parser.program()
         if error:
             print("Compiler Stage: ", error)
