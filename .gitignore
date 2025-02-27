@@ -6,3 +6,4 @@ node_modules
 *.fc
 *.exe
 *.log
+.env

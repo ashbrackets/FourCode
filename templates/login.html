@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" class="default">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <title>FourCode</title>
+        <link href="{{url_for('static',filename='css/main.css')}}"
+            rel="stylesheet" />
+        <script src="{{url_for('static',filename='js/login.js')}}"
+            defer></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
+            integrity="sha512-1YMgn4j8cIL91s14ByDGmHtBU6+F8bWOMcF47S0cRO3QNm8SKPNexy4s3OCim9fABUtO++nJMtcpWbINWjMSzQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+            rel="stylesheet">
+    </head>
+    <body>
+        <div id="canvas"
+            class="-top-5 -left-5 -z-10 fixed w-[calc(100vw+50px)] h-[calc(100vh+50px)] overflow-hidden"></div>
+        <div
+            class="flex flex-col h-screen overflow-auto">
+            {% include 'navbar.html' %}
+            <div
+                class="flex-grow rounded-t-lg overflow-y-auto">
+                <!-- CONTENT -->
+                <div
+                    class="flex justify-center items-center w-full h-full">
+                    <form name="Login"
+                        class="flex flex-col justify-center items-center gap-4 bg-background px-14 py-8 rounded-lg outline outline-4 outline-black">
+                        <!-- <p class="font-bold text-black text-4xl">Login</p> -->
+                        <input type="text" id="username" placeholder="Username"
+                            autocomplete="username"
+                            class="bg-secondary px-2 py-1 rounded-lg font-mono text-text text-xl">
+                        <input type="password" id="password"
+                            class="bg-secondary px-2 py-1 rounded-lg font-mono text-text text-xl"
+                            placeholder="Password"
+                            autocomplete="current-password">
+                        <button id="login-button"
+                            class="bg-button px-6 py-1 rounded-lg outline outline-4 outline-black font-mono font-bold text-black text-xl hover:underline">Login</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

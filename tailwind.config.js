@@ -11,11 +11,8 @@ export const theme = {
     //   // mono: ['Fira Code', 'monospace'],
     // }
     fontFamily: {
-      // For headings, titles
       headings: ['Montserrat', 'Helvetica Neue', 'Arial', 'sans-serif'],
-      // For general body text
       sans: ['Roboto', 'sans-serif'],
-      // For code blocks and editor
       mono: ['Fira Code', 'Courier New', 'Courier', 'monospace'],
     },
   },

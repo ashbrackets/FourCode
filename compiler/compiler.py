@@ -37,7 +37,7 @@ class Compiler:
             exe_file += ".exe"
 
         compile_process = subprocess.run(
-            ["gcc", c_file, "-o", exe_file],
+            ["gcc -O3", c_file, "-o", exe_file],
             capture_output=True
         )
 

@@ -1,11 +1,25 @@
 from pathlib import Path
-from flask import Flask, redirect, render_template, request, jsonify, url_for
+from flask import Flask, redirect, render_template, request, jsonify, url_for, session
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
 from compiler.compiler import Compiler
+import os, uuid, markdown, bcrypt, dotenv
 import compiler.test as diff
-import os, uuid, markdown
-
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", 'curb-your-david')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = True  # Enable in production
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+csrf = CSRFProtect(app)
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(120), nullable=False)
 
 TEMP_DIR = "temp_files"
 os.makedirs(TEMP_DIR, exist_ok=True)
@@ -77,6 +91,28 @@ def run_code():
     output = compiler.run(c_file, exe_file)
     print("Output: ", output)
     return jsonify({"result": output})
+
+@app.route("/login", methods=['GET'])
+def login_page():
+    return render_template("login.html")
+
+@app.route("/login", methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get('username', '').strip()
+    password = data.get('password', '').strip()
+
+    if not username or not password:
+        return jsonify({'error': 'Username and password are required'}), 400
+    
+    user = User.query.filter_by(username=username).first()
+
+    if not user or not bcrypt.checkpw(password.encode('utf-8'), user.password_hash):
+        return jsonify({'error': 'Invalid credentials'}), 401
+
+    session['user_id'] = user.id
+    return jsonify({'redirect': '/learn'})
+
 
 class TempError(Exception):
     pass
