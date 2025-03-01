@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" class="default">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>FourCode</title>
+        <script src="{{ url_for('static', filename='js/lesson.js') }}"
+            type="module"></script>
+        <link href="{{url_for('static',filename='css/main.css')}}"
+            rel="stylesheet" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+            rel="stylesheet">
+    </head>
+    <body>
+        <div
+            class="flex flex-col bg-secondary h-screen overflow-auto">
+            {% include 'navbar.html' %}
+            <div
+                class="flex-grow bg-background rounded-t-lg overflow-y-auto">
+                <!-- CONTENT -->
+                {% if 'user' in session %}
+                <p>{{ session['user'] }}</p>
+                {% else %}
+                <p>User not found</p>
+                {% endif %}
+            </div>
+        </div>
+    </body>
+</html>

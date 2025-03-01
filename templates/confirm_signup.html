@@ -34,12 +34,14 @@
                         name="Login" method="POST"
                         class="flex flex-col justify-center items-center gap-4 bg-background px-14 pt-4 pb-8 rounded-lg outline outline-4 outline-black">
                         <p
-                            class="font-mono font-bold text-black text-4xl">Login</p>
+                            class="font-mono font-bold text-black text-4xl">Create
+                            Account</p>
                         <input
                             type="text"
                             name="username"
                             placeholder="Username"
                             autocomplete="username"
+                            value="{{username}}"
                             autofocus
                             class="bg-secondary px-2 py-1 focus:border-transparent rounded-lg focus:outline-none focus:ring-4 focus:ring-button font-mono text-text text-xl" />
                         <div class="relative w-full">
@@ -48,22 +50,21 @@
                                 name="password"
                                 placeholder="Password"
                                 autocomplete="current-password"
+                                value="{{password}}"
                                 class="bg-secondary px-2 py-1 rounded-lg focus:outline-none focus:ring-4 focus:ring-button w-full font-mono text-text text-xl" />
                             <button id="togglePassword" type="button"
                                 class="top-1/2 right-3 absolute -translate-y-1/2 transform">
-                                <!-- <div
-                                    class="absolute hover:bg-white opacity-50 rounded-full w-9 h-9 transition-colors -translate-x-1.5 -translate-y-1.5 duration-300 transform"></div> -->
+                                <div
+                                    class="absolute hover:bg-white opacity-50 rounded-full w-9 h-9 transition-colors -translate-x-1.5 -translate-y-1.5 duration-300 transform"></div>
                                 <img
                                     src="{{ url_for('static', filename='images/eye-off.svg') }}"
-                                    alt="Hide" class="hidden w-6 h-6"
-                                    id="eye-off">
+                                    alt="Hide" class="w-6 h-6" id="eye-off">
                                 <img
                                     src="{{ url_for('static', filename='images/eye.svg') }}"
-                                    alt="Show" class="w-6 h-6" id="eye">
+                                    alt="Show" class="hidden w-6 h-6" id="eye">
                             </button>
                         </div>
                         <button
-                            id="login-button"
                             type="submit"
                             class="bg-button px-6 py-1 rounded-lg hover:ring-4 hover:ring-black font-mono font-bold text-black text-xl hover:underline">
                             Confirm

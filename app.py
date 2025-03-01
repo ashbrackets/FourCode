@@ -1,31 +1,26 @@
-from pathlib import Path
-from flask import Flask, redirect, render_template, request, jsonify, url_for, session
-from flask_sqlalchemy import SQLAlchemy
-from flask_wtf.csrf import CSRFProtect
+from flask import Flask, redirect, render_template, request, jsonify, url_for, flash, session
+import psycopg2
+from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 from compiler.compiler import Compiler
-import os, uuid, markdown, bcrypt, dotenv
+import os, uuid, markdown, datetime
 import compiler.test as diff
 
+load_dotenv(override=True)
+
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", 'curb-your-david')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = True  # Enable in production
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.secret_key = os.getenv("SECRET_KEY")
 
-csrf = CSRFProtect(app)
-db = SQLAlchemy(app)
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(120), nullable=False)
 
 TEMP_DIR = "temp_files"
 os.makedirs(TEMP_DIR, exist_ok=True)
 
 LESSONS_FOLDER = os.path.join(app.static_folder, "lessons")
 LESSONS = sorted(os.listdir(LESSONS_FOLDER))
+
+def get_db_connection():
+    print(os.getenv('DATABASE_URL'))
+    return psycopg2.connect(os.getenv('DATABASE_URL'))
 
 @app.route('/')
 def index():
@@ -40,7 +35,6 @@ def about():
     return render_template('about.html')
 
 def get_lesson_content(filename):
-    """Read and convert a Markdown file to HTML."""
     filepath = os.path.join(LESSONS_FOLDER, filename)
     with open(filepath, "r", encoding="utf-8") as f:
         content = f.read()
@@ -92,26 +86,102 @@ def run_code():
     print("Output: ", output)
     return jsonify({"result": output})
 
-@app.route("/login", methods=['GET'])
-def login_page():
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == "POST":
+        print(request.form)
+        username = request.form["username"]
+        password = request.form["password"]
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        try:
+            if app.debug:
+                cur.execute('SELECT * FROM test WHERE username = %s', (username,))
+            else:
+                cur.execute('SELECT * FROM users WHERE username = %s', (username,))
+            user = cur.fetchone()
+            print(user)
+            if not user:
+                session['pending_user'] = {
+                    'username': username,
+                    'password': password
+                }
+                print('redirecting')
+                return redirect(url_for('confirm_signup'))
+            else:
+                if check_password_hash(user[2], password):
+                    session['user'] = username
+                    flash('Logged in successfully!', 'success')
+                    return redirect(url_for('learn'))
+                else:
+                    flash('Incorrect Password!', 'error')
+                    return redirect(url_for('login'))
+        except Exception as e:
+            print('except')
+            conn.rollback()
+            flash(f'An error occurred {e}', 'error')
+            return redirect(url_for('login'))
+        finally:
+            cur.close()
+            conn.close()
     return render_template("login.html")
 
-@app.route("/login", methods=['POST'])
-def login():
-    data = request.get_json()
-    username = data.get('username', '').strip()
-    password = data.get('password', '').strip()
-
-    if not username or not password:
-        return jsonify({'error': 'Username and password are required'}), 400
+@app.route('/confirm-signup', methods=['GET', 'POST'])
+def confirm_signup():
+    print('recieved')
+    if 'pending_user' not in session: 
+        print('returning')
+        return redirect(url_for('login'))
     
-    user = User.query.filter_by(username=username).first()
+    if request.method == 'POST':
+        username = session['pending_user']['username']
+        password = session['pending_user']['password']
 
-    if not user or not bcrypt.checkpw(password.encode('utf-8'), user.password_hash):
-        return jsonify({'error': 'Invalid credentials'}), 401
+        conn = get_db_connection()
+        cur = conn.cursor()
 
-    session['user_id'] = user.id
-    return jsonify({'redirect': '/learn'})
+        try:
+            hashed_password = generate_password_hash(password)
+            if app.debug:
+                cur.execute(
+                    'INSERT INTO test (username, password, created_at) VALUES (%s, %s, %s)',
+                    (username, hashed_password, datetime.datetime.now())
+                )
+            else:
+                cur.execute(
+                    'INSERT INTO users (username, password, created_at) VALUES (%s, %s, %s)',
+                    (username, hashed_password, datetime.datetime.now())
+                )
+            conn.commit()
+            session['user'] = username
+            flash('Account created successfully!', 'success')
+            return redirect(url_for('learn'))
+        except Exception as e:
+            conn.rollback()
+            flash('Account creation failed', 'error')
+            return redirect(url_for('login'))
+        finally:
+            session.pop('pending_user', None)
+            cur.close()
+            conn.close()
+
+    return render_template('confirm_signup.html', 
+        username=session['pending_user']['username'], 
+        password=session['pending_user']['password']
+    )
+
+@app.route("/logout")
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('login'))
+
+@app.route("/user")
+def user():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    return render_template('user.html')
 
 
 class TempError(Exception):

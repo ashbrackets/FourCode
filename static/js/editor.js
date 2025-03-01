@@ -13,10 +13,8 @@ export function createEditor(elementId) {
 function resizeFontInEditor() {
     const editor = document.querySelector('.CodeMirror');
     if (window.screen.width < 640) {
-        console.log("yo")
         editor.style.fontSize = "24px";
     } else {
-        console.log("tp")
         editor.style.fontSize = "20px";
     }
 }

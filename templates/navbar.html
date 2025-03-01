@@ -24,13 +24,25 @@
             <button
                 class="m-3 text-text hover:underline">About</button>
         </a>
+        {% if 'user' in session %}
+        <a href="{{url_for('user')}}">
+            <button
+                class="m-3 text-text hover:underline">Hi,
+                {{session['user']}}</button>
+        </a>
+        <a href="{{url_for('logout')}}">
+            <button
+                class="m-3 text-text hover:underline">Logout</button>
+        </a>
+        {% else %}
         <a href="{{url_for('login')}}">
             <button
                 class="m-3 text-text hover:underline">Login</button>
         </a>
-        <a href="{{url_for('test')}}">
+        {% endif %}
+        <!-- <a href="{{url_for('test')}}">
             <button
                 class="m-3 text-text hover:underline">Test</button>
-        </a>
+        </a> -->
     </div>
 </nav>

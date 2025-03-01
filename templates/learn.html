@@ -59,6 +59,13 @@
         <div
             class="flex flex-col bg-nav h-screen overflow-auto">
             {% include 'navbar.html' %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert {{ category }} text-text">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
             <div
                 class="flex-grow bg-gray-300 rounded-t-lg overflow-y-auto">
                 <div
