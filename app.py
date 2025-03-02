@@ -1,9 +1,8 @@
 from flask import Flask, redirect, render_template, request, jsonify, url_for, flash, session
-import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from compiler.compiler import Compiler
-import os, uuid, markdown, datetime
+import os, uuid, markdown, datetime, psycopg2
 import compiler.test as diff
 
 load_dotenv(override=True)
@@ -89,7 +88,6 @@ def run_code():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
-        print(request.form)
         username = request.form["username"]
         password = request.form["password"]
         
@@ -102,13 +100,11 @@ def login():
             else:
                 cur.execute('SELECT * FROM users WHERE username = %s', (username,))
             user = cur.fetchone()
-            print(user)
             if not user:
                 session['pending_user'] = {
                     'username': username,
                     'password': password
                 }
-                print('redirecting')
                 return redirect(url_for('confirm_signup'))
             else:
                 if check_password_hash(user[2], password):
@@ -119,7 +115,6 @@ def login():
                     flash('Incorrect Password!', 'error')
                     return redirect(url_for('login'))
         except Exception as e:
-            print('except')
             conn.rollback()
             flash(f'An error occurred {e}', 'error')
             return redirect(url_for('login'))
@@ -130,9 +125,7 @@ def login():
 
 @app.route('/confirm-signup', methods=['GET', 'POST'])
 def confirm_signup():
-    print('recieved')
-    if 'pending_user' not in session: 
-        print('returning')
+    if 'pending_user' not in session:
         return redirect(url_for('login'))
     
     if request.method == 'POST':
