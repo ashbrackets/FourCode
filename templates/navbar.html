@@ -1,48 +1,204 @@
 <nav
-    id="header"
-    class="flex justify-between items-center bg-nav drop-shadow-xl w-full h-[64px] min-h-[64px]">
-    <a href="/" name="Logo" class="flex flex-row mt-2 pb-2 pl-3">
-        <p class="font-mono text-blue-400 text-4xl">[</p>
-        <p class="font-mono text-text text-4xl"
+    class="z-50 flex flex-shrink-0 justify-between items-center bg-secondary shadow-2xl w-full h-[64px] min-h-[64px]">
+    <!-- Logo -->
+    <a href="/" class="flex flex-row items-center pl-2.5 h-full">
+        <p class="font-mono text-blue-400 text-3xl lg:text-4xl">[</p>
+        <p class="font-mono text-white text-3xl lg:text-4xl"
             id="brandName">FourCode</p>
-        <p class="font-mono text-blue-400 text-4xl">]</p>
+        <p class="font-mono text-blue-400 text-3xl lg:text-4xl">]</p>
     </a>
-    <div name="navbar" class="pr-2">
-        <a href="/">
-            <button
-                class="m-3 text-text hover:underline">Home</button>
-        </a>
-        <a href="{{url_for('learn')}}">
-            <button
-                class="m-3 text-text hover:underline">Learn</button>
-        </a>
-        <a href="{{url_for('playground')}}">
-            <button
-                class="m-3 text-text hover:underline">Playground</button>
-        </a>
-        <a href="{{url_for('about')}}">
-            <button
-                class="m-3 text-text hover:underline">About</button>
-        </a>
+
+    <!-- Deskleft Navbar -->
+    <div class="hidden lg:flex space-x-6 pr-4">
+        <a href="/" class="text-text hover:underline">Home</a>
+        <a href="{{url_for('learn')}}"
+            class="text-text hover:underline">Learn</a>
+        <a href="{{url_for('playground')}}"
+            class="text-text hover:underline">Playground</a>
+        <a href="{{url_for('about')}}"
+            class="text-text hover:underline">About</a>
         {% if 'user' in session %}
-        <a href="{{url_for('user')}}">
-            <button
-                class="m-3 text-text hover:underline">Hi,
-                {{session['user']}}</button>
+        <a href="{{url_for('user')}}"
+            class="text-text hover:underline">Profile</a>
+        {% else %}
+        <a href="{{url_for('login')}}"
+            class="text-text hover:underline">Login</a>
+        {% endif %}
+        <!-- <a href="{{url_for('test')}}" class="text-text hover:underline">Test</a> -->
+    </div>
+
+    <!-- Hamburger Button -->
+    <button id="menu-btn" class="lg:hidden p-4 scale-[1]">
+        <svg class="w-10 h-10" fill="white" viewBox="0 0 24 24">
+            <path d="M4 6h16M4 12h16M4 18h16" stroke="white"
+                stroke-width="2" stroke-linecap="round" />
+        </svg>
+    </button>
+</nav>
+
+<!-- Mobile Menu (Hidden by Default) -->
+<div id="mobile-menu"
+    class="lg:hidden -top-[200%] z-20 fixed flex justify-end bg-secondary bg-opacity-[0.99] w-full h-screen transition-all duration-300 ease-in-out">
+    <div
+        class="flex flex-col justify-start items-center shadow-lg rounded-b-lg w-full">
+        <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
+        <a href="/"
+            class="flex justify-center items-center py-6 w-full">
+            <p
+                class="opacity-100 font-mono text-text text-2xl hover:underline">Home</p>
         </a>
-        <a href="{{url_for('logout')}}">
-            <button
-                class="m-3 text-text hover:underline">Logout</button>
+        <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
+        <a href="{{url_for('learn')}}"
+            class="flex justify-center items-center py-6 w-full">
+            <p
+                class="opacity-100 font-mono text-text text-2xl hover:underline">Learn</p>
+        </a>
+        <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
+        <a href="{{url_for('playground')}}"
+            class="flex justify-center items-center py-6 w-full">
+            <p
+                class="opacity-100 font-mono text-text text-2xl hover:underline">Playground</p>
+        </a>
+        <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
+        <a href="{{url_for('about')}}"
+            class="flex justify-center items-center py-6 w-full">
+            <p
+                class="opacity-100 font-mono text-text text-2xl hover:underline">About</p>
+        </a>
+        <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
+        {% if 'user' in session %}
+        <a href="{{url_for('user')}}"
+            class="flex justify-center items-center py-6 w-full">
+            <p
+                class="opacity-100 font-mono text-text text-2xl hover:underline">Profile</p>
         </a>
         {% else %}
-        <a href="{{url_for('login')}}">
-            <button
-                class="m-3 text-text hover:underline">Login</button>
+        <a href="{{url_for('login')}}"
+            class="flex justify-center items-center py-6 w-full">
+            <p
+                class="opacity-100 font-mono text-text text-2xl hover:underline">Login</p>
         </a>
         {% endif %}
-        <!-- <a href="{{url_for('test')}}">
-            <button
-                class="m-3 text-text hover:underline">Test</button>
-        </a> -->
+        <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
+        <!-- <div
+            class="flex justify-center items-center py-6 outline outline-1 outline-gray-500 w-full h-full">
+            <a href="{{url_for('test')}}"
+                class="opacity-100 text-text text-2xl hover:underline">Test</a>
+        </div> -->
     </div>
-</nav>
+</div>
+
+<script>
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuBtn.addEventListener('click', () => {
+        if (mobileMenu.classList.contains('-top-[200%]')) {
+            mobileMenu.classList.remove('-top-[200%]');
+            mobileMenu.classList.add('top-[64px]');
+        } else {
+            mobileMenu.classList.remove('top-[64px]');
+            mobileMenu.classList.add('-top-[200%]');
+        }
+    });
+
+    // #region intro
+    alphabets = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+    alphabets = alphabets.split('')
+    const brandElement = document.getElementById("brandName");
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function intro1() {
+        let timeBetweenChange = -20
+        for (let i = 0; i < 10; i++) {
+            setBrandName(getRandomTextOfLength(8))
+            await sleep(timeBetweenChange)
+            timeBetweenChange += 3
+        }
+        timeBetweenChange += 20
+        setBrandName(getRandomTextOfLength(8))
+        await sleep(timeBetweenChange)
+        setBrandName("FourCode")
+    }
+
+    async function intro2() {
+        const word = "FourCode";
+        let curLetterIndex = Math.floor(word.length / 2);
+        let brandElement = document.getElementById("brandName");
+        brandElement.textContent = ""
+        for (let i = 0; i < word.length / 2; i++) {
+            let timeBetweenChange = 0;
+
+            updateBrandName(getRandomText(1) + brandElement.innerText + getRandomText(1));
+            for (let j = 0; j < 10; j++) {
+                updateBrandName(" " + brandElement.innerText.slice(1, -1) + " ");
+                updateBrandName(getRandomText(1) + brandElement.innerText + getRandomText(1));
+                await sleep(timeBetweenChange);
+                timeBetweenChange += 1;
+            }
+
+            timeBetweenChange += 20;
+            await sleep(timeBetweenChange);
+            updateBrandName(" " + brandElement.innerText.slice(1, -1) + " ");
+            updateBrandName(word[word.length / 2 - 1 - i] + brandElement.innerText + word[curLetterIndex]);
+
+            curLetterIndex += 1;
+        }
+    }
+
+    async function intro3() {
+        const word = "FourCode";
+        let brandElement = document.getElementById("brandName");
+        brandElement.innerText = ""
+        let time = 1.0 * 1000
+
+        for (let i = 0; i < word.length; i++) {
+            updateBrandName(brandElement.innerText + getRandomText(1))
+            for (let j = 0; j < 10; j++) {
+                updateBrandName(brandElement.innerText.slice(0, -1))
+                updateBrandName(brandElement.innerText + getRandomText(1))
+                await sleep(time / 10 / word.length)
+            }
+            updateBrandName(brandElement.innerText.slice(0, -1))
+            updateBrandName(brandElement.innerText + word[i])
+        }
+    }
+    
+    let isInAnimation = false
+    async function intro4() {
+        isInAnimation = true
+        const word = "FourCode";
+        brandElement.innerText = ""
+        const time = 1.0 * 1000
+        const noOfRandLetters = 3
+        for (let i = 0; i < word.length; i++) {
+            updateBrandName(brandElement.innerText + getRandomText(word.length - i))
+            for (let j = 0; j < noOfRandLetters; j++) {
+                updateBrandName(brandElement.innerText.slice(0, i))
+                updateBrandName(brandElement.innerText + getRandomText(word.length - i))
+                await sleep(time / noOfRandLetters / word.length)
+            }
+            updateBrandName(brandElement.innerText.slice(0, i))
+            updateBrandName(brandElement.innerText + word[i])
+        }
+        isInAnimation = false
+    }
+
+    function updateBrandName(text) {
+        document.getElementById("brandName").innerText = text;
+    }
+
+    function getRandomText(length) {
+        return Array.from({ length }, () => alphabets[Math.floor(Math.random() * alphabets.length)]).join("");
+    }
+
+    window.addEventListener("load", (event) => {intro4()});
+
+    brandElement.parentElement.addEventListener("mouseenter", () => {
+        if(!isInAnimation)intro4()
+    })
+    // #endregion
+</script>

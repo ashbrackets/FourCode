@@ -20,60 +20,57 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-document.getElementById('run-button').addEventListener('click', async () => {
-    let startTime = performance.now()
-    const code = editor.getValue(); // Get the text from the editor
-    const textarea = document.getElementById('output')
-    textarea.textContent = ''
-    // Send the code to the Flask backend
-    const response = await fetch('/run', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code: code })
-    });
-    let result = await response.json()
-    console.log(editor)
-    console.log(result)
-    if (result.error) {
-        editor.getAllMarks().forEach(marker => marker.clear());
-        let line = result.line
-        let pos = result.pos - 1
-        // if (result.error.includes("Lexer Error: ")) {
-        //     line = result.curLineNo
-        //     pos = result.curPos
-        // }
-        if (editor.getLine(line)) {
-            if (pos > editor.getLine(line).trim().length) {
-                pos = editor.getLine(line).trim().length + 1
-                ensureCharAt(editor, line, pos)
-            }
+document.getElementsByName('run-button').forEach((e) => {
+    e.addEventListener('click', async () => {
+        let startTime = performance.now()
+        const code = editor.getValue();
+        const textarea = document.getElementById('output')
+        textarea.textContent = ''
+        const response = await fetch('/run', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code: code })
+        });
+        let result = await response.json()
+        if (result.error) {
+            editor.getAllMarks().forEach(marker => marker.clear());
+            let line = result.curLineNo - 1
+            let pos = result.pos - 1
+            // if (result.error.includes("Lexer Error: ")) {
+            //     line = result.curLineNo
+            //     pos = result.curPos
+            // }
+            // if (editor.getLine(line)) {
+            //     if (pos > editor.getLine(line).trim().length) {
+            //         pos = editor.getLine(line).trim().length + 1
+            //         ensureCharAt(editor, line, pos)
+            //     }
+            // }
+            // let split = result.error.split(":")
+            // split[1] = pos.toString()
+            // result.error = split.join(":")
+            textarea.innerHTML = result.error;
+            editor.markText(
+                { line: line, ch: pos },
+                { line: line, ch: pos + 1 },
+                { className: "error-highlight" }
+            );
+            const errorMessage = result.error;
+            const errorLine = result.line - 1;
+            editor.setGutterMarker(errorLine, "error", document.createTextNode(errorMessage));
+        } else {
+            textarea.innerHTML = result.result;
         }
-        // let split = result.error.split(":")
-        // split[1] = pos.toString()
-        // result.error = split.join(":")
-        console.log(result.error)
-        textarea.innerHTML = result.error;
-        editor.markText(
-            { line: line, ch: pos },
-            { line: line, ch: pos + 1 },
-            { className: "error-highlight" }
-        );
-        const errorMessage = result.error;
-        const errorLine = result.line - 1; // The line where the error occurred
-        editor.setGutterMarker(errorLine, "error", document.createTextNode(errorMessage));
-    } else {
-        textarea.innerHTML = result.result; // Display the result
-    }
-    let endTime = performance.now()
-    let perfTime = endTime - startTime
-    textarea.innerHTML += "\nExecution Time: " + perfTime.toFixed(2).toString() + " ms"
-    // textarea.innerHTML += result.pos
-    textarea.innerHTML += "\n<b>- - - END OF PROGRAM - - -</b>"
-    // auto scroll to the end
-    scrollAnimation(textarea, .2)
-});
+        let endTime = performance.now()
+        let perfTime = endTime - startTime
+        textarea.innerHTML += "\nExecution Time: " + perfTime.toFixed(2).toString() + " ms"
+        textarea.innerHTML += "\n<b>---END OF PROGRAM---</b>"
+        // auto scroll to the end
+        scrollAnimation(textarea, .2)
+    });
+})
 
 function scrollAnimation(textarea, duration) {
     const element = textarea;
@@ -152,7 +149,6 @@ for (let i = 0; i < allResizeBars.length; i++) {
 
 function resizeElements(e) {
     if (!curResizeBar) {
-        console.error("no resize bar!")
         return
     }
 
@@ -167,12 +163,11 @@ function resizeElements(e) {
 
         if (newHeightA < MIN_HEIGHT || newHeightB < MIN_HEIGHT) return;
 
-        link1.style.flex = `0 0 ${newHeightA}px`
-        link2.style.flex = `0 0 ${newHeightB}px`
+        link1.style.height = `${newHeightA}px`
+        link2.style.height = `${newHeightB}px`
 
         let totalHeight = newHeightA + newHeightB
         sectionSizes.set(curResizeBar, [(newHeightA / totalHeight) * 100, (newHeightB / totalHeight) * 100])
-        // console.log((newHeightA / totalHeight) * 100, (newHeightB / totalHeight) * 100)
     } else {
         let deltaX = e.clientX - startX
         let newWidthA = startWidthA + deltaX
@@ -185,7 +180,6 @@ function resizeElements(e) {
 
         let totalWidth = newWidthA + newWidthB
         sectionSizes.set(curResizeBar, [(newWidthA / totalWidth) * 100, (newWidthB / totalWidth) * 100])
-        // console.log([(newWidthA / totalWidth) * 100, (newWidthB / totalWidth) * 100])
     }
 }
 
@@ -208,7 +202,6 @@ function setOnWindowResize() {
                 let totalHeight = bar.parentElement.offsetHeight
                 link1.style.height = `${(heights[0] * totalHeight) / 100}px`
                 link2.style.height = `${(heights[1] * totalHeight) / 100}px`
-                console.log("heights:", heights[0] * totalHeight, heights[1] * totalHeight)
             }
         } else {
             let widths = sectionSizes.get(bar)
@@ -216,7 +209,6 @@ function setOnWindowResize() {
                 let totalWidth = bar.parentElement.offsetWidth
                 link1.style.width = `${(widths[0] * totalWidth) / 100}px`
                 link2.style.width = `${(widths[1] * totalWidth) / 100}px`
-                console.log("widths:", widths[0] * totalWidth, widths[1] * totalWidth)
             }
         }
     })

@@ -39,6 +39,7 @@ class Parser:
         self.linePos = self.lexer.linePos
         self.curToken = self.peekToken
         try:
+            print(self.lexer.lineNo, self.linePos)
             self.peekToken = self.lexer.getToken()
         except LexerError as e:
             raise ParserError(str(e))

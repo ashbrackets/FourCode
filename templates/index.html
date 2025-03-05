@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="default">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {% include 'meta.html' %}
         <title>FourCode</title>
         <link href="{{url_for('static',filename='css/main.css')}}"
             rel="stylesheet" />
@@ -22,42 +21,19 @@
             class="-top-5 -left-5 -z-10 fixed w-[calc(100vw+50px)] h-[calc(100vh+50px)] overflow-hidden"></div>
         <div
             class="flex flex-col h-screen overflow-auto">
+            <!-- <div class="bg-secondary w-full h-[64px]" id="nav"></div> -->
             {% include 'navbar.html' %}
             <div
                 class="flex flex-grow justify-center items-center rounded-t-lg overflow-y-auto">
                 <!-- CONTENT -->
                 <div
                     class="relative flex flex-col justify-center items-center rounded-xl">
-                    <!-- Blurred Edge Effect -->
-                    <!-- <div
-                        class="absolute inset-0 bg-black/40 blur-2xl rounded-xl"></div> -->
-
-                    <!-- Content -->
-                    <!-- <a href="/" id="title" class="relative flex justify-center">
-                        <p
-                            class="left-0 absolute font-mono text-blue-400 lg:text-[150px] text-7xl">[</p>
-                        <p id="brandName"
-                            class="inline-block min-w-[10ch] font-mono text-text lg:text-[150px] text-7xl text-center">
-                        </p>
-                        <p
-                            class="right-0 absolute font-mono text-blue-400 lg:text-[150px] text-7xl">]</p>
-                    </a> -->
                     <p
-                        class="text-text lg:text-[80px] text-7xl text-center">
-                        <span class="block text-8xl">Welcome to the start</span>
-                        <span class="block mt-8">of your coding journey</span>
+                        class="text-text lg:text-[80px] text-5xl text-center">
+                        Welcome to the
+                        start of your coding
+                        journey
                     </p>
-                    <!-- <a id="title"
-                        class="flex justify-center mt-12">
-                        <p
-                            class="font-mono text-blue-400 lg:text-[150px] text-7xl transition-all duration-300 ease-in-out">[</p>
-                        <p id="brandName"
-                            class="font-mono text-text lg:text-[150px] text-7xl text-center transition-all duration-300 ease-in-out">
-                        </p>
-                        <p
-                            class="font-mono text-blue-400 lg:text-[150px] text-7xl transition-all duration-300 ease-in-out">]</p>
-                    </a> -->
-
                     <a href="{{url_for('learn')}}" id="start-learning-button"
                         class="z-10 relative bg-[#e88f36] mt-8 lg:mt-12 rounded-full outline outline-4 outline-secondary hover:outline-white">
                         <button
