@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" class="default">
+    <head>
+        {% include 'meta.html' %}
+        <title>FourCode</title>
+        <link href="{{url_for('static',filename='css/main.css')}}"
+            rel="stylesheet" />
+    </head>
+    <body>
+        <div
+            class="flex flex-col h-screen overflow-auto bg-secondary">
+            {% include 'navbar.html' %}
+            <div
+                class="flex-grow overflow-y-auto rounded-t-lg bg-background">
+                <div
+                    class="flex flex-col items-center justify-center w-full gap-4">
+                    <p class="text-7xl py-7">Lessons</p>
+                    {% for lesson in lessons %}
+                    <a
+                        href="{{url_for('learn', lesson_index=lesson.index)}}"
+                        class="{% if lesson.isCrossed %} line-through {% endif %}">{{lesson.name}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

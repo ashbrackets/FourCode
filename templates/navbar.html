@@ -1,17 +1,18 @@
+<div class=" w-full h-[64px] min-h-[64px]"></div>
 <nav
-    class="z-50 flex flex-shrink-0 justify-between items-center bg-secondary shadow-2xl w-full h-[64px] min-h-[64px]">
+    class="fixed z-50 flex flex-shrink-0 justify-between items-center w-full h-[64px] min-h-[64px]">
     <!-- Logo -->
     <a href="/" class="flex flex-row items-center pl-2.5 h-full">
-        <p class="font-mono text-blue-400 text-3xl lg:text-4xl">[</p>
-        <p class="font-mono text-white text-3xl lg:text-4xl"
+        <p class="font-mono text-3xl text-blue-400 lg:text-4xl">[</p>
+        <p class="font-mono text-3xl text-white lg:text-4xl"
             id="brandName">FourCode</p>
-        <p class="font-mono text-blue-400 text-3xl lg:text-4xl">]</p>
+        <p class="font-mono text-3xl text-blue-400 lg:text-4xl">]</p>
     </a>
 
     <!-- Deskleft Navbar -->
-    <div class="hidden lg:flex space-x-6 pr-4">
+    <div class="hidden pr-4 space-x-6 lg:flex">
         <a href="/" class="text-text hover:underline">Home</a>
-        <a href="{{url_for('learn')}}"
+        <a href="{{url_for('lessons')}}"
             class="text-text hover:underline">Learn</a>
         <a href="{{url_for('playground')}}"
             class="text-text hover:underline">Playground</a>
@@ -28,11 +29,8 @@
     </div>
 
     <!-- Hamburger Button -->
-    <button id="menu-btn" class="lg:hidden p-4 scale-[1]">
-        <svg class="w-10 h-10" fill="white" viewBox="0 0 24 24">
-            <path d="M4 6h16M4 12h16M4 18h16" stroke="white"
-                stroke-width="2" stroke-linecap="round" />
-        </svg>
+    <button id="menu-btn" class="lg:hidden p-4 pr-6 scale-[1.5]">
+        <img src="{{url_for('static', filename='images/menu.svg')}}" alt="menu">
     </button>
 </nav>
 
@@ -40,50 +38,50 @@
 <div id="mobile-menu"
     class="lg:hidden -top-[200%] z-20 fixed flex justify-end bg-secondary bg-opacity-[0.99] w-full h-screen transition-all duration-300 ease-in-out">
     <div
-        class="flex flex-col justify-start items-center shadow-lg rounded-b-lg w-full">
+        class="flex flex-col items-center justify-start w-full rounded-b-lg shadow-lg">
         <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
         <a href="/"
-            class="flex justify-center items-center py-6 w-full">
+            class="flex items-center justify-center w-full py-6">
             <p
-                class="opacity-100 font-mono text-text text-2xl hover:underline">Home</p>
+                class="font-mono text-2xl opacity-100 text-text hover:underline">Home</p>
         </a>
         <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
-        <a href="{{url_for('learn')}}"
-            class="flex justify-center items-center py-6 w-full">
+        <a href="{{url_for('lessons')}}"
+            class="flex items-center justify-center w-full py-6">
             <p
-                class="opacity-100 font-mono text-text text-2xl hover:underline">Learn</p>
+                class="font-mono text-2xl opacity-100 text-text hover:underline">Learn</p>
         </a>
         <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
         <a href="{{url_for('playground')}}"
-            class="flex justify-center items-center py-6 w-full">
+            class="flex items-center justify-center w-full py-6">
             <p
-                class="opacity-100 font-mono text-text text-2xl hover:underline">Playground</p>
+                class="font-mono text-2xl opacity-100 text-text hover:underline">Playground</p>
         </a>
         <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
         <a href="{{url_for('about')}}"
-            class="flex justify-center items-center py-6 w-full">
+            class="flex items-center justify-center w-full py-6">
             <p
-                class="opacity-100 font-mono text-text text-2xl hover:underline">About</p>
+                class="font-mono text-2xl opacity-100 text-text hover:underline">About</p>
         </a>
         <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
         {% if 'user' in session %}
         <a href="{{url_for('user')}}"
-            class="flex justify-center items-center py-6 w-full">
+            class="flex items-center justify-center w-full py-6">
             <p
-                class="opacity-100 font-mono text-text text-2xl hover:underline">Profile</p>
+                class="font-mono text-2xl opacity-100 text-text hover:underline">Profile</p>
         </a>
         {% else %}
         <a href="{{url_for('login')}}"
-            class="flex justify-center items-center py-6 w-full">
+            class="flex items-center justify-center w-full py-6">
             <p
-                class="opacity-100 font-mono text-text text-2xl hover:underline">Login</p>
+                class="font-mono text-2xl opacity-100 text-text hover:underline">Login</p>
         </a>
         {% endif %}
         <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
         <!-- <div
-            class="flex justify-center items-center py-6 outline outline-1 outline-gray-500 w-full h-full">
+            class="flex items-center justify-center w-full h-full py-6 outline outline-1 outline-gray-500">
             <a href="{{url_for('test')}}"
-                class="opacity-100 text-text text-2xl hover:underline">Test</a>
+                class="text-2xl opacity-100 text-text hover:underline">Test</a>
         </div> -->
     </div>
 </div>

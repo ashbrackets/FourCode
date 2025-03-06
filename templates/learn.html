@@ -58,9 +58,7 @@
     </head>
     <body>
         <div
-            class="flex flex-col bg-nav h-screen overflow-auto">
-            <!-- <div class="flex-shrink-0 bg-secondary w-full h-[128px]"
-                id="nav"></div> -->
+            class="relative flex flex-col h-screen overflow-auto bg-nav">
             {% include 'navbar.html' %}
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -72,38 +70,39 @@
             <div
                 class="flex-grow flex-shrink-0 bg-gray-300 rounded-t-lg lg:max-h-[calc(100vh-64px)] overflow-y-auto">
                 <div
-                    class="flex lg:flex-row flex-col h-full">
+                    class="relative flex flex-col h-full lg:flex-row">
+
                     <!-- input and output -->
                     <div id="Input-and-Output"
-                        class="flex flex-col flex-shrink-0 order-3 lg:order-1 px-2 lg:px-0 py-0 lg:py-2 pb-2 lg:pl-2 w-full lg:w-1/2 h-auto">
+                        class="flex flex-col flex-shrink-0 order-3 w-full h-auto px-2 py-0 pb-2 lg:order-1 lg:px-0 lg:py-2 lg:pl-2 lg:w-1/2">
                         <!-- Input -->
                         <div id="Input"
                             class="flex flex-col flex-shrink-0 bg-secondary mt-2 lg:mt-0 lg:h-[calc(100vh-64px-50%)] rounded-lg h-[600px]">
                             <p
                                 class="py-1 pl-1 font-medium text-text">Code</p>
                             <div
-                                class="mx-2 mt-1 rounded-lg h-full max-h-full overflow-hidden">
+                                class="h-full max-h-full mx-2 mt-1 overflow-hidden rounded-lg">
                                 <textarea
                                     id="code-editor"
-                                    class="bg-primary w-full h-full"></textarea>
+                                    class="w-full h-full bg-primary"></textarea>
                             </div>
                             <div class="flex justify-end p-2">
                                 <button
                                     name="run-button"
-                                    class="bg-button px-6 py-1 rounded-lg hover:outline outline-1 outline-white font-medium text-black">
+                                    class="px-6 py-1 font-medium text-black rounded-lg bg-button hover:outline outline-1 outline-white">
                                     Run
                                 </button>
                             </div>
                         </div>
                         <div name="resize-bar" link1="Input" link2="Output"
                             direction="vertical"
-                            class="hidden lg:flex justify-center items-center w-full h-2 cursor-row-resize">
+                            class="items-center justify-center hidden w-full h-2 lg:flex cursor-row-resize">
                             <img class="scale-[2]" draggable="false"
                                 src="{{ url_for('static', filename='images/horizontal_bar.svg') }}">
                         </div>
                         <!-- Output -->
                         <div id="Output"
-                            class="flex flex-col flex-1 bg-secondary mt-2 lg:mt-0 rounded-lg min-h-0">
+                            class="flex flex-col flex-1 min-h-0 mt-2 rounded-lg bg-secondary lg:mt-0">
                             <p class="pt-1 pl-1 text-text">Output</p>
                             <div id="output"
                                 class="bg-primary m-2 scrollbar-thumb-white px-2 lg:h-[calc(100vh-64px-50%)] pt-1 rounded-lg h-[400px] overflow-y-auto font-mono text-text lg:text-lg text-2xl break-words whitespace-pre-wrap scrollbar scrollbar-track-transparent"></div>
@@ -111,7 +110,7 @@
                     </div>
                     <div name="resize-bar" link1="Input-and-Output"
                         link2="Lesson" direction="horizontal"
-                        class="hidden lg:flex justify-center items-center order-2 w-2 h-full cursor-col-resize">
+                        class="items-center justify-center order-2 hidden w-2 h-full lg:flex cursor-col-resize">
                         <img class="scale-[6] translate-y-5"
                             draggable="false"
                             src="{{ url_for('static', filename='images/vertical_bar.svg') }}">
@@ -122,9 +121,9 @@
                         <!-- Lesson -->
                         <div
                             class="flex flex-col bg-secondary rounded-lg h-full max-h-screen lg:max-h-[calc(100vh-64px)]">
-                            <p class="pt-1 pl-2 text-text text-lg">Lesson</p>
+                            <p class="pt-1 pl-2 text-lg text-text">Lesson</p>
                             <div
-                                class="flex-1 bg-primary prose-h1:m-0 prose-h2:m-0 prose-p:m-0 mx-2 mt-2 scrollbar-thumb-white px-2 pt-1 rounded-lg max-w-none overflow-y-auto text-text prose-h1:text-text prose-h2:text-text whitespace-pre-wrap prose-xl prose scrollbar scrollbar-track-transparent">{{
+                                class="flex-1 px-2 pt-1 mx-2 mt-2 overflow-y-auto prose prose-xl whitespace-pre-wrap rounded-lg bg-primary prose-h1:m-0 prose-h2:m-0 prose-p:m-0 scrollbar-thumb-white max-w-none text-text prose-h1:text-text prose-h2:text-text scrollbar scrollbar-track-transparent">{{
                                 content | safe }}
                             </div>
                             <nav class="flex justify-between my-2">

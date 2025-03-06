@@ -44,15 +44,14 @@ def learn():
     lesson_index = request.args.get("lesson_index", None)
     if lesson_index is None:
         return redirect(url_for("learn", lesson_index=0))
-    if not LESSONS:  # If there are no lessons, show an error
+    if not LESSONS: 
         return "No lessons found", 404
     try:
-        lesson_index = int(lesson_index)  # Convert to integer
+        lesson_index = int(lesson_index)
     except ValueError:
-        return "Invalid lesson index", 400  # Handle invalid numbers
-
+        return "Invalid lesson index", 400 
     if lesson_index < 0 or lesson_index >= len(LESSONS):
-        return "Lesson not found", 404  # Prevent out-of-bounds access
+        return "Lesson not found", 404  
 
     lesson_content = get_lesson_content(LESSONS[lesson_index])
 
@@ -176,6 +175,18 @@ def user():
         return redirect(url_for('login'))
     return render_template('user.html')
 
+@app.route("/lessons")
+def lessons():
+    lessons = []
+    index = -1
+    LESSONS = sorted(os.listdir(LESSONS_FOLDER))
+    for file in LESSONS:
+        index += 1
+        name =  os.path.splitext(file)[0].split("_")[1]
+        isCrossed = False
+        lessons.append({'name': name, 'index': index, 'isCrossed': isCrossed})
+
+    return render_template('lessons.html', lessons=lessons)
 
 class TempError(Exception):
     pass
