@@ -117,11 +117,13 @@ class Parser:
                         self.emitter.emitLine('printf(\"%100s\\n\",' + self.curToken.text + ');')
                         self.nextToken()
                     case TokenType.DECIMAL:
-                        self.emitter.emitLine('printf(\"%' + '.2f\\n\", (float)(' + self.curToken.text + '));')
-                        self.nextToken()
+                        self.emitter.emit('printf(\"%' + '.2f\\n\", (float)(')
+                        self.expression()
+                        self.emitter.emitLine('));')
                     case TokenType.INTEGER:
-                        self.emitter.emitLine('printf(\"%' + 'd\\n\", (int)(' + self.curToken.text + '));')
-                        self.nextToken()
+                        self.emitter.emit('printf(\"%' + '.2f\\n\", (float)(')
+                        self.expression()
+                        self.emitter.emitLine('));')
             else:
                 print('PRINT-NUMBER')
                 self.emitter.emit('printf(\"%' + '.2f\\n\", (float)(')

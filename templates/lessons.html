@@ -5,6 +5,8 @@
         <title>FourCode</title>
         <link href="{{url_for('static',filename='css/main.css')}}"
             rel="stylesheet" />
+        <script src="{{url_for('static', filename='js/lessons.js')}}"
+            defer></script>
     </head>
     <body>
         <div
@@ -13,13 +15,32 @@
             <div
                 class="flex-grow overflow-y-auto rounded-t-lg bg-background">
                 <div
-                    class="flex flex-col items-center justify-center w-full gap-4">
-                    <p class="text-7xl py-7">Lessons</p>
-                    {% for lesson in lessons %}
-                    <a
-                        href="{{url_for('learn', lesson_index=lesson.index)}}"
-                        class="{% if lesson.isCrossed %} line-through {% endif %}">{{lesson.name}}</a>
-                    {% endfor %}
+                    class="flex flex-col items-center w-full h-full gap-4 mt-10">
+                    <div class="rounded-lg bg-secondary">
+                        <div class="p-6 m-2 rounded-lg bg-primary">
+                            <p class="pb-6 text-white text-7xl">Lessons</p>
+                            <div
+                                class="flex flex-col justify-start gap-2">
+                                {% for lesson in lessons %}
+                                <div
+                                    class="flex flex-row items-center gap-2 decoration-[2px] text-white">
+                                    <input type="checkbox" name="lesson"
+                                        value="{{ lesson.index }}"
+                                        class="w-4 h-4 rounded-full" />
+                                    <a
+                                        href="{{url_for('learn', lesson_index=lesson.index)}}"
+                                        class="flex flex-row gap-1">
+                                        <p
+                                            class="{% if lesson.isCrossed %} line-through {% endif %} text-white text-lg">{{lesson.name}}</p>
+                                        <img class="self-center w-4 h-4"
+                                            src="{{url_for('static', filename='images/external-link.svg')}}"
+                                            alt="link">
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

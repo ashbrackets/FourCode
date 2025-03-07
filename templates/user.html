@@ -4,8 +4,6 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>FourCode</title>
-        <script src="{{ url_for('static', filename='js/lesson.js') }}"
-            type="module"></script>
         <link href="{{url_for('static',filename='css/main.css')}}"
             rel="stylesheet" />
         <link
@@ -14,10 +12,10 @@
     </head>
     <body>
         <div
-            class="flex flex-col bg-secondary h-screen overflow-auto">
+            class="flex flex-col h-screen overflow-auto bg-secondary">
             {% include 'navbar.html' %}
             <div
-                class="flex-grow bg-background rounded-t-lg overflow-y-auto">
+                class="flex-grow overflow-y-auto rounded-t-lg bg-background">
                 <!-- CONTENT -->
                 {% if 'user' in session %}
                 <p>{{ session['user'] }}</p>

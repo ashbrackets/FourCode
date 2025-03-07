@@ -17,27 +17,58 @@ os.makedirs(TEMP_DIR, exist_ok=True)
 LESSONS_FOLDER = os.path.join(app.static_folder, "lessons")
 LESSONS = sorted(os.listdir(LESSONS_FOLDER))
 
+SHOULD_CREATE_LESSONS_DB = False
+
 def get_db_connection():
-    print(os.getenv('DATABASE_URL'))
     return psycopg2.connect(os.getenv('DATABASE_URL'))
 
-@app.route('/')
-def index():
-    return render_template('index.html')
 
-@app.route('/playground')
-def playground():
-    return render_template('playground.html')
+def create_lessons_table():
+    conn = get_db_connection()
+    cur = conn.cursor()
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
+    try:
+        cur.execute("TRUNCATE TABLE lessons RESTART IDENTITY CASCADE")
+        LESSONS = sorted(os.listdir(LESSONS_FOLDER))
+        for lesson in LESSONS:
+            lesson_data = os.path.splitext(lesson)[0].split('_') 
+            lesson_id = lesson_data[0]
+            lesson_name = ' '.join(lesson_data[1:-1])
+            lesson_order = lesson_data[-1]
+
+            cur.execute("INSERT INTO lessons (lesson_id, lesson_name, lesson_order) VALUES (%s, %s, %s)", 
+                        (lesson_id, lesson_name, lesson_order))
+        conn.commit()
+        print("LESSONS TABLE CREATED")
+    except Exception as e:
+        conn.rollback()
+        print("LESSONS TABLE CREATION ERROR:", e)
+    finally:
+        cur.close()
+        conn.close()
+
+
 
 def get_lesson_content(filename):
     filepath = os.path.join(LESSONS_FOLDER, filename)
     with open(filepath, "r", encoding="utf-8") as f:
         content = f.read()
     return markdown.markdown(content)
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/playground')
+def playground():
+    return render_template('playground.html')
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 @app.route('/learn')
 def learn():
@@ -59,6 +90,7 @@ def learn():
                            content=lesson_content, 
                            lesson_index=lesson_index, 
                            total_lessons=len(LESSONS))
+
 
 @app.route('/run', methods=['POST'])
 def run_code():
@@ -84,6 +116,7 @@ def run_code():
     print("Output: ", output)
     return jsonify({"result": output})
 
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
@@ -107,7 +140,7 @@ def login():
                 return redirect(url_for('confirm_signup'))
             else:
                 if check_password_hash(user[2], password):
-                    session['user'] = username
+                    session['user_id'] = user[0]
                     flash('Logged in successfully!', 'success')
                     return redirect(url_for('learn'))
                 else:
@@ -121,6 +154,7 @@ def login():
             cur.close()
             conn.close()
     return render_template("login.html")
+
 
 @app.route('/confirm-signup', methods=['GET', 'POST'])
 def confirm_signup():
@@ -146,8 +180,10 @@ def confirm_signup():
                     'INSERT INTO users (username, password, created_at) VALUES (%s, %s, %s)',
                     (username, hashed_password, datetime.datetime.now())
                 )
+            cur.execute('SELECT id FROM users WHERE username = %s', (username,))
+            user_id = cur.fetchone()
             conn.commit()
-            session['user'] = username
+            session['user_id'] = user_id
             flash('Account created successfully!', 'success')
             return redirect(url_for('learn'))
         except Exception as e:
@@ -164,16 +200,19 @@ def confirm_signup():
         password=session['pending_user']['password']
     )
 
+
 @app.route("/logout")
 def logout():
-    session.pop('user', None)
+    session.pop('user_id', None)
     return redirect(url_for('login'))
+
 
 @app.route("/user")
 def user():
     if 'user' not in session:
         return redirect(url_for('login'))
     return render_template('user.html')
+
 
 @app.route("/lessons")
 def lessons():
@@ -187,6 +226,32 @@ def lessons():
         lessons.append({'name': name, 'index': index, 'isCrossed': isCrossed})
 
     return render_template('lessons.html', lessons=lessons)
+
+
+@app.route("/lessons-update-db", methods=["POST"])
+def lessons_update_db():
+    user_id = session['user_id']
+    isChecked = request.json.get('isChecked')
+    lesson_id = request.json.get('lesson_index')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    try:
+        if isChecked:
+            cur.execute("INSERT INTO user_lessons (user_id, lesson_id) VALUES (%s, %s)", (user_id, lesson_id))
+        else:
+            cur.execute("DELETE FROM user_lessons WHERE user_id = %s AND lesson_id = %s", (user_id, lesson_id))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        flash('Lesson update failed', 'error')
+    finally:
+        conn.close()
+        cur.close()
+    return jsonify({'isChecked': isChecked})
+
+
 
 class TempError(Exception):
     pass
@@ -225,6 +290,9 @@ def testing():
 @app.route('/test')
 def test():
     return render_template('test.html')
+
+if SHOULD_CREATE_LESSONS_DB:
+    create_lessons_table()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
