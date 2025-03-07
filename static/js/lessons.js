@@ -1,7 +1,7 @@
 let checkboxes = document.getElementsByName("lesson").forEach((ele) => {
     ele.addEventListener("click", async (e) => {
         let isChecked = ele.checked
-        let lesson_index = ele.value + 1
+        let lesson_index = parseInt(ele.value) + 1
         const response = await fetch('/lessons-update-db', {
             method: 'POST',
             headers: {

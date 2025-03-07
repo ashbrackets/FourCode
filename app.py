@@ -236,7 +236,7 @@ def lessons_update_db():
 
     conn = get_db_connection()
     cur = conn.cursor()
-
+    print(isChecked, user_id, lesson_id)
     try:
         if isChecked:
             cur.execute("INSERT INTO user_lessons (user_id, lesson_id) VALUES (%s, %s)", (user_id, lesson_id))
