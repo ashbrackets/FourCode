@@ -2,7 +2,7 @@ from flask import Flask, redirect, render_template, request, jsonify, url_for, f
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from compiler.compiler import Compiler
-import os, uuid, markdown, datetime, psycopg2
+import os, uuid, markdown, datetime, psycopg2, array
 import compiler.test as diff
 
 load_dotenv(override=True)
@@ -220,6 +220,7 @@ def lessons():
     index = -1
     has_lessons = []
     LESSONS = sorted(os.listdir(LESSONS_FOLDER))
+    print('yo')
     if 'user_id' in session:
         print(session['user_id'])
         conn = get_db_connection()
@@ -227,8 +228,9 @@ def lessons():
         
         try:
             cur.execute("SELECT l.lesson_id FROM user_lessons ul JOIN lessons l ON ul.lesson_id = l.lesson_id WHERE ul.user_id = %s;", 
-                        (session['user_id'],))
+                        (2,))
             has_lessons = cur.fetchall()
+            has_lessons = [item for tuple_item in has_lessons for item in tuple_item]
             print(has_lessons)
             conn.commit()
         except Exception as e:
@@ -244,6 +246,7 @@ def lessons():
             isCrossed = False
             if index in has_lessons:
                 isCrossed = True
+            
             lessons.append({'name': name, 'index': index, 'isCrossed': isCrossed})
 
     return render_template('lessons.html', lessons=lessons)
