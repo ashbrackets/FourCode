@@ -218,25 +218,49 @@ def user():
 def lessons():
     lessons = []
     index = -1
+    has_lessons = []
     LESSONS = sorted(os.listdir(LESSONS_FOLDER))
-    for file in LESSONS:
-        index += 1
-        name =  os.path.splitext(file)[0].split("_")[1]
-        isCrossed = False
-        lessons.append({'name': name, 'index': index, 'isCrossed': isCrossed})
+    if 'user_id' in session:
+        print(session['user_id'])
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        try:
+            cur.execute("SELECT l.lesson_id FROM user_lessons ul JOIN lessons l ON ul.lesson_id = l.lesson_id WHERE ul.user_id = %s;", 
+                        (session['user_id'],))
+            has_lessons = cur.fetchall()
+            print(has_lessons)
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            flash("GET LESSONS ERROR:", e)
+        finally: 
+            cur.close()
+            conn.close()
+
+        for file in LESSONS:
+            index += 1
+            name =  os.path.splitext(file)[0].split("_")[1]
+            isCrossed = False
+            if index in has_lessons:
+                isCrossed = True
+            lessons.append({'name': name, 'index': index, 'isCrossed': isCrossed})
 
     return render_template('lessons.html', lessons=lessons)
 
 
 @app.route("/lessons-update-db", methods=["POST"])
 def lessons_update_db():
-    user_id = session['user_id']
     isChecked = request.json.get('isChecked')
     lesson_id = request.json.get('lesson_index')
 
+    if 'user_id' not in session:
+        return jsonify({'isChecked': isChecked})
+    user_id = session['user_id']
+
     conn = get_db_connection()
     cur = conn.cursor()
-    print(isChecked, user_id, lesson_id)
+
     try:
         if isChecked:
             cur.execute("INSERT INTO user_lessons (user_id, lesson_id) VALUES (%s, %s)", (user_id, lesson_id))

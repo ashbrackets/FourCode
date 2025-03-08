@@ -18,7 +18,7 @@
             class="text-text hover:underline">Playground</a>
         <a href="{{url_for('about')}}"
             class="text-text hover:underline">About</a>
-        {% if 'user' in session %}
+        {% if 'user_id' in session %}
         <a href="{{url_for('user')}}"
             class="text-text hover:underline">Profile</a>
         {% else %}
@@ -64,7 +64,7 @@
                 class="font-mono text-2xl opacity-100 text-text hover:underline">About</p>
         </a>
         <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
-        {% if 'user' in session %}
+        {% if 'user_id' in session %}
         <a href="{{url_for('user')}}"
             class="flex items-center justify-center w-full py-6">
             <p
