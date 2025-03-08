@@ -229,7 +229,6 @@ def lessons():
                         session['user_id'])
             has_lessons = cur.fetchall()
             has_lessons = [item for tuple_item in has_lessons for item in tuple_item]
-            conn.commit()
         except Exception as e:
             conn.rollback()
             flash("GET LESSONS ERROR:", e)
