@@ -226,9 +226,8 @@ def lessons():
         
         try:
             cur.execute("SELECT l.lesson_id FROM user_lessons ul JOIN lessons l ON ul.lesson_id = l.lesson_id WHERE ul.user_id = %s;", 
-                        session['user_id'])
-            has_lessons = cur.fetchall()
-            has_lessons = [item for tuple_item in has_lessons for item in tuple_item]
+                        (session['user_id'],))
+            has_lessons = [row[0] for row in cur.fetchall()]
         except Exception as e:
             conn.rollback()
             flash("GET LESSONS ERROR:", e)
