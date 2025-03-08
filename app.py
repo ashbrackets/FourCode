@@ -220,18 +220,15 @@ def lessons():
     index = -1
     has_lessons = []
     LESSONS = sorted(os.listdir(LESSONS_FOLDER))
-    print('yo')
     if 'user_id' in session:
-        print(session['user_id'])
         conn = get_db_connection()
         cur = conn.cursor()
         
         try:
             cur.execute("SELECT l.lesson_id FROM user_lessons ul JOIN lessons l ON ul.lesson_id = l.lesson_id WHERE ul.user_id = %s;", 
-                        (2,))
+                        session['user_id'])
             has_lessons = cur.fetchall()
             has_lessons = [item for tuple_item in has_lessons for item in tuple_item]
-            print(has_lessons)
             conn.commit()
         except Exception as e:
             conn.rollback()
