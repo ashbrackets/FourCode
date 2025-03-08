@@ -17,8 +17,8 @@
             <div
                 class="flex-grow overflow-y-auto rounded-t-lg bg-background">
                 <!-- CONTENT -->
-                {% if 'user' in session %}
-                <p>{{ session['user'] }}</p>
+                {% if 'user_id' in session %}
+                <p>{{ session['user_id'] }}</p>
                 {% else %}
                 <p>User not found</p>
                 {% endif %}
