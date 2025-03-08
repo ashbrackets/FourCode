@@ -209,7 +209,7 @@ def logout():
 
 @app.route("/user")
 def user():
-    if 'user' not in session:
+    if 'user_id' not in session:
         return redirect(url_for('login'))
     return render_template('user.html')
 
