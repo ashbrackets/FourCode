@@ -32,7 +32,7 @@ def create_lessons_table():
         LESSONS = sorted(os.listdir(LESSONS_FOLDER))
         for lesson in LESSONS:
             lesson_data = os.path.splitext(lesson)[0].split('_') 
-            lesson_id = lesson_data[0]
+            lesson_id = int(lesson_data[0])
             lesson_name = ' '.join(lesson_data[1:-1])
             lesson_order = lesson_data[-1]
 
@@ -70,6 +70,7 @@ def playground():
 def about():
     return render_template('about.html')
 
+
 @app.route('/learn')
 def learn():
     lesson_index = request.args.get("lesson_index", None)
@@ -86,9 +87,18 @@ def learn():
 
     lesson_content = get_lesson_content(LESSONS[lesson_index])
 
+    has_completed_lesson = True
+    # conn = get_db_connection()
+    # cur = conn.cursor()
+
+    # try:
+    #     cur.execute("SELECT l.lesson_id FROM user_lessons ul JOIN lessons l ON ul.lesson_id = l.lesson_id WHERE ul.user_id = %s AND ul.lesson_id = %s",
+    #                 (session['user_id'], lesson_index))
+
     return render_template("learn.html", 
                            content=lesson_content, 
-                           lesson_index=lesson_index, 
+                           lesson_index=lesson_index,
+                           has_completed_lesson = has_completed_lesson, 
                            total_lessons=len(LESSONS))
 
 
@@ -217,7 +227,7 @@ def user():
 @app.route("/lessons")
 def lessons():
     lessons = []
-    index = -1
+    index = 0
     has_lessons = []
     LESSONS = sorted(os.listdir(LESSONS_FOLDER))
     if 'user_id' in session:
@@ -228,21 +238,25 @@ def lessons():
             cur.execute("SELECT l.lesson_id FROM user_lessons ul JOIN lessons l ON ul.lesson_id = l.lesson_id WHERE ul.user_id = %s;", 
                         (session['user_id'],))
             has_lessons = [row[0] for row in cur.fetchall()]
+            print(has_lessons)
+            cur.execute("SELECT * FROM user_lessons")
+            all_lessons = cur.fetchall()
+            for i in all_lessons:
+                print(i)
         except Exception as e:
             conn.rollback()
             flash("GET LESSONS ERROR:", e)
         finally: 
             cur.close()
             conn.close()
-
-        for file in LESSONS:
-            index += 1
-            name =  os.path.splitext(file)[0].split("_")[1]
-            isCrossed = False
-            if index in has_lessons:
-                isCrossed = True
             
-            lessons.append({'name': name, 'index': index, 'isCrossed': isCrossed})
+    for file in LESSONS:
+        name =  os.path.splitext(file)[0].split("_")[1]
+        isCrossed = False
+        if index in has_lessons and 'user_id' in session:
+            isCrossed = True
+        lessons.append({'name': name, 'index': index, 'isCrossed': isCrossed})
+        index += 1
 
     return render_template('lessons.html', lessons=lessons)
 

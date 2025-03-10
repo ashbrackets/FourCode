@@ -23,7 +23,10 @@
                                 class="flex flex-col justify-start gap-2">
                                 {% for lesson in lessons %}
                                 <div
-                                    class="flex flex-row items-center gap-2 decoration-[2px] text-white">
+                                    class="flex flex-row items-center gap-2">
+                                    <p
+                                        class="text-lg text-white">{{lesson.index
+                                        + 1}}.</p>
                                     <input type="checkbox" name="lesson"
                                         value="{{ lesson.index }}"
                                         class="w-4 h-4 rounded-full"
@@ -32,8 +35,8 @@
                                     <a
                                         href="{{url_for('learn', lesson_index=lesson.index)}}"
                                         class="flex flex-row gap-1">
-                                        <p
-                                            class="{% if lesson.isCrossed %} line-through {% endif %} text-white text-lg">{{lesson.name}}</p>
+                                        <p id="lesson-name"
+                                            class="decoration-[2px] text-lg text-white {% if lesson.isCrossed %}line-through{% endif %}">{{lesson.name}}</p>
                                         <img class="self-center w-4 h-4"
                                             src="{{url_for('static', filename='images/external-link.svg')}}"
                                             alt="link">

@@ -60,13 +60,6 @@
         <div
             class="relative flex flex-col h-screen overflow-auto bg-nav">
             {% include 'navbar.html' %}
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            {% for category, message in messages %}
-            <div class="alert {{ category }} text-text">{{ message }}</div>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
             <div
                 class="flex-grow flex-shrink-0 bg-gray-300 rounded-t-lg lg:max-h-[calc(100vh-64px)] overflow-y-auto">
                 <div
@@ -89,7 +82,7 @@
                             <div class="flex justify-end p-2">
                                 <button
                                     name="run-button"
-                                    class="px-6 py-1 font-medium text-black rounded-lg bg-button hover:outline outline-1 outline-white">
+                                    class="px-6 py-1 text-black rounded-lg bg-button hover:outline outline-1 outline-white">
                                     Run
                                 </button>
                             </div>
@@ -135,6 +128,14 @@
                                         Previous
                                     </button>
                                 </a>
+                                <button type="button"
+                                    id="complete-lesson-button"
+                                    class="flex flex-row items-center h-full gap-1 px-6 py-1 rounded-lg bg-button">
+                                    <img
+                                        src="{{url_for('static', filename='images/check.svg')}}"
+                                        alt="check">
+                                    <p>Complete Lesson</p>
+                                </button>
                                 <a
                                     href="{{ url_for('learn', lesson_index=lesson_index+1) }} "
                                     class="{{ 'invisible' if lesson_index >= total_lessons - 1 else '' }}">

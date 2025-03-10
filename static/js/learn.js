@@ -109,6 +109,10 @@ function ensureCharAt(editor, line, ch) {
     }
 }
 
+document.getElementById("complete-lesson-button").addEventListener('click', () => {
+
+})
+
 let curResizeBar = null
 let isVerticalBar = null
 let resizeBars = new Map()
