@@ -1,8 +1,8 @@
-from flask import Flask, redirect, render_template, request, jsonify, url_for, flash, session
+from flask import Flask, redirect, render_template, request, jsonify, url_for, flash, session, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from compiler.compiler import Compiler
-import os, uuid, markdown, datetime, psycopg2, array
+import os, uuid, markdown, datetime, psycopg2
 import compiler.test as diff
 
 load_dotenv(override=True)
@@ -152,7 +152,7 @@ def login():
                 if check_password_hash(user[2], password):
                     session['user_id'] = user[0]
                     flash('Logged in successfully!', 'success')
-                    return redirect(url_for('learn'))
+                    return redirect(url_for('lessons'))
                 else:
                     flash('Incorrect Password!', 'error')
                     return redirect(url_for('login'))
@@ -195,7 +195,7 @@ def confirm_signup():
             conn.commit()
             session['user_id'] = user_id
             flash('Account created successfully!', 'success')
-            return redirect(url_for('learn'))
+            return redirect(url_for('lessons'))
         except Exception as e:
             conn.rollback()
             flash('Account creation failed', 'error')
@@ -224,45 +224,48 @@ def user():
     return render_template('user.html')
 
 
+@app.route("/is-logged-in")
+def is_logged_in():
+    if 'user_id' in session:
+        return jsonify({'isLoggedIn': True})
+    return jsonify({'isLoggedIn': False})
+
+
 @app.route("/lessons")
 def lessons():
     lessons = []
     index = 0
-    has_lessons = []
+    # remove later (debug for changing lessons mid run)
     LESSONS = sorted(os.listdir(LESSONS_FOLDER))
-    if 'user_id' in session:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        
-        try:
-            cur.execute("SELECT l.lesson_id FROM user_lessons ul JOIN lessons l ON ul.lesson_id = l.lesson_id WHERE ul.user_id = %s;", 
-                        (session['user_id'],))
-            has_lessons = [row[0] for row in cur.fetchall()]
-            print(has_lessons)
-            cur.execute("SELECT * FROM user_lessons")
-            all_lessons = cur.fetchall()
-            for i in all_lessons:
-                print(i)
-        except Exception as e:
-            conn.rollback()
-            flash("GET LESSONS ERROR:", e)
-        finally: 
-            cur.close()
-            conn.close()
-            
     for file in LESSONS:
         name =  os.path.splitext(file)[0].split("_")[1]
-        isCrossed = False
-        if index in has_lessons and 'user_id' in session:
-            isCrossed = True
-        lessons.append({'name': name, 'index': index, 'isCrossed': isCrossed})
+        lessons.append({'name': name, 'index': index})
         index += 1
 
     return render_template('lessons.html', lessons=lessons)
 
 
-@app.route("/lessons-update-db", methods=["POST"])
-def lessons_update_db():
+@app.route("/get-completed-lessons", methods=["POST"])
+def get_completed_lessons():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        cur.execute("SELECT l.lesson_id FROM user_lessons ul JOIN lessons l ON ul.lesson_id = l.lesson_id WHERE ul.user_id = %s;", 
+                    (session['user_id'],))
+        has_lessons = [row[0] for row in cur.fetchall()]
+    except Exception as e:
+        conn.rollback()
+        flash("GET LESSONS ERROR:", e)
+    finally: 
+        cur.close()
+        conn.close()
+
+    return jsonify({'completedLessons': has_lessons})
+
+
+@app.route("/update-lessons-db", methods=["POST"])
+def update_lessons_db():
     isChecked = request.json.get('isChecked')
     lesson_id = request.json.get('lesson_index')
 

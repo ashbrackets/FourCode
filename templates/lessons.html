@@ -19,24 +19,22 @@
                     <div class="rounded-lg bg-secondary">
                         <div class="p-6 m-2 rounded-lg bg-primary">
                             <p class="pb-6 text-white text-7xl">Lessons</p>
-                            <div
+                            <div id="lessons-container"
                                 class="flex flex-col justify-start gap-2">
                                 {% for lesson in lessons %}
                                 <div
-                                    class="flex flex-row items-center gap-2">
+                                    class="lesson-{{lesson.index}} flex flex-row items-center gap-2">
                                     <p
                                         class="text-lg text-white">{{lesson.index
                                         + 1}}.</p>
-                                    <input type="checkbox" name="lesson"
+                                    <input type="checkbox" id="lesson-checkbox"
                                         value="{{ lesson.index }}"
-                                        class="w-4 h-4 rounded-full"
-                                        {% if lesson.isCrossed %}checked{% endif
-                                        %} />
+                                        class="w-4 h-4 rounded-full lesson-checkbox" />
                                     <a
                                         href="{{url_for('learn', lesson_index=lesson.index)}}"
                                         class="flex flex-row gap-1">
                                         <p id="lesson-name"
-                                            class="decoration-[2px] text-lg text-white {% if lesson.isCrossed %}line-through{% endif %}">{{lesson.name}}</p>
+                                            class="decoration-[2px] text-lg text-white">{{lesson.name}}</p>
                                         <img class="self-center w-4 h-4"
                                             src="{{url_for('static', filename='images/external-link.svg')}}"
                                             alt="link">
