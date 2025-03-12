@@ -1,11 +1,13 @@
-let password = document.querySelector('input[name=\"password\"]')
-let eye = document.getElementById("eye")
-let eyeOff = document.getElementById("eye-off")
+document.getElementsByName("togglePassword").forEach((ele) => {
+    ele.addEventListener("click", () => {
+        const link = ele.getAttribute("link")
+        const password = document.querySelector("#" + link)
+        const eye = ele.querySelector("#eye")
+        const eyeOff = ele.querySelector("#eye-off")
+        let type = password.getAttribute("type") === "password" ? "text" : "password"
+        password.setAttribute('type', type)
 
-document.getElementById("togglePassword").addEventListener("click", () => {
-    let type = password.getAttribute("type") === "password" ? "text" : "password"
-    password.setAttribute('type', type)
-
-    eye.classList.toggle('hidden')
-    eyeOff.classList.toggle('hidden')
+        eye.classList.toggle('hidden')
+        eyeOff.classList.toggle('hidden')
+    })
 })

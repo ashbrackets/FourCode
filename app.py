@@ -143,11 +143,8 @@ def login():
                 cur.execute('SELECT * FROM users WHERE username = %s', (username,))
             user = cur.fetchone()
             if not user:
-                session['pending_user'] = {
-                    'username': username,
-                    'password': password
-                }
-                return redirect(url_for('confirm_signup'))
+                flash("Username already exists.", "error")
+                return render_template("login.html")
             else:
                 if check_password_hash(user[2], password):
                     session['user_id'] = user[0]
@@ -166,15 +163,31 @@ def login():
     return render_template("login.html")
 
 
-@app.route('/confirm-signup', methods=['GET', 'POST'])
-def confirm_signup():
-    if 'pending_user' not in session:
-        return redirect(url_for('login'))
-    
-    if request.method == 'POST':
-        username = session['pending_user']['username']
-        password = session['pending_user']['password']
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    username = ''
+    password = ''
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        input_error = False
 
+        if len(username) > 20 or len(username) < 3:
+            flash('Username should be between 3 to 20 characters.', 'error')
+            input_error = True
+        if len(password) < 8:
+            flash('Password should be atleast 8 characters.', 'error')
+            input_error = True
+        if username.isalnum() == False:
+            flash('Username should only contain characters a-z, A-Z or 0-9.')
+            input_error = True
+        
+        if input_error:
+            return render_template(
+                'signup.html', 
+                username=username,
+            )
+        
         conn = get_db_connection()
         cur = conn.cursor()
 
@@ -201,14 +214,10 @@ def confirm_signup():
             flash('Account creation failed', 'error')
             return redirect(url_for('login'))
         finally:
-            session.pop('pending_user', None)
             cur.close()
             conn.close()
 
-    return render_template('confirm_signup.html', 
-        username=session['pending_user']['username'], 
-        password=session['pending_user']['password']
-    )
+    return render_template('signup.html', username = username)
 
 
 @app.route("/logout")

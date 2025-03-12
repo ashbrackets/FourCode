@@ -1,6 +1,6 @@
 <div class=" w-full h-[64px] min-h-[64px]"></div>
 <nav
-    class="fixed z-50 flex flex-shrink-0 justify-between items-center w-full h-[64px] min-h-[64px]">
+    class="fixed z-50 flex flex-shrink-0 justify-between items-center w-full h-[64px] min-h-[64px] bg-secondary">
     <!-- Logo -->
     <a href="/" class="flex flex-row items-center pl-2.5 h-full">
         <p class="font-mono text-3xl text-blue-400 lg:text-4xl">[</p>
@@ -10,7 +10,7 @@
     </a>
 
     <!-- Deskleft Navbar -->
-    <div class="hidden pr-4 space-x-6 lg:flex">
+    <div class="items-center hidden pr-4 space-x-6 font-mono lg:flex">
         <a href="/" class="text-text hover:underline">Home</a>
         <a href="{{url_for('lessons')}}"
             class="text-text hover:underline">Learn</a>
@@ -24,6 +24,9 @@
         {% else %}
         <a href="{{url_for('login')}}"
             class="text-text hover:underline">Login</a>
+        <a href="{{url_for('signup')}}"
+            class="px-4 py-2 rounded-lg text-text hover:underline bg-primary">Sign
+            Up</a>
         {% endif %}
         <!-- <a href="{{url_for('test')}}" class="text-text hover:underline">Test</a> -->
     </div>
@@ -38,7 +41,7 @@
 <div id="mobile-menu"
     class="lg:hidden -top-[200%] z-20 fixed flex justify-end bg-secondary bg-opacity-[0.99] w-full h-screen transition-all duration-300 ease-in-out">
     <div
-        class="flex flex-col items-center justify-start w-full rounded-b-lg shadow-lg">
+        class="flex flex-col items-center justify-start w-full font-mono rounded-b-lg shadow-lg">
         <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
         <a href="/"
             class="flex items-center justify-center w-full py-6">
@@ -75,6 +78,13 @@
             class="flex items-center justify-center w-full py-6">
             <p
                 class="font-mono text-2xl opacity-100 text-text hover:underline">Login</p>
+        </a>
+        <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>
+        <a href="{{url_for('signup')}}"
+            class="flex items-center justify-center w-full py-6">
+            <p
+                class="font-mono text-2xl opacity-100 text-text hover:underline">Create
+                Account</p>
         </a>
         {% endif %}
         <div class="flex-shrink-0 bg-gray-500 w-full h-[2px]"></div>

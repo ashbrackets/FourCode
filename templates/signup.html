@@ -33,12 +33,15 @@
                         name="Login" method="POST"
                         class="flex flex-col items-center justify-center gap-4 pt-4 pb-8 rounded-lg bg-background px-14 outline outline-4 outline-black">
                         <p
-                            class="font-mono text-4xl font-bold text-black">Login</p>
+                            class="font-mono text-4xl font-bold text-black">Sign
+                            Up</p>
                         <input
                             type="text"
-                            id="username"
+                            name="username"
                             placeholder="Username"
                             autocomplete="username"
+                            value="{{username}}"
+                            required
                             autofocus
                             class="px-2 py-1 font-mono text-xl rounded-lg bg-secondary focus:border-transparent focus:outline-none focus:ring-4 focus:ring-button text-text" />
                         <div class="relative">
@@ -47,33 +50,52 @@
                                 id="password"
                                 placeholder="Password"
                                 autocomplete="current-password"
-                                class="px-2 py-1 font-mono text-xl rounded-lg bg-secondary focus:outline-none focus:ring-4 focus:ring-button text-text" />
+                                required
+                                class="w-full px-2 py-1 font-mono text-xl rounded-lg bg-secondary focus:outline-none focus:ring-4 focus:ring-button text-text" />
                             <button name="togglePassword" type="button"
                                 link="password"
-                                class="absolute transform -translate-y-1/2 top-1/2 right-3">
+                                class="absolute -translate-y-1/2 top-1/2 right-3">
                                 <!-- <div
                                     class="absolute hover:bg-white opacity-50 rounded-full w-9 h-9 transition-colors -translate-x-1.5 -translate-y-1.5 duration-300 transform"></div> -->
                                 <img
                                     src="{{ url_for('static', filename='images/eye-off.svg') }}"
-                                    alt="Hide" class="hidden w-6 h-6"
-                                    id="eye-off">
+                                    alt="Hide" class="w-6 h-6" id="eye-off">
                                 <img
                                     src="{{ url_for('static', filename='images/eye.svg') }}"
-                                    alt="Show" class="w-6 h-6" id="eye">
+                                    alt="Show" class="hidden w-6 h-6" id="eye">
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <input
+                                type="password"
+                                id="confirm-password"
+                                placeholder="Confirm Password"
+                                required
+                                class="w-full px-2 py-1 font-mono text-xl rounded-lg bg-secondary focus:outline-none focus:ring-4 focus:ring-button text-text" />
+                            <button name="togglePassword" type="button"
+                                link="confirm-password"
+                                class="absolute -translate-y-1/2 top-1/2 right-3">
+                                <!-- <div
+                                    class="absolute hover:bg-white opacity-50 rounded-full w-9 h-9 transition-colors -translate-x-1.5 -translate-y-1.5 duration-300 transform"></div> -->
+                                <img
+                                    src="{{ url_for('static', filename='images/eye-off.svg') }}"
+                                    alt="Hide" class="w-6 h-6" id="eye-off">
+                                <img
+                                    src="{{ url_for('static', filename='images/eye.svg') }}"
+                                    alt="Show" class="hidden w-6 h-6" id="eye">
                             </button>
                         </div>
                         <div
-                            class="flex flex-col items-center justify-center w-full gap-2">
+                            class="flex flex-col items-center justify-center gap-2">
                             <button
-                                id="login-button"
                                 type="submit"
                                 class="px-6 py-1 font-mono text-xl font-bold text-black rounded-lg w-min bg-button hover:ring-4 hover:ring-black hover:underline">
                                 Confirm
                             </button>
-                            <a href="{{url_for('signup')}}"
-                                id="signup-button"
-                                class="px-6 py-1 font-mono text-lg font-bold text-center text-black">
-                                Don't have an account? Click here
+                            <a
+                                href="{{url_for('login')}}"
+                                class="px-6 py-1 font-mono text-lg font-bold text-black">
+                                Already have an account? Click here
                             </a>
                         </div>
                         {% with messages =
