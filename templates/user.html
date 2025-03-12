@@ -17,7 +17,7 @@
             <div
                 class="flex justify-center flex-grow gap-2 rounded-t-lg bg-background">
                 <!-- CONTENT -->
-                <div class="flex flex-col items-center justify-center">
+                <div class="flex flex-col items-center justify-center gap-2">
                     {% if 'user_id' in session %}
                     <p>UserID: {{ session['user_id'] }}</p>
                     {% else %}
@@ -25,6 +25,9 @@
                     {% endif %}
                     <a href="{{url_for('logout')}}"
                         class="px-6 py-2 rounded-lg bg-button">Logout</a>
+                    <a href="{{url_for('delete_account')}}"
+                        class="px-6 py-2 rounded-lg bg-button">Delete
+                        Account</a>
                 </div>
             </div>
         </div>

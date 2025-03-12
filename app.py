@@ -130,8 +130,8 @@ def run_code():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form["username"].strip()
+        password = request.form["password"].strip()
         
         conn = get_db_connection()
         cur = conn.cursor()
@@ -168,10 +168,11 @@ def signup():
     username = ''
     password = ''
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
+        username = request.form.get("username").strip()
+        password = request.form.get("password").strip()
+        confirm_password = request.form.get("confirm-password").strip()
+        
         input_error = False
-
         if len(username) > 20 or len(username) < 3:
             flash('Username should be between 3 to 20 characters.', 'error')
             input_error = True
@@ -181,7 +182,10 @@ def signup():
         if username.isalnum() == False:
             flash('Username should only contain characters a-z, A-Z or 0-9.')
             input_error = True
-        
+        if password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            input_error = True
+
         if input_error:
             return render_template(
                 'signup.html', 
@@ -193,20 +197,15 @@ def signup():
 
         try:
             hashed_password = generate_password_hash(password)
-            if app.debug:
-                cur.execute(
-                    'INSERT INTO test (username, password, created_at) VALUES (%s, %s, %s)',
-                    (username, hashed_password, datetime.datetime.now())
-                )
-            else:
-                cur.execute(
-                    'INSERT INTO users (username, password, created_at) VALUES (%s, %s, %s)',
-                    (username, hashed_password, datetime.datetime.now())
-                )
-            cur.execute('SELECT id FROM users WHERE username = %s', (username,))
-            user_id = cur.fetchone()
+            table_name = 'test' if app.debug else 'users'
+            cur.execute(
+                f'INSERT INTO {table_name} (username, password, created_at) VALUES (%s, %s, %s)',
+                (username, hashed_password, datetime.datetime.now())
+            )
             conn.commit()
-            session['user_id'] = user_id
+            cur.execute(f'SELECT id FROM {table_name} WHERE username = %s', (username,))
+            user_id = cur.fetchone()
+            session['user_id'] = user_id[0]
             flash('Account created successfully!', 'success')
             return redirect(url_for('lessons'))
         except Exception as e:
@@ -239,6 +238,26 @@ def is_logged_in():
         return jsonify({'isLoggedIn': True})
     return jsonify({'isLoggedIn': False})
 
+
+@app.route("/delete-account")
+def delete_account():
+    table_name = 'test' if app.debug else 'users'
+    user_id = session['user_id']
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    try:
+        cur.execute(f'DELETE FROM {table_name} WHERE id = %s', (user_id,))
+        conn.commit()
+        return redirect(url_for('login'))
+    except Exception as e:
+        conn.rollback()
+        flash('Failed to delete account')
+        return  redirect(url_for('user'))
+    finally:
+        cur.close()
+        conn.close()
 
 @app.route("/lessons")
 def lessons():
