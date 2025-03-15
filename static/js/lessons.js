@@ -13,18 +13,8 @@ window.addEventListener("DOMContentLoaded", async () => {
         },
     })
     const result = await response.json()
-    let completedLessonsIndexes = []
-    if (result.isLoggedIn) {
-        const resp = await fetch('/get-completed-lessons', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-
-        const res = await resp.json()
-        completedLessonsIndexes = res.completedLessons
-    } else {
+    let completedLessonsIndexes = null
+    if (!result.isLoggedIn) {
         completedLessonsIndexes = JSON.parse(localStorage.getItem("completedLessons"))
     }
     if (completedLessonsIndexes === null) return
@@ -58,8 +48,9 @@ let checkboxes = document.querySelectorAll(".lesson-checkbox").forEach((ele) => 
                 body: JSON.stringify({ lesson_index: lesson_index, isChecked: isChecked })
             })
         } else {
-            let completedLessons = JSON.parse(localStorage.getItem("completedLessons"))
+            let completedLessons = JSON.parse(localStorage.getItem("completedLessons")) || []
             if (isChecked) {
+                console.log(completedLessons)
                 completedLessons.push(lesson_index)
                 localStorage.setItem("completedLessons", JSON.stringify(completedLessons))
             } else if (!isChecked) {

@@ -1,8 +1,9 @@
-from flask import Flask, redirect, render_template, request, jsonify, url_for, flash, session, make_response
+from flask import Flask, redirect, render_template, request, jsonify, url_for, flash, session, g
+import psycopg2.pool
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from compiler.compiler import Compiler
-import os, uuid, markdown, datetime, psycopg2
+import os, uuid, markdown, datetime, psycopg2, requests
 import compiler.test as diff
 
 load_dotenv(override=True)
@@ -19,8 +20,22 @@ LESSONS = sorted(os.listdir(LESSONS_FOLDER))
 
 SHOULD_CREATE_LESSONS_DB = False
 
+db_pool = psycopg2.pool.SimpleConnectionPool(1, 10, dsn=os.getenv('DATABASE_URL'))
+
 def get_db_connection():
-    return psycopg2.connect(os.getenv('DATABASE_URL'))
+    if not hasattr(g, 'db_conn'):
+        g.db_conn = db_pool.getconn()
+    return g.db_conn
+
+@app.teardown_appcontext
+def close_db_connection(exception=None):
+    db_conn = getattr(g, 'db_conn', None)
+    if db_conn is not None:
+        db_pool.putconn(db_conn)
+        g.db_conn = None
+
+# def get_db_connection():
+#     return psycopg2.connect(os.getenv('DATABASE_URL'))
 
 
 def create_lessons_table():
@@ -45,7 +60,7 @@ def create_lessons_table():
         print("LESSONS TABLE CREATION ERROR:", e)
     finally:
         cur.close()
-        conn.close()
+        
 
 
 
@@ -86,20 +101,15 @@ def learn():
         return "Lesson not found", 404  
 
     lesson_content = get_lesson_content(LESSONS[lesson_index])
-
-    has_completed_lesson = True
-    # conn = get_db_connection()
-    # cur = conn.cursor()
-
-    # try:
-    #     cur.execute("SELECT l.lesson_id FROM user_lessons ul JOIN lessons l ON ul.lesson_id = l.lesson_id WHERE ul.user_id = %s AND ul.lesson_id = %s",
-    #                 (session['user_id'], lesson_index))
+    has_completed_lesson = False
+    if 'user_id' in session:
+        has_completed_lesson = check_lesson_completion(lesson_index)
 
     return render_template("learn.html", 
-                           content=lesson_content, 
-                           lesson_index=lesson_index,
-                           has_completed_lesson = has_completed_lesson, 
-                           total_lessons=len(LESSONS))
+                            content=lesson_content, 
+                            lesson_index=lesson_index,
+                            has_completed_lesson = has_completed_lesson,
+                            total_lessons=len(LESSONS))
 
 
 @app.route('/run', methods=['POST'])
@@ -121,7 +131,6 @@ def run_code():
                         "curLineNo": error["curLineNo"], 
                         "curPos": error["curPos"]
                         })
-    
     output = compiler.run(c_file, exe_file)
     print("Output: ", output)
     return jsonify({"result": output})
@@ -137,10 +146,7 @@ def login():
         cur = conn.cursor()
 
         try:
-            if app.debug:
-                cur.execute('SELECT * FROM test WHERE username = %s', (username,))
-            else:
-                cur.execute('SELECT * FROM users WHERE username = %s', (username,))
+            cur.execute('SELECT * FROM users WHERE username = %s', (username,))
             user = cur.fetchone()
             if not user:
                 flash("Username already exists.", "error")
@@ -159,7 +165,7 @@ def login():
             return redirect(url_for('login'))
         finally:
             cur.close()
-            conn.close()
+            
     return render_template("login.html")
 
 
@@ -197,13 +203,12 @@ def signup():
 
         try:
             hashed_password = generate_password_hash(password)
-            table_name = 'test' if app.debug else 'users'
             cur.execute(
-                f'INSERT INTO {table_name} (username, password, created_at) VALUES (%s, %s, %s)',
+                'INSERT INTO users (username, password, created_at) VALUES (%s, %s, %s)',
                 (username, hashed_password, datetime.datetime.now())
             )
             conn.commit()
-            cur.execute(f'SELECT id FROM {table_name} WHERE username = %s', (username,))
+            cur.execute('SELECT id FROM users WHERE username = %s', (username,))
             user_id = cur.fetchone()
             session['user_id'] = user_id[0]
             flash('Account created successfully!', 'success')
@@ -214,7 +219,6 @@ def signup():
             return redirect(url_for('login'))
         finally:
             cur.close()
-            conn.close()
 
     return render_template('signup.html', username = username)
 
@@ -241,14 +245,13 @@ def is_logged_in():
 
 @app.route("/delete-account")
 def delete_account():
-    table_name = 'test' if app.debug else 'users'
     user_id = session['user_id']
 
     conn = get_db_connection()
     cur = conn.cursor()
 
     try:
-        cur.execute(f'DELETE FROM {table_name} WHERE id = %s', (user_id,))
+        cur.execute('DELETE FROM users WHERE id = %s', (user_id,))
         conn.commit()
         return redirect(url_for('login'))
     except Exception as e:
@@ -257,17 +260,32 @@ def delete_account():
         return  redirect(url_for('user'))
     finally:
         cur.close()
-        conn.close()
 
 @app.route("/lessons")
 def lessons():
     lessons = []
     index = 0
+    has_lessons = []
+    if 'user_id' in session:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        has_lessons = []
+        try:
+            cur.execute("SELECT l.lesson_id FROM user_lessons ul JOIN lessons l ON ul.lesson_id = l.lesson_id WHERE ul.user_id = %s;", 
+                        (session['user_id'],))
+            has_lessons = [row[0] for row in cur.fetchall()]
+        except Exception as e:
+            conn.rollback()
+            flash("GET LESSONS ERROR:", e)
+        finally: 
+            cur.close()
+
     # remove later (debug for changing lessons mid run)
     LESSONS = sorted(os.listdir(LESSONS_FOLDER))
     for file in LESSONS:
         name =  os.path.splitext(file)[0].split("_")[1]
-        lessons.append({'name': name, 'index': index})
+        isChecked = True if index in has_lessons else False 
+        lessons.append({'name': name, 'index': index, 'isChecked': isChecked})
         index += 1
 
     return render_template('lessons.html', lessons=lessons)
@@ -277,7 +295,7 @@ def lessons():
 def get_completed_lessons():
     conn = get_db_connection()
     cur = conn.cursor()
-    
+    has_lessons = []
     try:
         cur.execute("SELECT l.lesson_id FROM user_lessons ul JOIN lessons l ON ul.lesson_id = l.lesson_id WHERE ul.user_id = %s;", 
                     (session['user_id'],))
@@ -287,12 +305,33 @@ def get_completed_lessons():
         flash("GET LESSONS ERROR:", e)
     finally: 
         cur.close()
-        conn.close()
 
     return jsonify({'completedLessons': has_lessons})
 
 
-@app.route("/update-lessons-db", methods=["POST"])
+@app.route("/get_has_completed_lesson", methods=["POST"])
+def get_has_completed_lesson():
+    lesson_index = request.json.get("lesson_index")
+    has_completed_lesson = check_lesson_completion(lesson_index)
+    return jsonify({'has_completed_lesson': has_completed_lesson})
+
+def check_lesson_completion(lesson_index):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    has_completed_lesson = False
+    try:
+        cur.execute("SELECT EXISTS(SELECT 1 FROM user_lessons WHERE lesson_id = %s AND user_id = %s) AS has_completed", (lesson_index, session['user_id']))
+        result = cur.fetchone()
+        has_completed_lesson = result[0]
+    except Exception as e:
+        conn.rollback()
+        flash("Failed to get if user completed lesson" + str(e), "error")
+    finally:
+        cur.close()
+    return has_completed_lesson
+
+
+@app.route("/update-user-lessons-db", methods=["POST"])
 def update_lessons_db():
     isChecked = request.json.get('isChecked')
     lesson_id = request.json.get('lesson_index')
@@ -304,6 +343,7 @@ def update_lessons_db():
     conn = get_db_connection()
     cur = conn.cursor()
 
+    # TODO check if row exist before operations
     try:
         if isChecked:
             cur.execute("INSERT INTO user_lessons (user_id, lesson_id) VALUES (%s, %s)", (user_id, lesson_id))
@@ -314,10 +354,9 @@ def update_lessons_db():
         conn.rollback()
         flash('Lesson update failed', 'error')
     finally:
-        conn.close()
         cur.close()
-    return jsonify({'isChecked': isChecked})
 
+    return jsonify({'isChecked': isChecked})
 
 
 class TempError(Exception):

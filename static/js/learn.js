@@ -1,7 +1,9 @@
 import { createEditor } from './editor.js'
 
 var editor
-document.addEventListener('DOMContentLoaded', () => {
+let isLoggedIn = false
+const complete_button = document.getElementById("complete-lesson-button")
+document.addEventListener('DOMContentLoaded', async () => {
     editor = createEditor('code-editor');
     editor.setSize("100%", "100%")
     const urlParams = new URLSearchParams(window.location.search);
@@ -18,6 +20,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const lessonIndex = urlParams.get('lesson_index');
         localStorage.setItem('lesson_' + lessonIndex + '_code', code);
     });
+
+    // update completed lesson button
+    const response = await fetch('/is-logged-in', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    const result = await response.json()
+    isLoggedIn = result.isLoggedIn
+    if (!isLoggedIn) {
+        let completedLessons = JSON.parse(localStorage.getItem("completedLessons")) || []
+        if (!Array.isArray(completedLessons)) completedLessons = []
+        let completedLessonsSet = new Set(completedLessons)
+        console.log(completedLessonsSet, lessonIndex)
+        if (completedLessonsSet.has(parseInt(lessonIndex))) {
+            await animate_complete_button(0.1)
+        }
+    } else {
+        if (has_completed_lesson) {
+            await animate_complete_button(0.1)
+        }
+    }
+    complete_button.classList.replace("opacity-10", "opacity-100")
 });
 
 document.getElementsByName('run-button').forEach((e) => {
@@ -109,9 +135,50 @@ function ensureCharAt(editor, line, ch) {
     }
 }
 
-document.getElementById("complete-lesson-button").addEventListener('click', () => {
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
+complete_button.addEventListener('click', async () => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const lesson_index = parseInt(urlParams.get("lesson_index"))
+
+    if (!isLoggedIn) {
+        let completedLessons = JSON.parse(localStorage.getItem("completedLessons")) || []
+        if (!Array.isArray(completedLessons)) completedLessons = []
+        let completedLessonsSet = new Set(completedLessons)
+        if (!completedLessonsSet.has(lesson_index)) {
+            completedLessonsSet.add(lesson_index)
+            localStorage.setItem("completedLessons", JSON.stringify([...completedLessonsSet]))
+        }
+    } else {
+        const response2 = await fetch("/update-user-lessons-db", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ isChecked: true, lesson_index: lesson_index })
+        });
+        const result2 = await response2.json()
+    }
+
+    // animation
+    await animate_complete_button(0.1)
 })
+
+async function animate_complete_button(timems) {
+    let text = complete_button.querySelector(".title").textContent
+    let time = timems * 1000
+    for (let i = text.length; i >= 0; i--) {
+        complete_button.querySelector(".title").textContent = text.slice(0, i)
+        await sleep(time / text.length)
+    }
+    await sleep((time / text.length) * 5)
+    complete_button.classList.add("pointer-events-none")
+    complete_button.classList.replace("px-6", "px-2")
+    complete_button.classList.replace("rounded-lg", "rounded-full")
+    complete_button.querySelector(".title").classList.add("hidden")
+}
 
 let curResizeBar = null
 let isVerticalBar = null

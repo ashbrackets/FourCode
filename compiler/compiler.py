@@ -35,30 +35,27 @@ class Compiler:
     def run(self, c_file, exe_file):
         if platform.system() == "Windows":
             exe_file += ".exe"
-
         compile_process = subprocess.run(
-            ["gcc", "-O0", c_file, "-o", exe_file],
-            capture_output=True
+            ["gcc", "-O0", "-pipe", "-g0", c_file, "-o", exe_file],
         )
 
         if compile_process.returncode != 0:
             os.remove(c_file)
             return "Compilation Error: " + compile_process.stderr
-
+        
         run_process = subprocess.run(
             [exe_file],
             text=True,
             capture_output=True
         )
-
         if run_process.returncode != 0:
             if os.path.exists(exe_file):
                 os.remove(exe_file)
             return "Execution Error: " + run_process.stderr
         
-        os.remove(c_file)
         if os.path.exists(exe_file):
             os.remove(exe_file)
+        os.remove(c_file)
 
         return run_process.stdout
         
