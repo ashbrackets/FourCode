@@ -19,11 +19,6 @@ document.getElementsByName("dp").forEach((ele) => {
 })
 
 confirmButton.addEventListener("click", async () => {
-    // get currentDP
-    // if logged in 
-    // add to db
-    // else
-    // save in localStorage
     currentDP = profilePic.name
     console.log(currentDPLink)
     navDP.src = currentDPLink

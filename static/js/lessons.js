@@ -40,7 +40,7 @@ let checkboxes = document.querySelectorAll(".lesson-checkbox").forEach((ele) => 
         const res = await resp.json()
 
         if (res.isLoggedIn) {
-            await fetch('/update-lessons-db', {
+            await fetch('/update-user-lessons-db', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

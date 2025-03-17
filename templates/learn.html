@@ -94,7 +94,7 @@
                             </div>
                         </div>
                         <div name="resize-bar" link1="Input" link2="Output"
-                            direction="vertical"
+                            direction="vertical" id="verticalResize"
                             class="items-center justify-center hidden w-full h-2 lg:flex cursor-row-resize">
                             <img class="scale-[2]" draggable="false"
                                 src="{{ url_for('static', filename='images/horizontal_bar.svg') }}">
@@ -108,6 +108,7 @@
                         </div>
                     </div>
                     <div name="resize-bar" link1="Input-and-Output"
+                        id="horizontalResize"
                         link2="Lesson" direction="horizontal"
                         class="items-center justify-center order-2 hidden w-2 h-full lg:flex cursor-col-resize">
                         <img class="scale-[6] translate-y-5"
