@@ -6,18 +6,20 @@
         <title>FourCode</title>
         <link href="{{url_for('static',filename='css/main.css')}}"
             rel="stylesheet" />
+        <script src="{{url_for('static', filename='js/user.js')}}"
+            defer></script>
         <link
             href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
             rel="stylesheet">
     </head>
-    <body>
+    <body class="font-mono">
         <div
             class="flex flex-col h-screen overflow-auto bg-secondary">
             {% include 'navbar.html' %}
             <div
-                class="flex justify-center flex-grow gap-2 rounded-t-lg bg-background">
+                class="flex items-center justify-center flex-grow gap-2 rounded-t-lg bg-background">
                 <!-- CONTENT -->
-                <div class="flex flex-col items-center justify-center gap-2">
+                <!-- <div class="flex flex-col items-center justify-center gap-2">
                     {% if 'user_id' in session %}
                     <p>UserID: {{ session['user_id'] }}</p>
                     {% else %}
@@ -28,6 +30,78 @@
                     <a href="{{url_for('delete_account')}}"
                         class="px-6 py-2 rounded-lg bg-button">Delete
                         Account</a>
+                </div> -->
+                <div class="w-[400px] h-[700px] bg-secondary rounded-lg p-2"
+                    name="profile">
+                    <div
+                        class="flex flex-col items-center w-full h-full rounded-lg bg-primary">
+                        <div
+                            class="rounded-full bg-button w-[300px] m-4 h-[300px] outline outline-4 outline-black">
+                            <img class="w-full h-full rounded-full pixelated"
+                                id="profilePic" name="{{dp}}"
+                                src="{{url_for('static', filename='images/'~dp~'.png')}}"
+                                alt="DP">
+                        </div>
+                        <div
+                            class="w-full h-full pl-4 font-mono text-xl text-white">
+                            <p>{{ username }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-[1000px] p-2 h-[700px] bg-secondary rounded-lg"
+                    name="details">
+                    <div
+                        class="flex flex-col justify-between w-full h-full p-2 rounded-lg bg-primary">
+                        <div class="w-full ">
+                            <p class="text-xl text-white">Profile Picture</p>
+                            <div name="dp-container"
+                                class="flex flex-wrap gap-8 pt-4 pl-2">
+                                <button type="button" name="dp"
+                                    class="rounded-full bg-button w-[150px] h-[150px] outline outline-2 outline-black">
+                                    <img name="frog"
+                                        class="w-full h-full rounded-full dp pixelated"
+                                        src="{{url_for('static', filename='images/frog.png')}}"
+                                        alt="DP">
+                                </button>
+                                <button type="button" name="dp"
+                                    class="rounded-full bg-button w-[150px] h-[150px] outline outline-2 outline-black">
+                                    <img name="neko"
+                                        class="w-full h-full rounded-full dp pixelated"
+                                        src="{{url_for('static', filename='images/neko.png')}}"
+                                        alt="DP">
+                                </button>
+                                <button type="button" name="dp"
+                                    class="rounded-full bg-button w-[150px] h-[150px] outline outline-2 outline-black">
+                                    <img name="dogo"
+                                        class="w-full h-full rounded-full dp pixelated"
+                                        src="{{url_for('static', filename='images/dogo.png')}}"
+                                        alt="DP">
+                                </button>
+                                <button type="button" name="dp"
+                                    class="rounded-full bg-button w-[150px] h-[150px] outline outline-2 outline-black">
+                                    <img name="bob"
+                                        class="w-full h-full rounded-full dp pixelated"
+                                        src="{{url_for('static', filename='images/bob.png')}}"
+                                        alt="DP">
+                                </button>
+                            </div>
+                            <button id="DP-confirm-button" disabled
+                                class="px-6 py-1 mt-8 ml-2 text-lg font-semibold transition-opacity duration-300 rounded-lg opacity-0 outline outline-2 outline-black hover:outline-white bg-button">Confirm</button>
+                        </div>
+                        <div
+                            class="flex flex-col w-full gap-4 text-xl text-white">
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                placeholder="Username"
+                                autocomplete="username"
+                                class="w-64 px-2 py-1 font-mono text-xl rounded-lg bg-secondary focus:border-transparent focus:outline-none focus:ring-4 focus:ring-button text-text" />
+                            <a href>Change Name</a>
+                            <a href class="text-red-600">Delete Account</a>
+                            <a href>Logout</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

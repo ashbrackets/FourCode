@@ -31,5 +31,12 @@ export const plugins = [
       'button': '#e88f36'
     }
   }),
+  function ({ addUtilities }) {
+    addUtilities({
+      ".pixelated": {
+        "image-rendering": "pixelated"
+      }
+    })
+  }
 ]
 

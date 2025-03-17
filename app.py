@@ -233,7 +233,20 @@ def logout():
 def user():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('user.html')
+    username = ''
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT username, dp FROM users WHERE id=%s", (session['user_id'],))
+        res = cur.fetchone()
+        username = res[0]
+        dp = str(res[1])
+    except Exception as e:
+        conn.rollback()
+        flash("Could not get username." + str(e), "error")
+    finally:
+        cur.close()
+    return render_template('user.html', username = username, dp = dp)
 
 
 @app.route("/is-logged-in")
@@ -357,6 +370,26 @@ def update_lessons_db():
         cur.close()
 
     return jsonify({'isChecked': isChecked})
+
+
+@app.route("/set-dp", methods=["POST"])
+def set_dp():
+    if "user_id" not in session:
+        return jsonify({"result": "error"})
+    dp = request.json.get("dp")
+    user_id = session["user_id"]
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("UPDATE users SET dp = %s WHERE id = %s", (dp, user_id))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        flash("set dp error" + str(e), "error")
+    finally:
+        cur.close()
+    return jsonify({"result": "success"})
 
 
 class TempError(Exception):
