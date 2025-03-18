@@ -154,6 +154,7 @@ def login():
             else:
                 if check_password_hash(user[2], password):
                     session['user_id'] = user[0]
+                    session['dp'] = user[4]
                     flash('Logged in successfully!', 'success')
                     return redirect(url_for('lessons'))
                 else:
@@ -226,6 +227,7 @@ def signup():
 @app.route("/logout")
 def logout():
     session.pop('user_id', None)
+    session.pop('dp', None)
     return redirect(url_for('login'))
 
 
@@ -384,6 +386,7 @@ def set_dp():
     try:
         cur.execute("UPDATE users SET dp = %s WHERE id = %s", (dp, user_id))
         conn.commit()
+        session['dp'] = dp
     except Exception as e:
         conn.rollback()
         flash("set dp error" + str(e), "error")

@@ -21,7 +21,8 @@
         {% if 'user_id' in session %}
         <a href="{{url_for('user')}}"
             class="flex flex-row items-center gap-1 text-text hover:underline">
-            <img src="{{ url_for('static', filename='images/'~dp~'.png')}}"
+            <img
+                src="{{ url_for('static', filename='images/'~(session['dp'] if 'dp' in session else 'frog')~'.png')}}"
                 alt="DP" id="nav-dp"
                 class="w-[32px] h-[32px] rounded-full">
             Profile
