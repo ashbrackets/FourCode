@@ -8,11 +8,12 @@ class Lexer:
         self.source = source + '\n'
         self.curChar = ''
         self.curPos = -1
-        self.prevLineNo = 1
-        self.lineNo = 1
+        self.prevLineNo = 0
+        self.lineNo = 0
         self.prevLinePos = 0    # cursor position in the previous line 
         self.linePos = 0        # current cursor position in the line 
         self.error = ''
+        self.debug = []
         self.nextChar()
 
     def nextChar(self):
@@ -22,7 +23,11 @@ class Lexer:
             self.curChar = '\0'
         else:
             self.curChar = self.source[self.curPos]
-    
+            self.debug.append("---")
+            self.debug.append(f"curChar:\"{self.curChar}\": \ncurPos:{self.curPos}, \nprevLineNo:{self.prevLineNo}, \nlineNo:{self.lineNo}, \nprevLinePos:{self.prevLinePos}, \nlinePos:{self.linePos}")
+            print("---")
+            print(f"curChar:\"{self.curChar}\": \ncurPos:{self.curPos}, \nprevLineNo:{self.prevLineNo}, \nlineNo:{self.lineNo}, \nprevLinePos:{self.prevLinePos}, \nlinePos:{self.linePos}")
+
     def peek(self):
         if self.curPos + 1 >= len(self.source):
             return '\0'
@@ -31,7 +36,7 @@ class Lexer:
     def addError(self, message):
         # if "Lexing Error" not in self.error:
         #     self.error += "Lexing Error: \n\t" 
-        self.error += '<b><u>Line ' + str(self.lineNo) + ':' + str(self.linePos + 1) + ':</u></b> '
+        self.error += '<b><u>Line ' + str(self.lineNo + 1) + ':' + str(self.linePos) + ':</u></b> '
         self.error += message + '\n\t'
         print(self.lineNo, self.curPos)
         raise LexerError("Lexer Error: " + self.error)
@@ -173,11 +178,7 @@ class Token:
     
     @staticmethod
     def checkIfKeyword(tokenText):
-        tokenText = str(tokenText).upper()
-        for kind in TokenType:
-            if kind.name == tokenText and kind.value >= 100 and kind.value < 200:
-                return kind
-        return None
+        return KEYWORDS.get(tokenText.upper(), None)
 
 class TokenType(enum.Enum):
     ERROR = -4
@@ -215,3 +216,19 @@ class TokenType(enum.Enum):
     LTEQ = 209
     GT = 210
     GTEQ = 211
+
+KEYWORDS = {
+    'PRINT': TokenType.PRINT,
+    'INPUT': TokenType.INPUT,
+    'VAR': TokenType.VAR,
+    'IF': TokenType.IF,
+    'ELSEIF': TokenType.ELSEIF,
+    'ELSE': TokenType.ELSE,
+    'END': TokenType.END,
+    'WHILE': TokenType.WHILE,
+    'REPEAT': TokenType.REPEAT,
+    'FOR': TokenType.FOR,
+    'FROM': TokenType.FROM,
+    'TO': TokenType.TO,
+    'STEP': TokenType.STEP,
+}

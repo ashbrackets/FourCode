@@ -16,7 +16,7 @@
             rel="stylesheet">
 
     </head>
-    <body>
+    <body class="font-mono">
         <div id="canvas"
             class="-top-5 -left-5 -z-10 fixed w-[calc(100vw+50px)] h-[calc(100vh+50px)] overflow-hidden"></div>
         <div
@@ -24,27 +24,27 @@
             <!-- <div class="bg-secondary w-full h-[64px]" id="nav"></div> -->
             {% include 'navbar.html' %}
             <div
-                class="flex flex-grow justify-center items-center rounded-t-lg overflow-y-auto">
+                class="flex items-center justify-center flex-grow overflow-y-auto rounded-t-lg">
                 <!-- CONTENT -->
                 <div
-                    class="relative flex flex-col justify-center items-center rounded-xl">
+                    class="relative flex flex-col items-center justify-center rounded-xl">
                     <p
                         class="text-text lg:text-[80px] text-5xl text-center">
                         Welcome to the
                         start of your coding
                         journey
                     </p>
-                    <a href="{{url_for('learn')}}" id="start-learning-button"
-                        class="z-10 relative bg-[#e88f36] mt-8 lg:mt-12 rounded-full outline outline-4 outline-secondary hover:outline-white">
+                    <a href="{{url_for('lessons')}}" id="start-learning-button"
+                        class="z-10 relative bg-[#e88f36] mt-8 lg:mt-24 rounded-full outline outline-4 outline-secondary hover:outline-white">
                         <button
-                            class="mx-20 my-5 text-black text-3xl lg:text-6xl">
+                            class="mx-20 my-5 text-3xl text-black lg:text-6xl">
                             Start learning
                         </button>
                     </a>
 
                     <!-- <div class="relative">
                         <p
-                            class="mt-7 text-text text-2xl lg:text-4xl">
+                            class="text-2xl mt-7 text-text lg:text-4xl">
                             Easiest
                             way
                             to start coding.</p>

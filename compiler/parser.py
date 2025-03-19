@@ -1,10 +1,11 @@
 from compiler.lexer import *
+import traceback
 # import sys
 
 LOOP_LIMIT = 1000
 
 class ParserError(Exception):
-    pass
+    print(traceback.format_exc())
 
 class Parser:
     def __init__(self, lexer, emitter):
@@ -14,6 +15,7 @@ class Parser:
         self.lineNo = 0
         self.linePos = 0
         self.isInLoop = False # tracks if currently in a while loop waiting for a token. used in errors
+        self.debug = []
 
         self.symbols = dict()    # Variables declared so far.
         self.labelsDeclared = set() # Labels declared so far.
@@ -41,6 +43,8 @@ class Parser:
         try:
             print(self.lexer.lineNo, self.linePos)
             self.peekToken = self.lexer.getToken()
+            if self.curToken:
+                self.debug.append(f"{self.lexer.lineNo} : {self.linePos} - \"{self.curToken.text}\", {self.curToken.kind}")
         except LexerError as e:
             raise ParserError(str(e))
         if self.peekToken.kind == TokenType.ERROR:
@@ -57,7 +61,8 @@ class Parser:
         if self.linePos == -1:
             self.lineNo -= 1
             self.linePos = self.lexer.prevLinePos
-        lineData = '<b><u>Line ' + str(self.lineNo) + ':' + str(self.linePos) + ':</u></b> '
+        lineData = '<b><u>Line ' + str(self.lineNo + 1) + ':' + str(self.lexer.linePos) + ':</u></b> '
+        print(lineData)
         self.error += lineData
         self.error += message
         if self.isInLoop:
@@ -82,9 +87,16 @@ class Parser:
             
             print("PROGRAM-END")
             self.emitter.emitLine("return 0;")
-            self.emitter.emitLine("}")  
+            self.emitter.emitLine("}")
+            print("\nDEBUG:")
+            for i in self.debug:
+                print(i)
+            print("\nLEXER DEBUG:")
+            for i in self.lexer.debug:
+                print(i)
             return None
         except ParserError as e:
+            print(traceback.format_exc())
             return {"error": str(e), 
                     "line": self.lineNo, 
                     "pos": self.linePos, 
@@ -92,6 +104,7 @@ class Parser:
                     "curLineNo": self.lexer.prevLineNo
                     }
         except LexerError as e:
+            print(traceback.format_exc())
             return {"error": str(e), 
                     "line": self.lineNo,
                     "pos": self.linePos, 

@@ -60,10 +60,11 @@ document.getElementsByName('run-button').forEach((e) => {
             body: JSON.stringify({ code: code })
         });
         let result = await response.json()
+        console.log(result)
         if (result.error) {
             editor.getAllMarks().forEach(marker => marker.clear());
-            let line = result.curLineNo - 1
-            let pos = result.pos - 1
+            let line = result.curLineNo
+            let pos = result.curPos
             // if (result.error.includes("Lexer Error: ")) {
             //     line = result.curLineNo
             //     pos = result.curPos
