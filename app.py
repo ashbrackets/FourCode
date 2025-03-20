@@ -114,7 +114,7 @@ def learn():
 
 @app.route('/run', methods=['POST'])
 def run_code():
-    code = request.json.get('code').strip()
+    code = request.json.get('code')
     if not code:
         return jsonify({"result": "No code provided"})
 
@@ -127,9 +127,8 @@ def run_code():
     if error:
         return jsonify({"error": error["error"], 
                         "line": error["line"], 
-                        "pos": error["pos"], 
-                        "curLineNo": error["curLineNo"], 
-                        "curPos": error["curPos"]
+                        "startPos": error["startPos"], 
+                        "endPos": error["endPos"],
                         })
     output = compiler.run(c_file, exe_file)
     print("Output: ", output)

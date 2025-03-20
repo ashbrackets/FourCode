@@ -5,15 +5,14 @@ import traceback
 LOOP_LIMIT = 1000
 
 class ParserError(Exception):
-    print(traceback.format_exc())
+    pass
+    # print(traceback.format_exc())
 
 class Parser:
     def __init__(self, lexer, emitter):
         self.lexer = lexer
         self.emitter = emitter
         self.error = ''
-        self.lineNo = 0
-        self.linePos = 0
         self.isInLoop = False # tracks if currently in a while loop waiting for a token. used in errors
         self.debug = []
 
@@ -21,8 +20,10 @@ class Parser:
         self.labelsDeclared = set() # Labels declared so far.
         self.labelsGotoed = set() # Labels goto'ed so far.
 
+        self.prevToken = None
         self.curToken = None
         self.peekToken = None
+        self.canPrev = True
         self.nextToken()
         self.nextToken()
     
@@ -38,38 +39,36 @@ class Parser:
         self.nextToken()
 
     def nextToken(self):
-        self.linePos = self.lexer.linePos
+        self.prevToken = self.curToken
         self.curToken = self.peekToken
         try:
-            print(self.lexer.lineNo, self.linePos)
             self.peekToken = self.lexer.getToken()
-            if self.curToken:
-                self.debug.append(f"{self.lexer.lineNo} : {self.linePos} - \"{self.curToken.text}\", {self.curToken.kind}")
         except LexerError as e:
-            raise ParserError(str(e))
+            raise LexerError(str(e))
         if self.peekToken.kind == TokenType.ERROR:
             self.addError(self.peekToken.text, True)
             # self.error = self.peekToken.text
         if self.curToken:
             print(self.curToken.kind)
     
+    def backToken(self):
+        if self.canPrev:
+            self.peekToken = self.curToken
+            self.curToken = self.prevToken
+        else:
+            self.addError("Cannot go to previous token.")
+        self.canPrev = False
+    
     def addError(self, message, isLexError = False):
         if isLexError:
             raise ParserError("Lexer Error: " + message)
-        self.linePos = self.linePos - len(self.curToken.text) - 1
-        self.lineNo = self.lexer.lineNo
-        if self.linePos == -1:
-            self.lineNo -= 1
-            self.linePos = self.lexer.prevLinePos
-        lineData = '<b><u>Line ' + str(self.lineNo + 1) + ':' + str(self.lexer.linePos) + ':</u></b> '
-        print(lineData)
+        lineData = '<b><u>Line ' + str(self.curToken.lineNo + 1) + ':' + str(self.curToken.endLinePos + 1) + ':</u></b> '
         self.error += lineData
         self.error += message
         if self.isInLoop:
             self.error += " Probably a missing 'end' for a statement."
         self.error += '\n'
         # print(self.error)
-        # print(self.lexer.prevLinePos)
         raise ParserError("Parser Error:" + self.error)
 
     def program(self):
@@ -91,25 +90,25 @@ class Parser:
             print("\nDEBUG:")
             for i in self.debug:
                 print(i)
-            print("\nLEXER DEBUG:")
-            for i in self.lexer.debug:
-                print(i)
+            # print("\nLEXER DEBUG:")
+            # for i in self.lexer.debug:
+            #     print(i)
             return None
         except ParserError as e:
-            print(traceback.format_exc())
+            # print(traceback.format_exc())
+            print("parser")
             return {"error": str(e), 
-                    "line": self.lineNo, 
-                    "pos": self.linePos, 
-                    "curPos": self.lexer.curPos, 
-                    "curLineNo": self.lexer.prevLineNo
+                    "line": self.curToken.lineNo, 
+                    "startPos": self.curToken.startLinePos,
+                    "endPos": self.curToken.endLinePos
                     }
         except LexerError as e:
-            print(traceback.format_exc())
+            # print(traceback.format_exc())
+            print("lexer")
             return {"error": str(e), 
-                    "line": self.lineNo,
-                    "pos": self.linePos, 
-                    "curLineNo": self.lexer.prevLineNo,
-                    "curPos": self.lexer.curPos, 
+                    "line": self.curToken.lineNo, 
+                    "startPos": self.lexer.linePos,
+                    "endPos": self.lexer.linePos
                     }
 
 
@@ -147,6 +146,7 @@ class Parser:
             self.nextToken()
             self.emitter.emit('if(')
             if self.checkToken(TokenType.NEWLINE):
+                self.backToken()
                 self.addError("Expected comparison after 'if'.")
             self.comparison()
 
@@ -160,6 +160,7 @@ class Parser:
                     self.nextToken()
                     self.emitter.emitLine('} else if (')
                     if self.checkToken(TokenType.NEWLINE):
+                        self.backToken()
                         self.addError("Expected comparison after 'elseif'.")
                     self.comparison()
 
@@ -191,7 +192,7 @@ class Parser:
                 self.symbols["__loop_counter"] = TokenType.INTEGER
                 self.emitter.headerLine("int __loop_counter = 0;")
             self.emitter.emitLine("if(__loop_counter >= " + str(LOOP_LIMIT) + "){")
-            self.emitter.emit(f"printf(\"Error:\\n\\tLoop limit of {LOOP_LIMIT} has been reached.\");")
+            self.emitter.emit(f"printf(\"Error:\\n\\tLoop limit of {LOOP_LIMIT} has been reached.\\n\");")
             self.emitter.emitLine("break;")
             self.emitter.emitLine("}")
             self.emitter.emitLine("__loop_counter++;")
@@ -213,7 +214,8 @@ class Parser:
                 self.symbols[varName] = TokenType.INTEGER
                 self.emitter.headerLine("int " + varName + " = 0;")
             else:
-                if self.symbols[varName] != TokenType.INTEGER and self.symbols[varName] != TokenType.DECIMAL:\
+                if self.symbols[varName] != TokenType.INTEGER and self.symbols[varName] != TokenType.DECIMAL:
+                    self.curToken.endLinePos -= 1
                     self.addError("\'" + varName + "\' should be either an INTEGER or a DECIMAL.")
             self.emitter.emit(varName + "=")
             self.nextToken()
@@ -355,6 +357,7 @@ class Parser:
             self.nextToken()
         else:
             # Error!
+            self.backToken()
             self.addError("Unexpected token at \'" + self.curToken.text + f"\' ({self.curToken.kind}). Expecting either a INTEGER or DECIMAL. If VARIABLE, make sure it is either an INTEGER or DECIMAL.")
 
     # nl ::= '\n'+

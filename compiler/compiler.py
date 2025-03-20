@@ -1,5 +1,5 @@
-from compiler.lexer import Lexer
-from compiler.parser import Parser
+from compiler.lexer import Lexer, LexerError
+from compiler.parser import Parser, ParserError
 from compiler.emitter import Emitter
 import os, subprocess, platform, re
 
@@ -8,29 +8,43 @@ EXECUTION_TIMEOUT = 5
 class Compiler:
     def __init__(self, code):
         self.code = code
+        self.lexer = None
+        self.parser = None
+        self.emitter = None
 
     def compile(self, filepath):
+        # NOTE: IDK why i added the try catch, can't think of an error that can occur. 
         try:
-            lexer = Lexer(self.code)
-            emitter = Emitter(filepath)
-            parser = Parser(lexer, emitter)
-        except Exception as e:
-            errormsg = str(e)
-            errData = re.search(r'Line (\d+):(\d+)', errormsg)
+            self.lexer = Lexer(self.code)
+            self.emitter = Emitter(filepath)
+            self.parser = Parser(self.lexer, self.emitter)
+        except LexerError as e:
+            print("LexerError", e)
+            print(self.lexer.curPos)
+            return {"error": str(e), 
+                    "line": 0, 
+                    "startPos": self.lexer.linePos,
+                    "endPos": self.lexer.linePos
+                    }
+        except ParserError as e:
+            print("ParserError", e)
+            return "Parser"
+            # errormsg = str(e)
+            # errData = re.search(r'Line (\d+):(\d+)', errormsg)
             # print(type(e))
             # print(e)
             # print(str(e))
-            return {"error": str(e),
-                    "line": int(errData.group(1)),
-                    "pos": int(errData.group(2)),
-                    "curLineNo": lexer.prevLineNo,
-                    "curPos": lexer.curPos
-                    }
-        error = parser.program()
+            # return {"error": str(e),
+            #         "line": int(errData.group(1)) - 1,
+            #         "pos": int(errData.group(2)) - 1,
+            #         "curLineNo": 0,
+            #         "curPos": 0
+            #         }
+        error = self.parser.program()
         if error:
             print("Compiler Stage: ", error)
             return error
-        emitter.writeFile()
+        self.emitter.writeFile()
 
     def run(self, c_file, exe_file):
         if platform.system() == "Windows":

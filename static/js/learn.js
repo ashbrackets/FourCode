@@ -60,11 +60,12 @@ document.getElementsByName('run-button').forEach((e) => {
             body: JSON.stringify({ code: code })
         });
         let result = await response.json()
-        console.log(result)
         if (result.error) {
             editor.getAllMarks().forEach(marker => marker.clear());
-            let line = result.curLineNo
-            let pos = result.curPos
+            let line = result.line
+            console.log(result)
+
+            // let pos = result.startLinePos
             // if (result.error.includes("Lexer Error: ")) {
             //     line = result.curLineNo
             //     pos = result.curPos
@@ -80,8 +81,8 @@ document.getElementsByName('run-button').forEach((e) => {
             // result.error = split.join(":")
             textarea.innerHTML = result.error;
             editor.markText(
-                { line: line, ch: pos },
-                { line: line, ch: pos + 1 },
+                { line: line, ch: result.startPos },
+                { line: line, ch: result.endPos + 1 },
                 { className: "error-highlight" }
             );
             const errorMessage = result.error;

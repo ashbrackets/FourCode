@@ -25,6 +25,9 @@
             href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/monokai.min.css"
             integrity="sha512-R6PH4vSzF2Yxjdvb2p2FA06yWul+U0PDDav4b/od/oXf9Iw37zl10plvwOXelrjV2Ai7Eo3vyHeyFUjhXdBCVQ=="
             crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="icon" type="image/x-icon"
+            href="{{url_for('static', filename='images/favicon.ico')}}">
+
         <style>
 			.CodeMirror {
 				background-color: #1d2d44 !important;
@@ -96,7 +99,8 @@
                         <div name="resize-bar" link1="Input" link2="Output"
                             direction="vertical" id="verticalResize"
                             class="items-center justify-center hidden w-full h-2 lg:flex cursor-row-resize">
-                            <img class="scale-[2]" draggable="false"
+                            <img class="scale-[2] pointer-events-none"
+                                draggable="false"
                                 src="{{ url_for('static', filename='images/horizontal_bar.svg') }}">
                         </div>
                         <!-- Output -->
@@ -111,7 +115,8 @@
                         id="horizontalResize"
                         link2="Lesson" direction="horizontal"
                         class="items-center justify-center order-2 hidden w-2 h-full lg:flex cursor-col-resize">
-                        <img class="scale-[6] translate-y-5"
+                        <img
+                            class="scale-[6] translate-y-5 pointer-events-none"
                             draggable="false"
                             src="{{ url_for('static', filename='images/vertical_bar.svg') }}">
                     </div>

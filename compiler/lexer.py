@@ -8,25 +8,31 @@ class Lexer:
         self.source = source + '\n'
         self.curChar = ''
         self.curPos = -1
-        self.prevLineNo = 0
         self.lineNo = 0
-        self.prevLinePos = 0    # cursor position in the previous line 
-        self.linePos = 0        # current cursor position in the line 
+        self.linePos = -1
         self.error = ''
         self.debug = []
         self.nextChar()
 
     def nextChar(self):
         self.curPos += 1
-        self.linePos += 1
         if self.curPos >= len(self.source):
             self.curChar = '\0'
         else:
             self.curChar = self.source[self.curPos]
-            self.debug.append("---")
-            self.debug.append(f"curChar:\"{self.curChar}\": \ncurPos:{self.curPos}, \nprevLineNo:{self.prevLineNo}, \nlineNo:{self.lineNo}, \nprevLinePos:{self.prevLinePos}, \nlinePos:{self.linePos}")
-            print("---")
-            print(f"curChar:\"{self.curChar}\": \ncurPos:{self.curPos}, \nprevLineNo:{self.prevLineNo}, \nlineNo:{self.lineNo}, \nprevLinePos:{self.prevLinePos}, \nlinePos:{self.linePos}")
+            print(f'{self.curPos}: "{self.curChar}"')
+            if self.curChar != "\n":
+                self.linePos += 1
+            print(f"{self.lineNo}:{self.linePos}, {self.curPos}: \"{str('\\n') if self.curChar == "\n" else self.curChar}\"")
+
+    def prevChar(self):
+        print(f'"{self.curChar}"')
+        self.curPos -= 1
+        if self.curPos <= 0:
+            self.curChar = '\0'
+        else:
+            self.curChar = self.source[self.curPos]
+            self.linePos -= 1
 
     def peek(self):
         if self.curPos + 1 >= len(self.source):
@@ -36,9 +42,8 @@ class Lexer:
     def addError(self, message):
         # if "Lexing Error" not in self.error:
         #     self.error += "Lexing Error: \n\t" 
-        self.error += '<b><u>Line ' + str(self.lineNo + 1) + ':' + str(self.linePos) + ':</u></b> '
+        self.error += '<b><u>Line ' + str(self.lineNo + 1) + ':' + str(self.linePos + 1) + ':</u></b> '
         self.error += message + '\n\t'
-        print(self.lineNo, self.curPos)
         raise LexerError("Lexer Error: " + self.error)
 
     def skipWhitespace(self):
@@ -54,7 +59,7 @@ class Lexer:
         self.skipWhitespace()
         self.skipComment()
         token = None
-
+        startLinePos = self.linePos
         if self.curChar == '+':
             token = Token(self.curChar, TokenType.PLUS)
         elif self.curChar == '-':
@@ -98,8 +103,10 @@ class Lexer:
 
             while self.curChar != '\"' and self.curChar != '\0':
                 isIncompleteString = False
-                if self.peek() == '\0':
+                if self.peek() == '\0' or self.peek() == '\n':
                     isIncompleteString = True
+                    while self.curChar == " ":
+                        self.prevChar()
                     self.addError("String needs a end quote.")
                     token = Token(self.error, TokenType.ERROR)
                 errorChar = None
@@ -153,10 +160,8 @@ class Lexer:
                 token = Token(tokenText, keyword)
         elif self.curChar == '\n':
             token = Token('\\n', TokenType.NEWLINE)
-            self.prevLineNo = self.lineNo
             self.lineNo += 1
-            self.prevLinePos = self.linePos
-            self.linePos = 1
+            self.linePos = -1
         elif self.curChar == '\0':
             token = Token('', TokenType.EOF)
         elif self.curChar == ';':
@@ -169,13 +174,23 @@ class Lexer:
             return Token(self.error, TokenType.ERROR)
 
         self.nextChar()
+        token.setPos(self.lineNo, startLinePos, self.linePos)
         return token
+
 
 class Token:
     def __init__(self, tokenText, tokenKind):
         self.text = tokenText
         self.kind = tokenKind
+        self.lineNo = -1
+        self.startLinePos = -1
+        self.endLinePos = -1
     
+    def setPos(self, lineNo, startLinePos, endLinePos):
+        self.lineNo = lineNo
+        self.startLinePos = startLinePos
+        self.endLinePos = endLinePos
+
     @staticmethod
     def checkIfKeyword(tokenText):
         return KEYWORDS.get(tokenText.upper(), None)
