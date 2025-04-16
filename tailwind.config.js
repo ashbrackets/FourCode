@@ -5,16 +5,20 @@ export const mode = 'jit'
 export const content = ["./templates/**/*.{html,htm}"]
 export const theme = {
   extend: {
-    // fontFamily: {
-    //   // sans: ['Inter', 'sans-serif'],
-    //   serif: ['Merriweather', 'serif'],
-    //   // mono: ['Fira Code', 'monospace'],
-    // }
     fontFamily: {
-      headings: ['Montserrat', 'Helvetica Neue', 'Arial', 'sans-serif'],
-      sans: ['Roboto', 'sans-serif'],
-      mono: ['Fira Code', 'Courier New', 'Courier', 'monospace'],
+      headings: ['Inter', 'system-ui', 'sans-serif'],
+      sans: ['Inter', 'system-ui', 'sans-serif'],
+      mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
     },
+    spacing: {
+      'nav': '4rem',
+    },
+    backgroundImage: {
+      'dot-grid': "radial-gradient(circle at center, rgba(128, 128, 128, 0.3) 1px, transparent 1px)"
+    },
+    backgroundSize: {
+      'dot-grid': '20px 20px'
+    }
   },
 }
 export const plugins = [
@@ -23,12 +27,12 @@ export const plugins = [
   "prettier-plugin-tailwindcss",
   createThemes({
     default: {
-      'primary': '#1d2d44',
-      'secondary': '#0d1321',
-      'background': '#f1faee',
-      'text': '#ffffff',
-      'nav': "#0d1321",
-      'button': '#e88f36'
+      'primary': '#2563eb',
+      'secondary': '#1e293b',
+      'background': '#f8fafc',
+      'text': '#f8fafc',
+      'nav': "#0f172a",
+      'button': '#3b82f6'
     }
   }),
   function ({ addUtilities }) {

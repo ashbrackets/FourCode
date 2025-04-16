@@ -219,6 +219,8 @@ class TokenType(enum.Enum):
     FROM = 113
     TO = 114
     STEP = 115
+    FUNCTION = 116
+    RETURN = 117
     # Operators.
     EQ = 201  
     PLUS = 202

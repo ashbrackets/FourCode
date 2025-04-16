@@ -1,116 +1,96 @@
-<!doctype html>
-<html lang="en" class="default">
-    <head>
-        {% include 'meta.html' %}
-        <title>FourCode</title>
-        <link
-            href="{{url_for('static',filename='css/main.css')}}"
-            rel="stylesheet" />
-        <script
-            src="{{url_for('static',filename='js/shader.js')}}"
-            defer></script>
-        <script src="{{ url_for('static', filename='js/login.js') }}"
-            defer></script>
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
-            integrity="sha512-1YMgn4j8cIL91s14ByDGmHtBU6+F8bWOMcF47S0cRO3QNm8SKPNexy4s3OCim9fABUtO++nJMtcpWbINWjMSzQ=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"></script>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-            rel="stylesheet" />
-    </head>
-    <body>
-        <div
-            id="canvas"
-            class="-top-5 -left-5 -z-10 fixed w-[calc(100vw+50px)] h-[calc(100vh+50px)] overflow-hidden"></div>
-        <div class="flex flex-col h-screen overflow-auto">
-            {% include 'navbar.html' %}
-            <div class="flex-grow overflow-y-auto rounded-t-lg">
-                <!-- CONTENT -->
-                <div class="flex items-center justify-center w-full h-full">
-                    <form
-                        name="Login" method="POST"
-                        class="flex flex-col items-center justify-center gap-4 pt-4 pb-8 rounded-lg bg-background px-14 outline outline-4 outline-black">
-                        <p
-                            class="font-mono text-4xl font-bold text-black">Sign
-                            Up</p>
-                        <input
-                            type="text"
-                            name="username"
-                            placeholder="Username"
-                            autocomplete="username"
-                            value="{{username}}"
-                            required
-                            autofocus
-                            class="px-2 py-1 font-mono text-xl rounded-lg bg-secondary focus:border-transparent focus:outline-none focus:ring-4 focus:ring-button text-text" />
-                        <div class="relative">
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                placeholder="Password"
-                                autocomplete="current-password"
-                                required
-                                class="w-full px-2 py-1 font-mono text-xl rounded-lg bg-secondary focus:outline-none focus:ring-4 focus:ring-button text-text" />
-                            <button name="togglePassword" type="button"
-                                link="password"
-                                class="absolute -translate-y-1/2 top-1/2 right-3">
-                                <!-- <div
-                                    class="absolute hover:bg-white opacity-50 rounded-full w-9 h-9 transition-colors -translate-x-1.5 -translate-y-1.5 duration-300 transform"></div> -->
-                                <img
-                                    src="{{ url_for('static', filename='images/eye-off.svg') }}"
-                                    alt="Hide" class="w-6 h-6" id="eye-off">
-                                <img
-                                    src="{{ url_for('static', filename='images/eye.svg') }}"
-                                    alt="Show" class="hidden w-6 h-6" id="eye">
-                            </button>
-                        </div>
-                        <div class="relative">
-                            <input
-                                type="password"
-                                id="confirm-password"
-                                name="confirm-password"
-                                placeholder="Confirm Password"
-                                required
-                                class="w-full px-2 py-1 font-mono text-xl rounded-lg bg-secondary focus:outline-none focus:ring-4 focus:ring-button text-text" />
-                            <button name="togglePassword" type="button"
-                                link="confirm-password"
-                                class="absolute -translate-y-1/2 top-1/2 right-3">
-                                <!-- <div
-                                    class="absolute hover:bg-white opacity-50 rounded-full w-9 h-9 transition-colors -translate-x-1.5 -translate-y-1.5 duration-300 transform"></div> -->
-                                <img
-                                    src="{{ url_for('static', filename='images/eye-off.svg') }}"
-                                    alt="Hide" class="w-6 h-6" id="eye-off">
-                                <img
-                                    src="{{ url_for('static', filename='images/eye.svg') }}"
-                                    alt="Show" class="hidden w-6 h-6" id="eye">
-                            </button>
-                        </div>
-                        <div
-                            class="flex flex-col items-center justify-center gap-2">
-                            <button
-                                type="submit"
-                                class="px-6 py-1 font-mono text-xl font-bold text-black rounded-lg w-min bg-button hover:ring-4 hover:ring-black hover:underline">
-                                Confirm
-                            </button>
-                            <a
-                                href="{{url_for('login')}}"
-                                class="px-6 py-1 font-mono text-lg font-bold text-black">
-                                Already have an account? Click here
-                            </a>
-                        </div>
-                        {% with messages =
-                        get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                        {% for category, message in messages %}
-                        <div class="alert {{ category }} text-red-600">{{
-                            message
-                            }}</div>
-                        {% endfor %} {% endif %} {% endwith %}
-                    </form>
-                </div>
+{% extends "template.html" %}
+
+{% block content %}
+<div class="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4">
+    {# Background Canvas #}
+    <div id="canvas" class="fixed inset-0 -z-10 w-full h-full overflow-hidden opacity-30"></div>
+
+    {# Signup Form #}
+    <div class="w-full max-w-md">
+        <div class="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-secondary">Create Account</h2>
+                <p class="mt-2 text-secondary/60">Join our community of learners today</p>
             </div>
+
+            <form name="Login" method="POST" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-secondary/80 mb-1">Username</label>
+                    <input type="text"
+                        name="username"
+                        placeholder="Choose a username"
+                        autocomplete="username"
+                        value="{{username}}"
+                        required
+                        autofocus
+                        class="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors text-secondary" />
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-secondary/80 mb-1">Password</label>
+                    <div class="relative">
+                        <input type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                            required
+                            class="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors text-secondary pr-12" />
+                        <button name="togglePassword" 
+                            type="button"
+                            link="password"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors">
+                            <i class="ph ph-eye text-xl text-secondary/60 hidden" id="eye"></i>
+                            <i class="ph ph-eye-slash text-xl text-secondary/60" id="eye-off"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="confirm-password" class="block text-sm font-medium text-secondary/80 mb-1">Confirm Password</label>
+                    <div class="relative">
+                        <input type="password"
+                            id="confirm-password"
+                            name="confirm-password"
+                            placeholder="Confirm your password"
+                            required
+                            class="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors text-secondary pr-12" />
+                        <button name="togglePassword" 
+                            type="button"
+                            link="confirm-password"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors">
+                            <i class="ph ph-eye text-xl text-secondary/60 hidden" id="eye"></i>
+                            <i class="ph ph-eye-slash text-xl text-secondary/60" id="eye-off"></i>
+                        </button>
+                    </div>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="p-3 rounded-lg bg-red-50 text-red-600 text-sm">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <div class="space-y-4">
+                    <button type="submit"
+                        class="w-full px-6 py-3 text-base font-semibold rounded-lg bg-primary hover:bg-primary/90 text-text transition-colors">
+                        Create Account
+                    </button>
+                    <p class="text-center text-secondary/60">
+                        Already have an account? 
+                        <a href="{{url_for('login')}}" class="text-primary hover:text-primary/80 font-medium">
+                            Sign in here
+                        </a>
+                    </p>
+                </div>
+            </form>
         </div>
-    </body>
-</html>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"></script>
+<script src="{{ url_for('static', filename='js/shader.js') }}"></script>
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock %}

@@ -1,169 +1,249 @@
-<html class="default">
-    <head>
-        {% include 'meta.html' %}
-        <title>FourCode</title>
-        <script src="{{ url_for('static', filename='js/learn.js') }}"
-            type="module"></script>
-        <link href="{{url_for('static',filename='css/main.css')}}"
-            rel="stylesheet" />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-            rel="stylesheet">
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"
-            integrity="sha512-6cPYokihlrofMNApz7OXVQNObWjLiKGIBBb7+UB+AuMiRCLKmFKgrwms21sHq3bdFFZWpfHYRJBJvMFMPj1S9g=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css"
-            integrity="sha512-uf06llspW44/LZpHzHT6qBOIVODjWtv4MxCricRxkzvopAlSWnTf6hpZTFxuuZcuNE9CBQhqE0Seu1CoRk84nQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/python/python.min.js"
-            integrity="sha512-Vs2GKxnxnTQBRW7o2xXZ9A28njjmu5RToS42efiKNEWmikov0inZY522EtGVK5CcVo0M/FQwmXsTfl9skgRnvw=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/monokai.min.css"
-            integrity="sha512-R6PH4vSzF2Yxjdvb2p2FA06yWul+U0PDDav4b/od/oXf9Iw37zl10plvwOXelrjV2Ai7Eo3vyHeyFUjhXdBCVQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link rel="icon" type="image/x-icon"
-            href="{{url_for('static', filename='images/favicon.ico')}}">
+{% extends "template.html" %}
 
-        <style>
-			.CodeMirror {
-				background-color: #1d2d44 !important;
-			}
-			.CodeMirror-gutters {
-				background-color: #1d2d44 !important;
-				border-right: 1px solid #374151 !important;
-			}
-			.CodeMirror {
-				font-size: 24px;
-				font-family: monospace;
-			}
-			.error-highlight {
-				background-color: #ff0000;
-				color: #000000;
-			}
-            .cm-scroller {
-                /* Firefox */
-                scrollbar-width: thin;
-                scrollbar-color: white transparent;
-            }
-
-            /* WebKit browsers */
-            .cm-scroller::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            .cm-scroller::-webkit-scrollbar-track {
-                background: transparent;
-            }
-
-            .cm-scroller::-webkit-scrollbar-thumb {
-                background-color: white;
-                border-radius: 4px;
-            }
-		</style>
-    </head>
-    <body>
-        <div
-            class="relative flex flex-col h-screen overflow-auto bg-nav">
-            {% include 'navbar.html' %}
-            <div
-                class="flex-grow flex-shrink-0 bg-gray-300 rounded-t-lg lg:max-h-[calc(100vh-64px)] overflow-y-auto">
+{% block content %}
+<div class="flex flex-col w-full h-full py-2 lg:overflow-hidden">
+    <div class="flex flex-col h-full lg:flex-row">
+        {# Code Editor and Output Section #}
+        <div id="Input-and-Output"
+            class="flex flex-col w-full lg:w-[calc(50%-1.5rem)] order-2 lg:order-1 h-[600px] lg:h-full">
+            {# Code Editor #}
+            <div id="Input"
+                class="flex flex-col h-[48%] bg-white shadow-lg rounded-lg">
                 <div
-                    class="relative flex flex-col h-full lg:flex-row">
+                    class="flex items-center justify-between p-2 border-b border-gray-100">
+                    <h3 class="flex items-center font-medium text-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                        Code Editor
+                    </h3>
+                    <button name="run-button"
+                        class="px-3 py-1.5 text-sm font-medium rounded-lg bg-primary hover:bg-primary/90 text-text transition-colors flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Run Code
+                    </button>
+                </div>
+                <div class="flex-grow overflow-hidden rounded-lg">
+                    <textarea id="code-editor" class="w-full h-full"></textarea>
+                </div>
+            </div>
 
-                    <!-- input and output -->
-                    <div id="Input-and-Output"
-                        class="flex flex-col flex-shrink-0 order-3 w-full h-auto px-2 py-0 pb-2 lg:order-1 lg:px-0 lg:py-2 lg:pl-2 lg:w-1/2">
-                        <!-- Input -->
-                        <div id="Input"
-                            class="flex flex-col flex-shrink-0 bg-secondary mt-2 lg:mt-0 lg:h-[calc(100vh-64px-50%)] rounded-lg h-[600px]">
-                            <p
-                                class="py-1 pl-1 font-medium text-text">Code</p>
-                            <div
-                                class="h-full max-h-full mx-2 mt-1 overflow-hidden rounded-lg">
-                                <textarea
-                                    id="code-editor"
-                                    class="w-full h-full bg-primary"></textarea>
-                            </div>
-                            <div class="flex justify-end p-2">
-                                <button
-                                    name="run-button"
-                                    class="px-6 py-1 text-black rounded-lg bg-button hover:outline outline-1 outline-white">
-                                    Run
-                                </button>
-                            </div>
-                        </div>
-                        <div name="resize-bar" link1="Input" link2="Output"
-                            direction="vertical" id="verticalResize"
-                            class="items-center justify-center hidden w-full h-2 lg:flex cursor-row-resize">
-                            <img class="scale-[2] pointer-events-none"
-                                draggable="false"
-                                src="{{ url_for('static', filename='images/horizontal_bar.svg') }}">
-                        </div>
-                        <!-- Output -->
-                        <div id="Output"
-                            class="flex flex-col flex-1 min-h-0 mt-2 rounded-lg bg-secondary lg:mt-0">
-                            <p class="pt-1 pl-1 text-text">Output</p>
-                            <div id="output"
-                                class="bg-primary m-2 scrollbar-thumb-white px-2 lg:h-[calc(100vh-64px-50%)] pt-1 rounded-lg h-[400px] overflow-y-auto font-mono text-text lg:text-lg text-2xl break-words whitespace-pre-wrap scrollbar scrollbar-track-transparent"></div>
-                        </div>
-                    </div>
-                    <div name="resize-bar" link1="Input-and-Output"
-                        id="horizontalResize"
-                        link2="Lesson" direction="horizontal"
-                        class="items-center justify-center order-2 hidden w-2 h-full lg:flex cursor-col-resize">
-                        <img
-                            class="scale-[6] translate-y-5 pointer-events-none"
-                            draggable="false"
-                            src="{{ url_for('static', filename='images/vertical_bar.svg') }}">
-                    </div>
-                    <!-- lesson -->
-                    <div id="Lesson"
-                        class="flex-none lg:flex-1 gap-2 order-1 lg:order-3 px-2 lg:px-0 py-0 lg:py-2 pt-2 lg:pr-2 lg:h-auto max-h-[1500px]">
-                        <!-- Lesson -->
-                        <div
-                            class="flex flex-col bg-secondary rounded-lg h-full max-h-screen lg:max-h-[calc(100vh-64px)]">
-                            <p class="pt-1 pl-2 text-lg text-text">Lesson</p>
-                            <div
-                                class="flex-1 px-2 pt-1 mx-2 mt-2 overflow-y-auto prose prose-xl whitespace-pre-wrap rounded-lg bg-primary prose-h1:m-0 prose-h2:m-0 prose-p:m-0 scrollbar-thumb-white max-w-none text-text prose-h1:text-text prose-h2:text-text scrollbar scrollbar-track-transparent">{{
-                                content | safe }}
-                            </div>
-                            <nav class="flex justify-between my-2">
-                                <a
-                                    href="{{ url_for('learn', lesson_index=lesson_index-1) }}"
-                                    class="{{ 'invisible' if lesson_index <= 0 else '' }}">
-                                    <button
-                                        class="mx-2 px-6 py-1 bg-button text-black rounded-lg hover:outline outline-1 outline-white {{ 'invisible' if lesson_index <= 0 else '' }}">
-                                        Previous
-                                    </button>
-                                </a>
-                                <button type="button"
-                                    id="complete-lesson-button"
-                                    class="flex flex-row items-center w-auto h-full gap-1 px-6 py-1 transition-all duration-500 rounded-lg hover:outline outline-1 outline-white opacity-10 bg-button">
-                                    <img
-                                        src="{{url_for('static', filename='images/check.svg')}}"
-                                        alt="check">
-                                    <p class="title">Complete Lesson</p>
-                                </button>
-                                <a
-                                    href="{{ url_for('learn', lesson_index=lesson_index+1) }} "
-                                    class="{{ 'invisible' if lesson_index >= total_lessons - 1 else '' }}">
-                                    <button
-                                        class="mx-2 px-6 py-1 bg-button text-black rounded-lg hover:outline outline-1 outline-white {{ 'invisible' if lesson_index >= total_lessons - 1 else '' }}">
-                                        Next
-                                    </button>
-                                </a>
-                            </nav>
-                        </div>
-                    </div>
+            {# Resize Bar #}
+            <div name="resize-bar"
+                link1="Input"
+                link2="Output"
+                direction="vertical"
+                id="verticalResize"
+                class="items-center justify-center hidden w-full h-2 transition-colors bg-gray-200 lg:flex cursor-row-resize hover:bg-primary/40">
+                <div class="flex items-center justify-center gap-1.5 scale-75">
+                    <div class="w-1 h-1 bg-gray-500 rounded-full"></div>
+                    <div class="w-1 h-1 bg-gray-500 rounded-full"></div>
+                    <div class="w-1 h-1 bg-gray-500 rounded-full"></div>
+                </div>
+            </div>
+
+            {# Output #}
+            <div id="Output"
+                class="flex flex-col h-[48%] bg-white shadow-lg rounded-lg">
+                <div class="flex items-center p-2 border-b border-gray-100">
+                    <h3 class="flex items-center font-medium text-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Output
+                    </h3>
+                </div>
+                <div id="output"
+                    class="flex-grow p-3 overflow-y-auto font-mono text-base whitespace-pre-wrap text-secondary"></div>
+            </div>
+        </div>
+
+        {# Resize Bar #}
+        <div name="resize-bar"
+            link1="Input-and-Output"
+            id="horizontalResize"
+            link2="Lesson"
+            direction="horizontal"
+            class="items-center justify-center order-3 hidden w-2 h-full transition-colors bg-gray-200 lg:flex cursor-col-resize hover:bg-primary/40 lg:order-2">
+            <div
+                class="flex flex-col items-center justify-center gap-1.5 scale-75">
+                <div class="w-1 h-1 bg-gray-500 rounded-full"></div>
+                <div class="w-1 h-1 bg-gray-500 rounded-full"></div>
+                <div class="w-1 h-1 bg-gray-500 rounded-full"></div>
+            </div>
+        </div>
+
+        {# Lesson Content #}
+        <div id="Lesson"
+            class="w-full lg:w-[calc(50%-1.5rem)] order-1 lg:order-3 h-[500px] lg:h-full mt-16 lg:mt-0">
+            <div class="flex flex-col h-full bg-white rounded-lg shadow-lg">
+                <div
+                    class="flex items-center justify-between flex-shrink-0 p-2 border-b border-gray-100">
+                    <h3 class="flex items-center font-medium text-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        Lesson Content
+                    </h3>
+                </div>
+                <div
+                    class="flex-grow p-4 overflow-y-auto prose prose-lg max-w-none">
+                    {{content | safe}}
+                </div>
+                <div
+                    class="flex items-center justify-between flex-shrink-0 p-2 border-t border-gray-100">
+                    <a
+                        href="{{ url_for('learn', lesson_index=lesson_index-1) }}"
+                        class="{{ 'invisible' if lesson_index <= 0 else '' }}">
+                        <button
+                            class="flex items-center px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-200 hover:bg-gray-50 text-secondary transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="w-5 h-5 mr-2" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2"
+                                    d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            Previous
+                        </button>
+                    </a>
+                    <button type="button"
+                        id="complete-lesson-button"
+                        class="flex items-center px-4 py-1.5 text-sm font-medium rounded-lg bg-primary/10 text-primary transition-all duration-300 opacity-0">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span class="title">Complete Lesson</span>
+                    </button>
+                    <a
+                        href="{{ url_for('learn', lesson_index=lesson_index+1) }}"
+                        class="{{ 'invisible' if lesson_index >= total_lessons - 1 else '' }}">
+                        <button
+                            class="flex items-center px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-200 hover:bg-gray-50 text-secondary transition-colors">
+                            Next
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="w-5 h-5 ml-2" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </button>
+                    </a>
                 </div>
             </div>
         </div>
-        <script>
-            let has_completed_lesson = "{{ has_completed_lesson }}"
-        </script>
-    </body>
-</html>
+    </div>
+</div>
+
+{# CodeMirror Dependencies #}
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css" />
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/monokai.min.css" />
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/python/python.min.js"></script>
+
+<style>
+.CodeMirror {
+    height: 100%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+}
+.CodeMirror-gutters {
+    background-color: #f8fafc !important;
+    border-right: 1px solid #e2e8f0 !important;
+}
+.CodeMirror-linenumber {
+    color: #64748b !important;
+}
+.cm-s-default .cm-string { color: #24a0ed !important; }
+.cm-s-default .cm-number { color: #905 !important; }
+.cm-s-default .cm-keyword { color: #07a !important; }
+.cm-s-default .cm-operator { color: #708 !important; }
+.cm-s-default .cm-comment { color: #5c6370 !important; }
+.cm-s-default .cm-def { color: #a626a4 !important; }
+.cm-s-default .cm-variable { color: #aa5d00 !important; }
+
+.error-highlight {
+    background-color: #fecaca !important;
+    color: #991b1b !important;
+}
+
+/* Dark mode overrides */
+.dark .CodeMirror {
+    color: #f8fafc !important;
+    background-color: #1e293b !important;
+}
+.dark .CodeMirror-gutters {
+    background-color: #0f172a !important;
+    border-right: 1px solid #334155 !important;
+}
+.dark .CodeMirror-linenumber {
+    color: #94a3b8 !important;
+}
+.dark .cm-s-monokai span.cm-string { color: #a5d6ff !important; }
+.dark .cm-s-monokai span.cm-number { color: #f2cc60 !important; }
+.dark .cm-s-monokai span.cm-keyword { color: #ff7b72 !important; }
+.dark .cm-s-monokai span.cm-operator { color: #79c0ff !important; }
+.dark .cm-s-monokai span.cm-comment { color: #8b949e !important; }
+.dark .cm-s-monokai span.cm-def { color: #d2a8ff !important; }
+.dark .cm-s-monokai span.cm-variable { color: #ffa657 !important; }
+</style>
+
+<script>
+let has_completed_lesson = "{{ has_completed_lesson }}";
+document.addEventListener('DOMContentLoaded', function() {
+    const completeButton = document.getElementById('complete-lesson-button');
+    
+    // Check if lesson is already completed and animate button accordingly
+    if (has_completed_lesson === "True") {
+        if (completeButton) {
+            completeButton.classList.add("pointer-events-none");
+            completeButton.classList.replace("px-4", "px-2");
+            completeButton.classList.replace("rounded-lg", "rounded-full");
+            completeButton.classList.replace("bg-primary/10", "bg-primary");
+            completeButton.classList.replace("text-primary", "text-white");
+            const titleSpan = completeButton.querySelector(".title");
+            if (titleSpan) titleSpan.classList.add("hidden");
+            completeButton.classList.replace("opacity-0", "opacity-100");
+        }
+    } else {
+        // Show the button normally for non-completed lessons
+        if (completeButton) {
+            completeButton.classList.replace("opacity-0", "opacity-100");
+        }
+    }
+});
+</script>
+<script src="{{ url_for('static', filename='js/learn.js') }}"
+    type="module"></script>
+{% endblock %}

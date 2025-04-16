@@ -105,7 +105,7 @@ def learn():
     if 'user_id' in session:
         has_completed_lesson = check_lesson_completion(lesson_index)
 
-    return render_template("learn.html", 
+    return render_template("learntemp.html", 
                             content=lesson_content, 
                             lesson_index=lesson_index,
                             has_completed_lesson = has_completed_lesson,
@@ -141,6 +141,26 @@ def login():
         username = request.form["username"].strip()
         password = request.form["password"].strip()
         
+
+        if len(username) > 20 or len(username) < 3:
+            flash('Username should be between 3 to 20 characters.', 'error')
+            return render_template(
+                'login.html', 
+                username=username,
+            )
+        if len(password) < 8:
+            flash('Password should be atleast 8 characters.', 'error')
+            return render_template(
+                'login.html', 
+                username=username,
+            )
+        if username.isalnum() == False:
+            flash('Username should only contain characters a-z, A-Z or 0-9.')
+            return render_template(
+                'login.html', 
+                username=username,
+            )   
+
         conn = get_db_connection()
         cur = conn.cursor()
 

@@ -1,60 +1,46 @@
-<!DOCTYPE html>
-<html lang="en" class="default">
-    <head>
-        {% include 'meta.html' %}
-        <title>FourCode</title>
-        <link href="{{url_for('static',filename='css/main.css')}}"
-            rel="stylesheet" />
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
-            integrity="sha512-1YMgn4j8cIL91s14ByDGmHtBU6+F8bWOMcF47S0cRO3QNm8SKPNexy4s3OCim9fABUtO++nJMtcpWbINWjMSzQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <script
-            src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-            rel="stylesheet">
+{% extends "template.html" %}
 
-    </head>
-    <body class="font-mono">
-        <div id="canvas"
-            class="-top-5 -left-5 -z-10 fixed w-[calc(100vw+50px)] h-[calc(100vh+50px)] overflow-hidden"></div>
+{% block content %}
+<div
+    class="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center mt-24 lg:mt-0 overflow-auto">
+    {# Background Canvas #}
+    <!-- <div id="canvas" class="fixed inset-0 w-full h-full overflow-hidden -z-10 opacity-30"></div> -->
+
+    {# Hero Section #}
+    <div class="relative max-w-4xl px-4 pt-[300px] mx-auto text-center">
+        <div class="absolute w-full h-full bg-white/90 blur-3xl -z-10"></div>
+        <h1
+            class="mb-8 text-4xl font-bold leading-tight md:text-6xl lg:text-7xl text-secondary">
+            Welcome to the start of your <span class="text-primary">coding
+                journey</span>
+        </h1>
+        <p class="max-w-2xl mx-auto mb-12 text-lg md:text-xl text-secondary/80">
+            Learn to code with our interactive lessons, practice in our
+            playground, and build real projects.
+            Start your journey today.
+        </p>
         <div
-            class="flex flex-col h-screen overflow-auto">
-            <!-- <div class="bg-secondary w-full h-[64px]" id="nav"></div> -->
-            {% include 'navbar.html' %}
-            <div
-                class="flex items-center justify-center flex-grow overflow-y-auto rounded-t-lg">
-                <!-- CONTENT -->
-                <div
-                    class="relative flex flex-col items-center justify-center rounded-xl">
-                    <p
-                        class="text-text lg:text-[80px] text-5xl text-center">
-                        Welcome to the
-                        start of your coding
-                        journey
-                    </p>
-                    <a href="{{url_for('lessons')}}" id="start-learning-button"
-                        class="z-10 relative bg-[#e88f36] mt-8 lg:mt-24 rounded-full outline outline-4 outline-secondary hover:outline-white">
-                        <button
-                            class="mx-20 my-5 text-3xl text-black lg:text-6xl">
-                            Start learning
-                        </button>
-                    </a>
-
-                    <!-- <div class="relative">
-                        <p
-                            class="text-2xl mt-7 text-text lg:text-4xl">
-                            Easiest
-                            way
-                            to start coding.</p>
-                    </div> -->
-                </div>
-            </div>
+            class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <a href="{{url_for('lessons')}}"
+                class="inline-flex items-center px-8 py-4 text-lg font-semibold transition-colors rounded-lg bg-primary hover:bg-primary/90 text-text">
+                Start Learning
+                <i class="ml-2 ph ph-arrow-right"></i>
+            </a>
+            <a href="{{url_for('playground')}}"
+                class="inline-flex items-center px-8 py-4 text-lg font-semibold transition-colors bg-white border rounded-lg border-secondary/20 hover:bg-white/50 text-secondary">
+                Try Playground
+                <i class="ml-2 ph ph-code"></i>
+            </a>
         </div>
-        <script
-            src="{{ url_for('static', filename='js/homepage.js') }}"></script>
-        <script
-            src="{{ url_for('static', filename='js/shader.js') }}"></script>
-    </body>
-</html>
+    </div>
+    {# Demo Section #}
+    <div class="h-[800px] w-full bg-red-700 mt-[280px]"></div>
+    {# Footer Section #}
+    <div class="h-[400px] w-full bg-blue-700"></div>
+</div>
+
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+{% endblock %}

@@ -50,22 +50,34 @@ class Compiler:
         if platform.system() == "Windows":
             exe_file += ".exe"
         compile_process = subprocess.run(
-            ["gcc", "-O0", "-pipe", "-g0", c_file, "-o", exe_file],
+            ["gcc", "-O0", "-pipe", "-g0", c_file, "-o", exe_file, '-Werror'],
+            text=True,
+            capture_output=True
         )
-
+        
         if compile_process.returncode != 0:
             os.remove(c_file)
             return "Compilation Error: " + compile_process.stderr
         
-        run_process = subprocess.run(
-            [exe_file],
-            text=True,
-            capture_output=True
-        )
-        if run_process.returncode != 0:
-            if os.path.exists(exe_file):
-                os.remove(exe_file)
-            return "Execution Error: " + run_process.stderr
+        try:
+            run_process = subprocess.run(
+                [exe_file],
+                text=True,
+                capture_output=True,
+                check=True
+            )
+        except subprocess.CalledProcessError as e:
+            if e.returncode != 0:
+                os.remove(c_file)
+                if os.path.exists(exe_file):
+                    os.remove(exe_file)
+                return f"1Execution Error: '{str(e.stderr)}' + '{str(e.stdout)}' + '{str(e.returncode)}'"
+            else:
+                os.remove(c_file)
+                if os.path.exists(exe_file):
+                    os.remove(exe_file)
+                return f"2Execution Error: '{str(e.stderr)}' + '{str(e.stdout)}' + '{str(e.returncode)}'"
+
         
         if os.path.exists(exe_file):
             os.remove(exe_file)

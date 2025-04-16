@@ -21,29 +21,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         localStorage.setItem('lesson_' + lessonIndex + '_code', code);
     });
 
-    // update completed lesson button
-    const response = await fetch('/is-logged-in', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    const result = await response.json()
-    isLoggedIn = result.isLoggedIn
-    if (!isLoggedIn) {
-        let completedLessons = JSON.parse(localStorage.getItem("completedLessons")) || []
-        if (!Array.isArray(completedLessons)) completedLessons = []
-        let completedLessonsSet = new Set(completedLessons)
-        console.log(completedLessonsSet, lessonIndex)
-        if (completedLessonsSet.has(parseInt(lessonIndex))) {
-            await animate_complete_button(0.1)
-        }
-    } else {
-        if (has_completed_lesson) {
-            await animate_complete_button(0.1)
+    // update completed lesson button if it exists
+    if (complete_button) {
+        const response = await fetch('/is-logged-in', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        const result = await response.json()
+        isLoggedIn = result.isLoggedIn
+        if (!isLoggedIn) {
+            let completedLessons = JSON.parse(localStorage.getItem("completedLessons")) || []
+            if (!Array.isArray(completedLessons)) completedLessons = []
+            let completedLessonsSet = new Set(completedLessons)
+            if (completedLessonsSet.has(parseInt(lessonIndex))) {
+                // Handle animation for non-logged in users but already completed
+                complete_button.classList.add("pointer-events-none");
+                complete_button.classList.replace("px-6", "px-2");
+                complete_button.classList.replace("rounded-lg", "rounded-full");
+                complete_button.classList.replace("bg-primary/10", "bg-primary");
+                complete_button.classList.replace("text-primary", "text-white");
+                complete_button.querySelector(".title").classList.add("hidden");
+            }
         }
     }
-    complete_button.classList.replace("opacity-10", "opacity-100")
 });
 
 document.getElementsByName('run-button').forEach((e) => {
@@ -141,32 +143,35 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-complete_button.addEventListener('click', async () => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const lesson_index = parseInt(urlParams.get("lesson_index"))
+// Only add event listener if the button exists
+if (complete_button) {
+    complete_button.addEventListener('click', async () => {
+        const urlParams = new URLSearchParams(window.location.search)
+        const lesson_index = parseInt(urlParams.get("lesson_index"))
 
-    if (!isLoggedIn) {
-        let completedLessons = JSON.parse(localStorage.getItem("completedLessons")) || []
-        if (!Array.isArray(completedLessons)) completedLessons = []
-        let completedLessonsSet = new Set(completedLessons)
-        if (!completedLessonsSet.has(lesson_index)) {
-            completedLessonsSet.add(lesson_index)
-            localStorage.setItem("completedLessons", JSON.stringify([...completedLessonsSet]))
+        if (!isLoggedIn) {
+            let completedLessons = JSON.parse(localStorage.getItem("completedLessons")) || []
+            if (!Array.isArray(completedLessons)) completedLessons = []
+            let completedLessonsSet = new Set(completedLessons)
+            if (!completedLessonsSet.has(lesson_index)) {
+                completedLessonsSet.add(lesson_index)
+                localStorage.setItem("completedLessons", JSON.stringify([...completedLessonsSet]))
+            }
+        } else {
+            const response2 = await fetch("/update-user-lessons-db", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ isChecked: true, lesson_index: lesson_index })
+            });
+            const result2 = await response2.json()
         }
-    } else {
-        const response2 = await fetch("/update-user-lessons-db", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ isChecked: true, lesson_index: lesson_index })
-        });
-        const result2 = await response2.json()
-    }
 
-    // animation
-    await animate_complete_button(0.1)
-})
+        // animation
+        await animate_complete_button(0.1)
+    })
+}
 
 async function animate_complete_button(timems) {
     let text = complete_button.querySelector(".title").textContent
@@ -179,6 +184,8 @@ async function animate_complete_button(timems) {
     complete_button.classList.add("pointer-events-none")
     complete_button.classList.replace("px-6", "px-2")
     complete_button.classList.replace("rounded-lg", "rounded-full")
+    complete_button.classList.replace("bg-primary/10", "bg-primary")
+    complete_button.classList.replace("text-primary", "text-white")
     complete_button.querySelector(".title").classList.add("hidden")
 }
 
@@ -238,14 +245,17 @@ function resizeElements(e) {
         link2.style.height = `${newHeightB}px`;
         sectionSizes.set(curResizeBar, [newHeightA / (newHeightA + newHeightB) * 100, newHeightB / (newHeightA + newHeightB) * 100]);
     } else {
-        let deltaX = e.clientX - startX;
-        let newWidthA = startWidthA + deltaX;
-        let newWidthB = startWidthB - deltaX;
-        if (newWidthA < MIN_WIDTH || newWidthB < MIN_WIDTH) return;
+        // Only apply width changes on desktop
+        if (window.innerWidth >= 1024) { // lg breakpoint
+            let deltaX = e.clientX - startX;
+            let newWidthA = startWidthA + deltaX;
+            let newWidthB = startWidthB - deltaX;
+            if (newWidthA < MIN_WIDTH || newWidthB < MIN_WIDTH) return;
 
-        link1.style.width = `${newWidthA}px`;
-        link2.style.width = `${newWidthB}px`;
-        sectionSizes.set(curResizeBar, [newWidthA / (newWidthA + newWidthB) * 100, newWidthB / (newWidthA + newWidthB) * 100]);
+            link1.style.width = `${newWidthA}px`;
+            link2.style.width = `${newWidthB}px`;
+            sectionSizes.set(curResizeBar, [newWidthA / (newWidthA + newWidthB) * 100, newWidthB / (newWidthA + newWidthB) * 100]);
+        }
     }
 }
 
@@ -273,9 +283,16 @@ function setOnWindowResize() {
             link1.style.height = `${(sizes[0] * totalHeight) / 100}px`;
             link2.style.height = `${(sizes[1] * totalHeight) / 100}px`;
         } else {
-            const totalWidth = bar.parentElement.offsetWidth;
-            link1.style.width = `${(sizes[0] * totalWidth) / 100}px`;
-            link2.style.width = `${(sizes[1] * totalWidth) / 100}px`;
+            // Only apply width changes on desktop
+            if (window.innerWidth >= 1024) { // lg breakpoint
+                const totalWidth = bar.parentElement.offsetWidth;
+                link1.style.width = `${(sizes[0] * totalWidth) / 100}px`;
+                link2.style.width = `${(sizes[1] * totalWidth) / 100}px`;
+            } else {
+                // Reset width on mobile
+                link1.style.width = '';
+                link2.style.width = '';
+            }
         }
     });
 }

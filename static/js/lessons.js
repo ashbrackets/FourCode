@@ -1,43 +1,72 @@
 window.addEventListener("DOMContentLoaded", async () => {
-    // if is logged in
-    // get from db
-    // else 
-    // get from localStorage 
-    //
-    // get list of completed lesson indexes
-    // update check box and line through
-    const response = await fetch('/is-logged-in', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    const result = await response.json()
-    let completedLessonsIndexes = null
+    // Check login status and initialize completed lessons
+    const response = await fetch('/is-logged-in');
+    const result = await response.json();
+    
+    let completedLessonsIndexes = [];
     if (!result.isLoggedIn) {
-        completedLessonsIndexes = JSON.parse(localStorage.getItem("completedLessons"))
+        completedLessonsIndexes = JSON.parse(localStorage.getItem("completedLessons")) || [];
     }
-    if (completedLessonsIndexes === null) return
-    console.log(completedLessonsIndexes)
-    const lessonsContainer = document.querySelector("#lessons-container")
+
+    // Update UI for completed lessons
     completedLessonsIndexes.forEach((index) => {
-        const checkbox = lessonsContainer.querySelector(`.lesson-${index}`).querySelector("#lesson-checkbox")
-        const name = lessonsContainer.querySelector(`.lesson-${index}`).querySelector("#lesson-name")
+        const lessonDiv = document.querySelector(`.lesson-${index}`);
+        if (!lessonDiv) return;
 
-        checkbox.setAttribute("checked", "")
-        name.classList.add('line-through')
-    })
-})
+        const checkbox = lessonDiv.querySelector('.lesson-checkbox');
+        const name = lessonDiv.querySelector(`#lesson-name-${index}`);
 
+        if (checkbox) checkbox.checked = true;
+        if (name) name.classList.add('line-through');
+    });
 
+    // Update progress bar
+    updateProgress();
+});
 
-let checkboxes = document.querySelectorAll(".lesson-checkbox").forEach((ele) => {
-    ele.addEventListener("click", async (e) => {
-        let isChecked = ele.checked
-        let lesson_index = parseInt(ele.value)
+// Function to update progress bar and text
+function updateProgress() {
+    const totalLessons = document.querySelectorAll('.lesson-checkbox').length;
+    const completedLessons = document.querySelectorAll('.lesson-checkbox:checked').length;
+    const progressPercent = (completedLessons / totalLessons) * 100;
 
-        const resp = await fetch("/is-logged-in")
-        const res = await resp.json()
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+
+    if (progressBar) {
+        progressBar.style.width = `${progressPercent}%`;
+    }
+    if (progressText) {
+        progressText.textContent = `${completedLessons}/${totalLessons} Complete`;
+    }
+}
+
+// Add event listeners to checkboxes
+document.querySelectorAll(".lesson-checkbox").forEach((checkbox) => {
+    checkbox.addEventListener("click", async (e) => {
+        const isChecked = checkbox.checked;
+        const lesson_index = parseInt(checkbox.value);
+        const lessonDiv = checkbox.closest(`.lesson-${lesson_index}`);
+        
+        if (!lessonDiv) return;
+
+        // Update UI
+        const lesson_name = lessonDiv.querySelector(`#lesson-name-${lesson_index}`);
+
+        if (lesson_name) {
+            if (isChecked) {
+                lesson_name.classList.add('line-through');
+            } else {
+                lesson_name.classList.remove('line-through');
+            }
+        }
+
+        // Update progress bar
+        updateProgress();
+
+        // Update backend/storage
+        const resp = await fetch("/is-logged-in");
+        const res = await resp.json();
 
         if (res.isLoggedIn) {
             await fetch('/update-user-lessons-db', {
@@ -46,23 +75,17 @@ let checkboxes = document.querySelectorAll(".lesson-checkbox").forEach((ele) => 
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ lesson_index: lesson_index, isChecked: isChecked })
-            })
+            });
         } else {
-            let completedLessons = JSON.parse(localStorage.getItem("completedLessons")) || []
+            let completedLessons = JSON.parse(localStorage.getItem("completedLessons")) || [];
             if (isChecked) {
-                console.log(completedLessons)
-                completedLessons.push(lesson_index)
-                localStorage.setItem("completedLessons", JSON.stringify(completedLessons))
-            } else if (!isChecked) {
-                completedLessons = completedLessons.filter(item => item !== lesson_index)
-                localStorage.setItem("completedLessons", JSON.stringify(completedLessons))
+                if (!completedLessons.includes(lesson_index)) {
+                    completedLessons.push(lesson_index);
+                }
+            } else {
+                completedLessons = completedLessons.filter(item => item !== lesson_index);
             }
+            localStorage.setItem("completedLessons", JSON.stringify(completedLessons));
         }
-        let lesson_name = ele.parentElement.querySelector('#lesson-name')
-        if (isChecked) {
-            lesson_name.classList.add('line-through')
-        } else {
-            lesson_name.classList.remove('line-through')
-        }
-    })
-}) 
+    });
+}); 

@@ -87,9 +87,9 @@ class Parser:
             print("PROGRAM-END")
             self.emitter.emitLine("return 0;")
             self.emitter.emitLine("}")
-            print("\nDEBUG:")
-            for i in self.debug:
-                print(i)
+            # print("\nDEBUG:")
+            # for i in self.debug:
+            #     print(i)
             # print("\nLEXER DEBUG:")
             # for i in self.lexer.debug:
             #     print(i)
@@ -262,6 +262,13 @@ class Parser:
                 self.expression()
                 self.emitter.emitLine(";")
             elif self.checkToken(TokenType.DECIMAL):
+                self.emitter.emit(varName + " = ")
+                if varName not in self.symbols:
+                    self.symbols[varName] = TokenType.DECIMAL
+                    self.emitter.headerLine("float " + varName + ";")
+                self.expression()
+                self.emitter.emitLine(";")
+            elif self.checkToken(TokenType.VARIABLE):
                 self.emitter.emit(varName + " = ")
                 if varName not in self.symbols:
                     self.symbols[varName] = TokenType.DECIMAL
