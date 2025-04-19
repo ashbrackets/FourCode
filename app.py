@@ -105,7 +105,7 @@ def learn():
     if 'user_id' in session:
         has_completed_lesson = check_lesson_completion(lesson_index)
 
-    return render_template("learntemp.html", 
+    return render_template("learn.html", 
                             content=lesson_content, 
                             lesson_index=lesson_index,
                             has_completed_lesson = has_completed_lesson,
