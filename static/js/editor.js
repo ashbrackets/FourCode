@@ -1,16 +1,16 @@
 export function createEditor(elementId) {
     // Check if dark mode is active
     const isDarkMode = document.documentElement.classList.contains('dark');
-    
+
     var editor = CodeMirror.fromTextArea(document.getElementById(elementId), {
         lineNumbers: true,
         theme: isDarkMode ? 'monokai' : 'default',
         lineWrapping: true,
         indentUnit: 4,
     });
-    
+
     resizeFontInEditor();
-    
+
     // Listen for dark mode changes and update the theme
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
@@ -20,10 +20,10 @@ export function createEditor(elementId) {
             }
         });
     });
-    
+
     // Observe the html element for class changes
     observer.observe(document.documentElement, { attributes: true });
-    
+
     return editor;
 }
 
@@ -39,3 +39,4 @@ function resizeFontInEditor() {
 }
 
 window.onresize = resizeFontInEditor;
+
