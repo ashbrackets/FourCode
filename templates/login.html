@@ -1,45 +1,53 @@
 {% extends "template.html" %}
 
 {% block content %}
-<div class="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4">
+<div
+    class="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4">
     {# Background Canvas #}
-    <div id="canvas" class="fixed inset-0 -z-10 w-full h-full overflow-hidden opacity-30"></div>
+    <div id="canvas"
+        class="fixed inset-0 w-full h-full overflow-hidden -z-10 opacity-30"></div>
 
     {# Login Form #}
     <div class="w-full max-w-md">
-        <div class="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-8">
-            <div class="text-center mb-8">
+        <div class="p-8 shadow-lg bg-white/80 backdrop-blur-sm rounded-2xl">
+            <div class="mb-8 text-center">
                 <h2 class="text-3xl font-bold text-secondary">Welcome Back</h2>
-                <p class="mt-2 text-secondary/60">Sign in to continue your learning journey</p>
+                <p class="mt-2 text-secondary/60">Sign in to continue your
+                    learning journey</p>
             </div>
 
             <form name="Login" method="POST" class="space-y-6">
                 <div>
-                    <label for="username" class="block text-sm font-medium text-secondary/80 mb-1">Username</label>
+                    <label for="username"
+                        class="block mb-1 text-sm font-medium text-secondary/80">Username</label>
                     <input type="text"
                         id="username"
                         name="username"
                         placeholder="Enter your username"
                         autocomplete="username"
                         autofocus
-                        class="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors text-secondary" />
+                        class="w-full px-4 py-3 transition-colors bg-white border border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none text-secondary" />
                 </div>
 
                 <div>
-                    <label for="password" class="block text-sm font-medium text-secondary/80 mb-1">Password</label>
+                    <label for="password"
+                        class="block mb-1 text-sm font-medium text-secondary/80">Password</label>
                     <div class="relative">
                         <input type="password"
                             id="password"
                             name="password"
                             placeholder="Enter your password"
                             autocomplete="current-password"
-                            class="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors text-secondary pr-12" />
-                        <button name="togglePassword" 
+                            class="w-full px-4 py-3 pr-12 transition-colors bg-white border border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none text-secondary" />
+                        <button name="togglePassword"
                             type="button"
                             link="password"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors">
-                            <i class="ph ph-eye text-xl text-secondary/60 hidden" id="eye"></i>
-                            <i class="ph ph-eye-slash text-xl text-secondary/60" id="eye-off"></i>
+                            class="absolute p-1 transition-colors -translate-y-1/2 rounded-full right-3 top-1/2 hover:bg-gray-100">
+                            <i
+                                class="hidden text-xl ph ph-eye text-secondary/60"
+                                id="eye"></i>
+                            <i class="text-xl ph ph-eye-slash text-secondary/60"
+                                id="eye-off"></i>
                         </button>
                     </div>
                 </div>
@@ -47,19 +55,21 @@
                 {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                 {% for category, message in messages %}
-                <div class="p-3 rounded-lg bg-red-50 text-red-600 text-sm">{{ message }}</div>
+                <div class="p-3 text-sm text-red-600 rounded-lg bg-red-50">{{
+                    message }}</div>
                 {% endfor %}
                 {% endif %}
                 {% endwith %}
 
                 <div class="space-y-4">
                     <button type="submit"
-                        class="w-full px-6 py-3 text-base font-semibold rounded-lg bg-primary hover:bg-primary/90 text-text transition-colors">
+                        class="w-full px-6 py-3 text-base font-semibold transition-colors rounded-lg bg-primary hover:bg-primary/90 text-text">
                         Sign In
                     </button>
                     <p class="text-center text-secondary/60">
-                        Don't have an account? 
-                        <a href="{{url_for('signup')}}" class="text-primary hover:text-primary/80 font-medium">
+                        Don't have an account?
+                        <a href="{{url_for('signup')}}"
+                            class="font-medium text-primary hover:text-primary/80">
                             Create one now
                         </a>
                     </p>
@@ -68,8 +78,5 @@
         </div>
     </div>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"></script>
-<script src="{{ url_for('static', filename='js/shader.js') }}"></script>
 <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 {% endblock %}

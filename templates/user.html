@@ -1,146 +1,75 @@
 {% extends "template.html" %}
 
 {% block content %}
-<div class="min-h-[calc(100vh-4rem)] py-8 px-4">
-    {# Background Canvas #}
-    <div id="canvas" class="fixed inset-0 -z-10 w-full h-full overflow-hidden opacity-30"></div>
-    
-    <div class="max-w-6xl mx-auto">
-        {# Profile Header #}
-        <div class="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-8 mb-8">
-            <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
-                {# Avatar Section #}
-                <div class="flex flex-col items-center space-y-4">
-                    <div class="relative group">
-                        <img src="{{ url_for('static', filename='images/'~(session['dp'] if 'dp' in session else 'frog')~'.png')}}"
-                            alt="Profile Picture" 
-                            class="w-32 h-32 rounded-full ring-4 ring-primary/20">
-                        <button class="absolute bottom-0 right-0 p-2 bg-primary text-text rounded-full shadow-lg hover:bg-primary/90 transition-colors">
-                            <i class="ph ph-pencil text-lg"></i>
-                        </button>
-                    </div>
-                    <div class="text-center">
-                        <h1 class="text-2xl font-bold text-secondary">{{ session['username'] }}</h1>
-                        <p class="text-secondary/60">Student</p>
-                    </div>
-                </div>
+<div
+    class="min-h-[calc(100vh-4rem)] flex items-center justify-center mt-24 lg:mt-0 py-12 px-4">
+    <div class="flex flex-row w-full max-w-4xl gap-4 mx-auto">
 
-                {# Stats Grid #}
-                <div class="flex-grow grid grid-cols-2 sm:grid-cols-4 gap-4 md:mt-4">
-                    <div class="p-4 text-center rounded-xl bg-primary/5">
-                        <div class="text-3xl font-bold text-primary mb-1">{{ completed_lessons }}</div>
-                        <div class="text-sm text-secondary/60">Lessons Completed</div>
-                    </div>
-                    <div class="p-4 text-center rounded-xl bg-green-50">
-                        <div class="text-3xl font-bold text-green-600 mb-1">{{ streak_days }}</div>
-                        <div class="text-sm text-secondary/60">Day Streak</div>
-                    </div>
-                    <div class="p-4 text-center rounded-xl bg-purple-50">
-                        <div class="text-3xl font-bold text-purple-600 mb-1">{{ xp_points }}</div>
-                        <div class="text-sm text-secondary/60">XP Points</div>
-                    </div>
-                    <div class="p-4 text-center rounded-xl bg-amber-50">
-                        <div class="text-3xl font-bold text-amber-600 mb-1">{{ achievements|length }}</div>
-                        <div class="text-sm text-secondary/60">Achievements</div>
-                    </div>
+        <!-- Avatar Section -->
+        <div
+            class="w-full p-8 transition-all shadow-sm bg-white/95 backdrop-blur-md hover:shadow-md rounded-2xl">
+            <div class="flex flex-col items-center space-y-4">
+                <div class="relative group">
+                    <img
+                        id="profilePic"
+                        src="{{ url_for('static', filename='images/'~(dp if dp else 'frog')~'.png')}}"
+                        alt="Profile Picture"
+                        class="w-32 h-32 rounded-full ring-4 ring-primary/20 pixelated">
+                </div>
+                <div class="text-center">
+                    <h1 class="text-2xl font-bold text-secondary">{{ username
+                        }}</h1>
                 </div>
             </div>
         </div>
 
-        {# Main Content Grid #}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {# Learning Progress #}
-            <div class="lg:col-span-2 space-y-8">
-                {# Recent Activity #}
-                <div class="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6">
-                    <h2 class="text-xl font-semibold text-secondary mb-6 flex items-center">
-                        <i class="ph ph-activity text-primary text-2xl mr-2"></i>
-                        Recent Activity
-                    </h2>
-                    <div class="space-y-4">
-                        {% for activity in recent_activities %}
-                        <div class="flex items-start space-x-4">
-                            <div class="flex-none w-8 h-8 flex items-center justify-center rounded-full 
-                                {% if activity.type == 'lesson' %}bg-primary/10 text-primary
-                                {% elif activity.type == 'achievement' %}bg-amber-100 text-amber-600
-                                {% else %}bg-green-100 text-green-600{% endif %}">
-                                <i class="ph {% if activity.type == 'lesson' %}ph-graduation-cap
-                                    {% elif activity.type == 'achievement' %}ph-trophy
-                                    {% else %}ph-check-circle{% endif %}"></i>
-                            </div>
-                            <div class="flex-grow">
-                                <p class="text-secondary">{{ activity.description }}</p>
-                                <p class="text-sm text-secondary/60">{{ activity.time }}</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                {# Learning Progress #}
-                <div class="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6">
-                    <h2 class="text-xl font-semibold text-secondary mb-6 flex items-center">
-                        <i class="ph ph-chart-line text-primary text-2xl mr-2"></i>
-                        Learning Progress
-                    </h2>
-                    <div class="space-y-4">
-                        {% for lesson in lessons %}
-                        <div class="flex items-center space-x-4">
-                            <div class="flex-none w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary font-medium">
-                                {{ lesson.index + 1 }}
-                            </div>
-                            <div class="flex-grow">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-secondary">{{ lesson.name }}</span>
-                                    <span class="text-sm text-secondary/60">{{ lesson.progress }}%</span>
-                                </div>
-                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-primary rounded-full transition-all w-[var(--progress)]" 
-                                        data-progress="{{ lesson.progress }}"
-                                        id="progress-bar-{{ loop.index }}"></div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
+        <!-- Settings Section -->
+        <div
+            class="flex flex-col w-full p-8 space-y-4 transition-all shadow-sm bg-white/95 backdrop-blur-md hover:shadow-md rounded-2xl">
+            <h2 class="text-xl font-semibold text-gray-800">Select Profile
+                Picture</h2>
+            <div class="flex flex-row gap-4">
+                <button type="button"
+                    class="w-20 h-20 rounded-full ring-2 ring-primary/20"
+                    name="dp">
+                    <img class="w-20 h-20 rounded-full dp pixelated"
+                        src="{{url_for('static', filename='images/bob.png')}}"
+                        alt="bob"
+                        name="bob">
+                </button>
+                <button type="button"
+                    class="w-20 h-20 rounded-full ring-2 ring-primary/20"
+                    name="dp">
+                    <img class="w-20 h-20 rounded-full dp pixelated"
+                        src="{{url_for('static', filename='images/dogo.png')}}"
+                        alt="dogo"
+                        name="dogo">
+                </button>
+                <button type="button"
+                    class="w-20 h-20 rounded-full ring-2 ring-primary/20"
+                    name="dp">
+                    <img class="w-20 h-20 rounded-full dp pixelated"
+                        src="{{url_for('static', filename='images/neko.png')}}"
+                        alt="neko"
+                        name="neko">
+                </button>
+                <button type="button"
+                    class="w-20 h-20 rounded-full ring-2 ring-primary/20"
+                    name="dp">
+                    <img class="w-20 h-20 rounded-full dp pixelated"
+                        src="{{url_for('static', filename='images/frog.png')}}"
+                        alt="frog"
+                        name="frog">
+                </button>
             </div>
-
-            {# Achievements Section #}
-            <div class="space-y-8">
-                {# Achievements #}
-                <div class="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6">
-                    <h2 class="text-xl font-semibold text-secondary mb-6 flex items-center">
-                        <i class="ph ph-trophy text-primary text-2xl mr-2"></i>
-                        Achievements
-                    </h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        {% for achievement in achievements %}
-                        <div class="p-4 rounded-xl {% if achievement.unlocked %}bg-amber-50{% else %}bg-gray-50{% endif %} text-center">
-                            <div class="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center
-                                {% if achievement.unlocked %}bg-amber-100 text-amber-600{% else %}bg-gray-200 text-gray-400{% endif %}">
-                                <i class="ph {{ achievement.icon }} text-2xl"></i>
-                            </div>
-                            <h3 class="font-medium text-secondary mb-1">{{ achievement.name }}</h3>
-                            <p class="text-sm text-secondary/60">{{ achievement.description }}</p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
+            <button
+                id="DP-confirm-button"
+                class="px-6 py-1 text-white rounded-lg bg-button w-fit">Confirm</button>
+            <a id="deleteAccount" href="{{url_for('delete_account')}}"
+                class="px-6 py-1 text-white bg-red-600 rounded-lg w-fit">Delete
+                Account</a>
         </div>
     </div>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"></script>
-<script src="{{ url_for('static', filename='js/shader.js') }}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Set progress bar widths
-        document.querySelectorAll('[data-progress]').forEach(progressBar => {
-            const progressValue = progressBar.getAttribute('data-progress');
-            progressBar.style.width = `${progressValue}%`;
-        });
-    });
-</script>
+<script src="{{ url_for('static', filename='js/user.js') }}"></script>
 {% endblock %}

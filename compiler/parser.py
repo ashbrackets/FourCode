@@ -158,7 +158,7 @@ class Parser:
             while not self.checkToken(TokenType.END):
                 if self.checkToken(TokenType.ELSEIF):
                     self.nextToken()
-                    self.emitter.emitLine('} else if (')
+                    self.emitter.emit('} else if (')
                     if self.checkToken(TokenType.NEWLINE):
                         self.backToken()
                         self.addError("Expected comparison after 'elseif'.")

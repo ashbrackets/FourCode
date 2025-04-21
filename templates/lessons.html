@@ -2,54 +2,69 @@
 
 {% block content %}
 <div class="min-h-[calc(100vh-4rem)] py-12 px-4 ">
-    {# Background Canvas #}
-    <!-- <div id="canvas" class="fixed inset-0 -z-10 w-full h-full overflow-hidden opacity-20"></div> -->
-    
-    <div class="max-w-4xl mx-auto">
+    <div class="relative max-w-4xl mx-auto">
+        <div
+            class="absolute w-full h-full bg-white/90 blur-3xl -z-10"></div>
         {# Header #}
-        <div class="text-center mb-16">
-            <h1 class="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-6 leading-normal md:leading-normal py-1">Your Learning Path</h1>
-            <p class="text-lg text-secondary/60 max-w-2xl mx-auto">Track your progress through our carefully crafted coding lessons. Each lesson builds upon the previous one to help you master coding step by step.</p>
+        <div class="mb-16 text-center">
+            <h1
+                class="py-1 mb-6 text-4xl font-bold leading-normal text-transparent md:text-6xl bg-gradient-to-r from-primary to-secondary bg-clip-text md:leading-normal">Your
+                Learning Path</h1>
+            <p class="max-w-2xl mx-auto text-lg text-secondary/60">Track your
+                progress through our carefully crafted coding lessons. Each
+                lesson builds upon the previous one to help you master coding
+                step by step.</p>
         </div>
 
         {# Progress Bar #}
         <div class="mb-12">
-            <div class="flex items-center justify-between text-sm text-secondary/60 mb-2">
+            <div
+                class="flex items-center justify-between mb-2 text-sm text-secondary/60">
                 <span>Your Progress</span>
-                <span class="font-medium" id="progress-text">0/{{lessons|length}} Complete</span>
+                <span class="font-medium"
+                    id="progress-text">0/{{lessons|length}} Complete</span>
             </div>
-            <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div class="h-full bg-primary rounded-full transition-all duration-300" id="progress-bar" style="width: 0%"></div>
+            <div class="h-2 overflow-hidden bg-gray-100 rounded-full">
+                <div
+                    class="h-full transition-all duration-300 rounded-full bg-primary"
+                    id="progress-bar" style="width: 0%"></div>
             </div>
         </div>
 
         {# Lessons List #}
-        <div class="bg-white shadow-xl rounded-3xl p-6 md:p-8 backdrop-blur-sm bg-white/80">
+        <div
+            class="p-6 bg-white shadow-xl rounded-3xl md:p-8 backdrop-blur-sm bg-white/80">
             <div id="lessons-container" class="divide-y divide-gray-100">
                 {% for lesson in lessons %}
                 <div class="lesson-{{lesson.index}} group">
-                    <div class="flex items-center gap-4 py-6 first:pt-2 last:pb-2">
+                    <div
+                        class="flex items-center gap-4 py-6 first:pt-2 last:pb-2">
                         {# Lesson Number #}
-                        <div class="flex-none w-10 h-10 flex items-center justify-center rounded-xl bg-primary/10 text-primary font-semibold group-hover:bg-primary/20 transition-colors">
+                        <div
+                            class="flex items-center justify-center flex-none w-10 h-10 font-semibold transition-colors rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20">
                             {{loop.index}}
                         </div>
 
                         {# Checkbox #}
-                        <input type="checkbox" 
+                        <input type="checkbox"
                             id="lesson-checkbox"
                             value="{{lesson.index}}"
-                            class="lesson-checkbox w-5 h-5 rounded-md border-2 border-gray-200 text-primary focus:ring-primary/20 cursor-pointer transition-colors"
+                            class="w-5 h-5 transition-colors border-2 border-gray-200 rounded-md cursor-pointer lesson-checkbox text-primary focus:ring-primary/20"
                             {% if lesson.isChecked %}checked{% endif %}>
 
                         {# Lesson Title and Link #}
                         <a href="{{url_for('learn', lesson_index=loop.index0)}}"
-                            class="flex-grow flex items-center justify-between group cursor-pointer">
-                            <span id="lesson-name-{{lesson.index}}" data-lesson-name="true"
+                            class="flex items-center justify-between flex-grow cursor-pointer group">
+                            <span id="lesson-name-{{lesson.index}}"
+                                data-lesson-name="true"
                                 class="{% if lesson.isChecked %}line-through{% endif %} decoration-2 text-lg text-secondary group-hover:text-primary transition-colors">
                                 {{lesson.name}}
                             </span>
-                            <span class="flex items-center text-secondary/40 group-hover:text-primary transition-colors">
-                                <span class="text-sm mr-2 opacity-0 group-hover:opacity-100 transition-opacity">Start Lesson</span>
+                            <span
+                                class="flex items-center transition-colors text-secondary/40 group-hover:text-primary">
+                                <span
+                                    class="mr-2 text-sm transition-opacity opacity-0 group-hover:opacity-100">Start
+                                    Lesson</span>
                                 <i class="ph ph-arrow-square-out"></i>
                             </span>
                         </a>
@@ -61,7 +76,5 @@
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"></script>
-<script src="{{ url_for('static', filename='js/shader.js') }}"></script>
 <script src="{{ url_for('static', filename='js/lessons.js') }}"></script>
 {% endblock %}

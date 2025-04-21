@@ -39,7 +39,7 @@ export const plugins = [
     addUtilities({
       ".pixelated": {
         "image-rendering": "pixelated"
-      }
+      },
     })
   }
 ]

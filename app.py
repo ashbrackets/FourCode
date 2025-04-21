@@ -287,6 +287,9 @@ def delete_account():
     try:
         cur.execute('DELETE FROM users WHERE id = %s', (user_id,))
         conn.commit()
+        
+        session.pop('user_id', None)
+        session.pop('dp', None)
         return redirect(url_for('login'))
     except Exception as e:
         conn.rollback()

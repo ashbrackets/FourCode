@@ -2,13 +2,13 @@
 
 {% block content %}
 <div
-    class="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center mt-24 lg:mt-0 overflow-auto">
-    {# Background Canvas #}
-    <!-- <div id="canvas" class="fixed inset-0 w-full h-full overflow-hidden -z-10 opacity-30"></div> -->
+    class="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center overflow-auto">
 
     {# Hero Section #}
-    <div class="relative max-w-4xl px-4 pt-[300px] mx-auto text-center">
-        <div class="absolute w-full h-full bg-white/90 blur-3xl -z-10"></div>
+    <div
+        class="relative max-w-4xl px-4 pt-[40%] lg:pt-[15%] mx-auto text-center">
+        <div
+            class="absolute w-full h-full -translate-x-4 -translate-y-1/4 bg-white/90 blur-3xl -z-10"></div>
         <h1
             class="mb-8 text-4xl font-bold leading-tight md:text-6xl lg:text-7xl text-secondary">
             Welcome to the start of your <span class="text-primary">coding
@@ -24,23 +24,93 @@
             <a href="{{url_for('lessons')}}"
                 class="inline-flex items-center px-8 py-4 text-lg font-semibold transition-colors rounded-lg bg-primary hover:bg-primary/90 text-text">
                 Start Learning
-                <i class="ml-2 ph ph-arrow-right"></i>
             </a>
             <a href="{{url_for('playground')}}"
                 class="inline-flex items-center px-8 py-4 text-lg font-semibold transition-colors bg-white border rounded-lg border-secondary/20 hover:bg-white/50 text-secondary">
                 Try Playground
-                <i class="ml-2 ph ph-code"></i>
             </a>
         </div>
     </div>
     {# Demo Section #}
-    <div class="h-[800px] w-full bg-red-700 mt-[280px]"></div>
+    <div
+        class="h-[600px] w-[90%] mt-[10%] mb-10 p-4 lg:p-12 rounded-lg bg-white/90 drop-shadow-lg">
+        <div class="flex flex-col justify-between w-full h-full lg:flex-row">
+            <div
+                class="flex items-center h-fit lg:h-full w-fit">
+                <p
+                    class="text-xl font-bold leading-relaxed text-left lg:text-5xl text-secondary">FourCode
+                    uses a
+                    simple and
+                    understandable
+                    lanugauge to teach
+                    the fundamentals of programming.</p>
+            </div>
+            <div
+                class="w-full h-full">
+                <div
+                    class="flex flex-col items-start w-full h-full overflow-hidden rounded-lg drop-shadow-lg">
+                    <div
+                        class="flex flex-col w-full gap-4 px-2 py-4 lg:flex-row">
+                        <button id="fibonacciCode"
+                            class="px-6 py-1 bg-white rounded-full codeExample ring-2 ring-gray-500">Fibonacci
+                            Series</button>
+                        <button id="greaterCode"
+                            class="px-6 py-1 bg-white rounded-full codeExample">Largest
+                            Number</button>
+                        <!-- <button class="px-6 py-1 rounded-full"></button> -->
+                    </div>
+                    <textarea id="code-editor" class="w-full h-full"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
     {# Footer Section #}
-    <div class="h-[400px] w-full bg-blue-700"></div>
+    <div
+        class="h-[64px] w-full bg-white rounded-lg flex flex-row items-center justify-between p-4">
+        <a href="/" class="flex items-center group">
+            <span
+                class="font-mono text-2xl transition-colors text-primary group-hover:text-primary/90">[</span>
+            <span
+                class="font-mono text-2xl transition-colors text-secondary group-hover:text-secondary/90">FourCode</span>
+            <span
+                class="font-mono text-2xl transition-colors text-primary group-hover:text-primary/90">]</span>
+        </a>
+        <div id="Socials" class="flex flex-row items-center gap-4 mx-4 ml-10">
+            <a href="https://x.com/" target="_blank"><img
+                    src="{{url_for('static', filename='images/twitter.svg')}}"
+                    alt="Twitter"
+                    class="w-5 h-5"></a>
+            <a href="https://instagram.com" target="_blank"><img
+                    src="{{url_for('static', filename='images/instagram.svg')}}"
+                    alt="Instagram"
+                    class="w-5 h-5"></a>
+            <a href="https://github.com" target="_blank"><img
+                    src="{{url_for('static', filename='images/github.svg')}}"
+                    alt="Github"
+                    class="w-5 h-5"></a>
+            <a href="https://facebook.com" target="_blank"><img
+                    src="{{url_for('static', filename='images/facebook.svg')}}"
+                    alt="facebook"
+                    class="w-5 h-5"></a>
+            <a href="https://linkedin.com" target="_blank"><img
+                    src="{{url_for('static', filename='images/linkedin.svg')}}"
+                    alt="LinkedIn"
+                    class="w-5 h-5"></a>
+        </div>
+    </div>
 </div>
 
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css" />
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/monokai.min.css" />
 <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"></script>
+    src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/python/python.min.js"></script>
+<script type="module"
+    src="{{ url_for('static', filename='js/index.js') }}"></script>
 <script
     src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+
 {% endblock %}

@@ -1,4 +1,5 @@
 import { createEditor } from './editor.js'
+import { resizeFontInEditor } from './resize_editor.js'
 
 var editor
 let isLoggedIn = false
@@ -12,7 +13,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (savedCode) {
         editor.setValue(savedCode);
     }
-
     editor.on('change', function () {
         editor.getAllMarks().forEach(marker => marker.clear());
         var code = editor.getValue();

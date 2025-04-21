@@ -3,28 +3,22 @@ import { createEditor } from './editor.js'
 var editor;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize the code editor
     editor = createEditor('code-editor');
     editor.setSize("100%", "100%");
-
-    // Load saved code if it exists
+    const ed = document.querySelector(".CodeMirror")
+    ed.style.fontSize = "16px"
     const savedCode = localStorage.getItem('playground_code');
     if (savedCode) {
         editor.setValue(savedCode);
     }
 
-    // Save code as the user types
     editor.on('change', function () {
         editor.getAllMarks().forEach(marker => marker.clear());
         const code = editor.getValue();
         localStorage.setItem('playground_code', code);
     });
-
-    // Initialize resize bars
-    initializeResizeBars();
 });
 
-// Add event listener to run button
 document.getElementsByName('run-button').forEach((e) => {
     e.addEventListener('click', async () => {
         let startTime = performance.now();
@@ -60,7 +54,6 @@ document.getElementsByName('run-button').forEach((e) => {
         textarea.innerHTML += "\nExecution Time: " + perfTime.toFixed(2).toString() + " ms";
         textarea.innerHTML += "\n<b>---END OF PROGRAM---</b>";
 
-        // Auto scroll to the end
         scrollAnimation(textarea, .2);
     });
 });

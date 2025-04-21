@@ -2,10 +2,10 @@
 
 {% block content %}
 <div
-    class="flex flex-col w-full h-full py-2 lg:flex-row ">
+    class="flex flex-col w-full h-[200%] lg:h-full gap-4 py-2 lg:gap-0 lg:flex-row ">
     {# Code Editor #}
     <div id="Input-and-Output"
-        class="flex flex-col h-[calc(50%-1rem)] lg:h-full lg:w-[50%] bg-white shadow-lg rounded-lg">
+        class="flex flex-col h-full lg:gap-0 gap-4 lg:w-[50%] lg:bg-white shadow-lg rounded-lg order-3 lg:order-1">
         <div id="Input"
             class="flex flex-col h-[50%] bg-white shadow-lg rounded-lg">
             <div
@@ -35,7 +35,7 @@
                     Run Code
                 </button>
             </div>
-            <div class="flex-grow overflow-hidden rounded-lg">
+            <div class="flex-grow overflow-hidden rounded-b-lg">
                 <textarea id="code-editor" class="w-full h-full"></textarea>
             </div>
         </div>
@@ -43,7 +43,7 @@
         {# Resize Bar #}
         <div name="resize-bar"
             link1="Input"
-            link2="Outputt"
+            link2="Output"
             direction="vertical"
             id="verticalResize"
             class="items-center justify-center hidden w-full h-2 transition-colors bg-gray-200 lg:flex cursor-row-resize hover:bg-primary/40">
@@ -55,8 +55,8 @@
         </div>
 
         {# Output #}
-        <div id="Outputt"
-            class="flex flex-col h-[50%] bg-white shadow-lg rounded-lg">
+        <div id="Output"
+            class="flex flex-col h-[50%] bg-white shadow-lg rounded-lg   mb-2 lg:mb-0"">
             <div class="flex items-center p-2 border-b border-gray-100">
                 <h3 class="flex items-center font-medium text-secondary">
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -80,7 +80,7 @@
         link2="Lesson"
         direction="horizontal"
         id="desktopResize"
-        class="items-center justify-center hidden w-2 h-full transition-colors bg-gray-200 rounded-lg lg:flex hover:bg-primary/40 cursor-col-resize">
+        class="items-center justify-center order-2 hidden w-2 h-full transition-colors bg-gray-200 rounded-lg lg:flex hover:bg-primary/40 cursor-col-resize">
         <div
             class="flex flex-col items-center justify-center gap-1.5 scale-75">
             <div class="w-1 h-1 bg-gray-500 rounded-full"></div>
@@ -89,9 +89,9 @@
         </div>
     </div>
 
-    {# Output #}
+    {# Lesson #}
     <div id="Lesson"
-        class="w-full lg:w-[calc(50%-1.5rem)] order-1 lg:order-3 h-[500px] lg:h-full mt-16 lg:mt-0">
+        class="w-full lg:w-[calc(50%-1.5rem)] order-1 lg:order-3 h-[500px] lg:h-full">
         <div class="flex flex-col h-full bg-white rounded-lg shadow-lg">
             <div
                 class="flex items-center justify-between flex-shrink-0 p-2 border-b border-gray-100">
@@ -167,7 +167,6 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
 <script
     src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/python/python.min.js"></script>
-<script src="https://unpkg.com/swapy/dist/swapy.min.js" defer></script>
 
 <style>
 .CodeMirror {
@@ -243,7 +242,9 @@
         }
     });
     </script>
-<script src="{{ url_for('static', filename='js/resizebars.js') }}"
+<script src="{{ url_for('static', filename='js/resize_bars.js') }}"
+    type="module"></script>
+<script src="{{ url_for('static', filename='js/resize_editor.js') }}"
     type="module"></script>
 <script src="{{ url_for('static', filename='js/learn.js') }}"
     type="module"></script>

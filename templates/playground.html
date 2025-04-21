@@ -2,7 +2,7 @@
 
 {% block content %}
 <div
-    class="flex flex-col w-full h-full py-2 lg:flex-row ">
+    class="flex flex-col w-full h-full gap-4 py-2 lg:gap-0 lg:flex-row ">
     {# Code Editor #}
     <div id="Input"
         class="flex flex-col h-[calc(50%-1rem)] lg:h-full lg:w-[50%] bg-white shadow-lg rounded-lg">
@@ -79,7 +79,6 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
 <script
     src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/python/python.min.js"></script>
-<script src="https://unpkg.com/swapy/dist/swapy.min.js" defer></script>
 
 <style>
 .CodeMirror {
@@ -133,5 +132,7 @@
 <script type="module"
     src="{{ url_for('static', filename='js/playground.js') }}"></script>
 <script type="module"
-    src="{{ url_for('static', filename='js/resizebars.js') }}"></script>
+    src="{{ url_for('static', filename='js/resize_bars.js') }}"></script>
+<!-- <script type="module"
+    src="{{ url_for('static', filename='js/resize_editor.js') }}"></script> -->
 {% endblock %}

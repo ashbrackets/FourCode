@@ -50,11 +50,11 @@ class Compiler:
         if platform.system() == "Windows":
             exe_file += ".exe"
         compile_process = subprocess.run(
-            ["gcc", "-O0", "-pipe", "-g0", c_file, "-o", exe_file, '-Werror'],
+            ["gcc", "-O0", "-g0", c_file, "-o", exe_file, '-Werror'],
             text=True,
             capture_output=True
         )
-        
+        print(1)
         if compile_process.returncode != 0:
             os.remove(c_file)
             return "Compilation Error: " + compile_process.stderr
@@ -66,6 +66,7 @@ class Compiler:
                 capture_output=True,
                 check=True
             )
+            print(2)
         except subprocess.CalledProcessError as e:
             if e.returncode != 0:
                 os.remove(c_file)
