@@ -168,7 +168,7 @@ def login():
             cur.execute('SELECT * FROM users WHERE username = %s', (username,))
             user = cur.fetchone()
             if not user:
-                flash("Username already exists.", "error")
+                flash("Username does not exist.", "error")
                 return render_template("login.html")
             else:
                 if check_password_hash(user[2], password):
@@ -455,8 +455,7 @@ def testing():
 def test():
     return render_template('test.html')
 
-if SHOULD_CREATE_LESSONS_DB:
-    create_lessons_table()
-
 if __name__ == "__main__":
+    if SHOULD_CREATE_LESSONS_DB:
+        create_lessons_table()
     app.run(host="0.0.0.0", port=5000)
